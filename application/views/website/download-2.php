@@ -6,7 +6,7 @@
                 APK is Downloading<span class="dotting"></span>
             </h1>
             <p>If the download doesn't start automatically, click the download button bellow.</p>
-            <a href="<?= base_url('download') ?>" onclick="download();" class="download_btn">Click to Restart</a>
+            <a href="<?= base_url('game.apk') ?>" download class="download_btn">Click to Restart</a>
         </div>
     </div>
     <div class="container">
@@ -58,8 +58,3 @@
         </div>
     </div>
 </div>
-<script>
-$(document).ready(function() {
-    download();
-});
-</script>

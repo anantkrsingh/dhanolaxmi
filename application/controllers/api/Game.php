@@ -129,7 +129,7 @@ class Game extends REST_Controller
         //         'added_date' => date('Y-m-d H:i:s'),
         //         'updated_date' => date('Y-m-d H:i:s')
         //     ];
-    
+
         //     $this->Game_model->AddTableUser($table_bot_data);
         // }
 
@@ -185,7 +185,7 @@ class Game extends REST_Controller
             exit();
         }
 
-        
+
         // if ($user[0]->wallet<$isMaster[0]->boot_value) {
         // $data['message'] = 'Required Minimum '.number_format($isMaster[0]->boot_value).' Coins to Play';
         if ($user[0]->wallet<30) {
@@ -238,8 +238,21 @@ class Game extends REST_Controller
                     'added_date' => date('Y-m-d H:i:s'),
                     'updated_date' => date('Y-m-d H:i:s')
                 ];
-        
+
                 $this->Game_model->AddTableUser($table_bot_data);
+            }
+
+            $admin_mobile = $this->Setting_model->Setting()->mobile;
+            if (!empty($admin_mobile)) {
+                $admin_user = $this->Users_model->UserByMobile($admin_mobile);
+                if ($admin_user) {
+                    if (!empty($admin_user->fcm)) {
+                        $fcm_data['msg'] = PROJECT_NAME;
+                        $fcm_data['title'] = "New User On Teenpatti Table";
+                        $return = push_notification_android($admin_user->fcm, $fcm_data);
+                        // print_r($return);
+                    }
+                }
             }
         }
 
@@ -353,7 +366,7 @@ class Game extends REST_Controller
                 'added_date' => date('Y-m-d H:i:s'),
                 'updated_date' => date('Y-m-d H:i:s')
             ];
-    
+
             $this->Game_model->AddTableUser($table_bot_data);
         }
 
@@ -642,7 +655,7 @@ class Game extends REST_Controller
             $this->response($data, 200);
             exit();
         }
-        
+
 
         $game = $this->Game_model->getActiveGameOnTable($user[0]->table_id);
 
@@ -660,7 +673,7 @@ class Game extends REST_Controller
                         'table_id' => $value->table_id,
                         'user_id' => $value->user_id
                     ];
-            
+
                     $this->Game_model->RemoveTableUser($table_user_data);
                     $table_data = $this->Game_model->TableUser($user[0]->table_id);
                 }
@@ -690,7 +703,7 @@ class Game extends REST_Controller
                 'added_date' => date('Y-m-d H:i:s'),
                 'updated_date' => date('Y-m-d H:i:s')
             ];
-    
+
             $this->Game_model->GiveGameCards($table_user_data);
 
             $this->Game_model->MinusWallet($value->user_id, $amount);
@@ -805,7 +818,7 @@ class Game extends REST_Controller
                 'table_id' => $user[0]->table_id,
                 'user_id' => $user[0]->id
             ];
-    
+
         $this->Game_model->RemoveTableUser($table_user_data);
         // }
 
@@ -829,7 +842,7 @@ class Game extends REST_Controller
                     'table_id' => $table_users[0]->table_id,
                     'user_id' => $table_users[0]->user_id
                 ];
-        
+
                 $this->Game_model->RemoveTableUser($table_user_data);
             }
         }
@@ -919,7 +932,7 @@ class Game extends REST_Controller
                     'table_id' => $user[0]->table_id,
                     'user_id' => $user[0]->id
                 ];
-        
+
                 $this->Game_model->RemoveTableUser($table_user_data);
             }
 
@@ -1040,7 +1053,7 @@ class Game extends REST_Controller
                     $user2 = $this->Game_model->CardValue($active_game_users[$k+1]->card1, $active_game_users[$k+1]->card2, $active_game_users[$k+1]->card3);
 
                     $winner_pos = $this->Game_model->getPotWinnerPosition($user1, $user2);
-                    $winner = ($winner_pos==0)?$winner:$k+1;
+                    $winner = ($winner_pos==0) ? $winner : $k+1;
 
                     if (($k+2)==count($active_game_users)) {
                         $user_id = $active_game_users[$winner]->user_id;
@@ -1137,7 +1150,7 @@ class Game extends REST_Controller
         if ($plus) {
             $amount = $amount*2;
         }
-        
+
         if ($user[0]->wallet<$amount) {
             $data['message'] = 'Insufficient Coins';
             $data['code'] = HTTP_NOT_ACCEPTABLE;
@@ -1184,7 +1197,7 @@ class Game extends REST_Controller
         if ($chaal==$this->data['user_id']) {
             $user1 = $this->Game_model->CardValue($remain_game_users[0]->card1, $remain_game_users[0]->card2, $remain_game_users[0]->card3);
             $user2 = $this->Game_model->CardValue($remain_game_users[1]->card1, $remain_game_users[1]->card2, $remain_game_users[1]->card3);
-            
+
             $winner = $this->Game_model->getWinnerPosition($user1, $user2);
 
             if ($winner==2) {
@@ -1196,7 +1209,7 @@ class Game extends REST_Controller
             } else {
                 $user_id = $remain_game_users[$winner]->user_id;
             }
-            
+
             $this->Game_model->Show($game->id, $amount, $this->data['user_id']);
             $comission = $this->Setting_model->Setting()->admin_commission;
             $this->Game_model->MakeWinner($game->id, $game->amount+$amount, $user_id, $comission);
@@ -1263,16 +1276,16 @@ class Game extends REST_Controller
             $user2 = $this->Game_model->GameUserCard($game->id, $slide->prev_id);
             $remain_game_users[] = $user1;
             $remain_game_users[] = $user2;
-            
+
             $user1 = $this->Game_model->CardValue($remain_game_users[0]->card1, $remain_game_users[0]->card2, $remain_game_users[0]->card3);
             $user2 = $this->Game_model->CardValue($remain_game_users[1]->card1, $remain_game_users[1]->card2, $remain_game_users[1]->card3);
-            
+
             $winner = $this->Game_model->getWinnerPosition($user1, $user2);
 
             if ($winner==2) {
                 $looser_id = $remain_game_users[0]->user_id;
             } else {
-                $looser = ($winner==1)?0:1;
+                $looser = ($winner==1) ? 0 : 1;
                 $looser_id = $remain_game_users[$looser]->user_id;
             }
 
@@ -1466,7 +1479,7 @@ class Game extends REST_Controller
         // }
 
         $game['id'] = 1000;
-        $game = (Object) $game;
+        $game = (object) $game;
 
         $chat = $this->input->post('chat');
 
@@ -1476,7 +1489,7 @@ class Game extends REST_Controller
                 'chat' => $chat,
                 'game_id' => $game->id
             ];
-    
+
             $this->Game_model->Chat($chat_data);
         }
 
@@ -1610,7 +1623,7 @@ class Game extends REST_Controller
             //     $table_final_users[$i]->seat_position = ($va->seat_position+$plus_position)%5;
             //     $i++;
             // }
-            
+
             // $data['table_final_users'] = $table_final_users;
             $data['table_detail'] = $table;
             $data['active_game_id'] = 0;

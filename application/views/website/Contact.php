@@ -16,7 +16,7 @@
                      <p>Install and Play <?= PROJECT_NAME ?> to win real rupees in cash!</p>
                  </div>
                  <div class="down">
-                     <a href="<?= base_url('game.apk') ?>">Download APK</a>
+                     <a href="<?= base_url('game.apk') ?>" download>Download APK</a>
                  </div>
              </div>
          </div>

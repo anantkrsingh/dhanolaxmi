@@ -121,20 +121,6 @@
 <script src="<?= base_url('assets/website/js/jsshare.js') ?>" type="text/javascript"></script>
 <script type="text/javascript">
 // lazyload img
-
-function download() {
-    var download_iframe = $("#download_iframe");
-    if (download_iframe.length > 0) {
-        download_iframe.remove();
-    }
-    var url = "game.apk";
-    var iframe = document.createElement("iframe");
-    iframe.id = "download_iframe";
-    iframe.style.display = "none";
-    iframe.src = url;
-    document.body.appendChild(iframe);
-}
-
 (function() {
     var lazy = new LazyLoad({
         threshold: 200,
@@ -194,12 +180,6 @@ for (var i = 0; i < shareItems.length; i += 1) {
     });
 }
 </script>
-<!-- <script src="<?= base_url('assets/website/cdn-cgi/scripts/7d0fa10a/cloudflare-static/rocket-loader.min.js') ?>"
-    data-cf-settings="149b61ccb1e3d8697e87b51c-|49" defer=""></script>
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v652eace1692a40cfa3763df669d7439c1639079717194"
-    integrity="sha512-Gi7xpJR8tSkrpF7aordPZQlW2DLtzUlZcumS8dMQjwDHEnw9I7ZLyiOj/6tZStRBGtGgN6ceN6cMH8z7etPGlw=="
-    data-cf-beacon='{"rayId":"6d09745ece6a746c","version":"2021.12.0","r":1,"token":"a506e876edb44eb48e62eb07b62e043c","si":100}'
-    crossorigin="anonymous"></script> -->
 </body>
 
 </html>

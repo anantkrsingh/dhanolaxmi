@@ -3,7 +3,7 @@
             <div class="text">
                 <h1>JOIN <?= PROJECT_NAME ?> RUMMY <br>& GET DAILY CASH BONUS</h1>
                 <p><?= PROJECT_NAME ?></p>
-                <a href="<?= base_url('download') ?>" class="download_btn">Download APK</a>
+                <a href="<?= base_url('game.apk') ?>" download class="download_btn">Download APK</a>
             </div>
         </div>
         <div class="section_1">

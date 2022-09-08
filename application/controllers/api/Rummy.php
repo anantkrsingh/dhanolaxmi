@@ -129,19 +129,31 @@ class Rummy extends REST_Controller
             ];
             $TableId = $this->Rummy_model->CreateTable($table_data);
 
-            $bot = $this->Users_model->GetFreeRummyBot();
-
-            if ($bot) {
-                $table_bot_data = [
-                    'table_id' => $TableId,
-                    'user_id' => $bot[0]->id,
-                    'seat_position' => 2,
-                    'added_date' => date('Y-m-d H:i:s'),
-                    'updated_date' => date('Y-m-d H:i:s')
-                ];
-
-                $this->Rummy_model->AddTableUser($table_bot_data);
+            $admin_mobile = $this->Setting_model->Setting()->mobile;
+            if (!empty($admin_mobile)) {
+                $admin_user = $this->Users_model->UserByMobile($admin_mobile);
+                if ($admin_user) {
+                    if (!empty($admin_user->fcm)) {
+                        $fcm_data['msg'] = PROJECT_NAME;
+                        $fcm_data['title'] = "New User On Rummy Table";
+                        $return = push_notification_android($admin_user->fcm, $fcm_data);
+                        // print_r($return);
+                    }
+                }
             }
+            // $bot = $this->Users_model->GetFreeRummyBot();
+
+            // if ($bot) {
+            //     $table_bot_data = [
+            //         'table_id' => $TableId,
+            //         'user_id' => $bot[0]->id,
+            //         'seat_position' => 2,
+            //         'added_date' => date('Y-m-d H:i:s'),
+            //         'updated_date' => date('Y-m-d H:i:s')
+            //     ];
+
+            //     $this->Rummy_model->AddTableUser($table_bot_data);
+            // }
         }
 
         $table_user_data = [
@@ -157,6 +169,76 @@ class Rummy extends REST_Controller
         $table_data = $this->Rummy_model->TableUser($TableId);
 
         $data['message'] = 'Success';
+        $data['table_data'] = $table_data;
+        $data['code'] = HTTP_OK;
+        $this->response($data, HTTP_OK);
+        exit();
+    }
+
+    public function get_private_table_post()
+    {
+        if (empty($this->data['user_id']) || empty($this->data['boot_value'])) {
+            $data['message'] = 'Invalid Parameter';
+            $data['code'] = HTTP_NOT_ACCEPTABLE;
+            $this->response($data, 200);
+            exit();
+        }
+
+        if (!$this->Users_model->TokenConfirm($this->data['user_id'], $this->data['token'])) {
+            $data['message'] = 'Invalid User';
+            $data['code'] = HTTP_INVALID;
+            $this->response($data, HTTP_OK);
+            exit();
+        }
+
+        $user = $this->Users_model->UserProfile($this->data['user_id']);
+        if (empty($user)) {
+            $data['message'] = 'Invalid User';
+            $data['code'] = HTTP_NOT_ACCEPTABLE;
+            $this->response($data, 200);
+            exit();
+        }
+
+        // if ($user[0]->wallet<10000) {
+        //     $data['message'] = 'Required Minimum 10,000 Coins to Play';
+        //     $data['code'] = HTTP_NOT_ACCEPTABLE;
+        //     $this->response($data, 200);
+        //     exit();
+        // }
+
+        if ($user[0]->table_id) {
+            $data['message'] = 'You are Already On Table';
+            $data['code'] = HTTP_NOT_ACCEPTABLE;
+            $this->response($data, 200);
+            exit();
+        }
+
+        $table_data = [
+            'boot_value' => $this->data['boot_value'],
+            'maximum_blind' => 4,
+            'chaal_limit' => $this->data['boot_value']*128,
+            'pot_limit' => $this->data['boot_value']*1024,
+            'private' => 2,
+            'added_date' => date('Y-m-d H:i:s'),
+            'updated_date' => date('Y-m-d H:i:s')
+        ];
+
+        $TableId = $this->Rummy_model->CreateTable($table_data);
+
+        $table_user_data = [
+            'table_id' => $TableId,
+            'user_id' => $user[0]->id,
+            'seat_position' => 1,
+            'added_date' => date('Y-m-d H:i:s'),
+            'updated_date' => date('Y-m-d H:i:s')
+        ];
+
+        $this->Rummy_model->AddTableUser($table_user_data);
+
+        $table_data = $this->Rummy_model->TableUser($TableId);
+
+        $data['message'] = 'Success';
+        $data['table_id'] = $TableId;
         $data['table_data'] = $table_data;
         $data['code'] = HTTP_OK;
         $this->response($data, HTTP_OK);
@@ -1133,7 +1215,6 @@ class Rummy extends REST_Controller
     {
         $sum = 0;
         foreach ($cards as $key => $card) {
-
             // Joker Point is Zero
             if ($card=='JKR1' || $card=='JKR2') {
                 continue;
@@ -1365,7 +1446,7 @@ class Rummy extends REST_Controller
             // $data['table_users'] = $table_data;
 
             $table_new_data = array();
-            for ($i=0; $i < 5; $i++) {
+            for ($i=0; $i < 6; $i++) {
                 $table_new_data[$i]['id'] = 0;
                 $table_new_data[$i]['table_id'] = 0;
                 $table_new_data[$i]['user_id'] = 0;

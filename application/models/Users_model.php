@@ -669,7 +669,7 @@ class Users_model extends MY_Model
         (SELECT `game_id`,`user_id`,`action`,`amount`,`added_date` FROM `tbl_rummy_log` WHERE `amount`!=0 AND `user_id`='.$user_id.'
         UNION
         SELECT `id`,`winner_id`,10,`user_winning_amt`,`added_date` FROM `tbl_rummy` WHERE  `winner_id`='.$user_id.') rummy
-        ORDER BY added_date DESC');
+        ORDER BY added_date ASC');
         // $this->db->get();
         return $Query->result();
     }

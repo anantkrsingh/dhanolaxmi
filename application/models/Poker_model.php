@@ -79,6 +79,21 @@ class Poker_model extends MY_Model
         return $Query->row();
     }
 
+    public function GetRamdomGameCard($game_id)
+    {
+        $this->db->select('cards');
+        $this->db->from('tbl_cards');
+        $this->db->where('`cards` NOT IN (SELECT `card1` FROM `tbl_poker_card` WHERE `id`='.$game_id.')', null, false);
+        $this->db->where('`cards` NOT IN (SELECT `card2` FROM `tbl_poker_card` WHERE `id`='.$game_id.')', null, false);
+        $this->db->where('`cards` NOT IN (SELECT `card` FROM `tbl_poker_middle_card` WHERE `game_id`='.$game_id.' AND isDeleted=0)', null, false);
+        $this->db->order_by('RAND()');
+        $this->db->limit(1);
+        $Query = $this->db->get();
+        // echo $this->db->last_query();
+        // exit;
+        return $Query->result();
+    }
+
     public function GetSeatOnTable($TableId)
     {
         $sql = "SELECT * FROM ( SELECT 1 AS mycolumn UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 ) a WHERE mycolumn NOT in ( SELECT seat_position FROM `tbl_poker_table_user` WHERE poker_table_id=" . $TableId . " AND isDeleted=0 ) LIMIT 1";
@@ -94,6 +109,19 @@ class Poker_model extends MY_Model
         $inserted_id =  $this->db->insert_id();
 
         return $inserted_id;
+    }
+
+    public function getTableCards($game_id)
+    {
+        $this->db->select('card');
+        $this->db->from('tbl_poker_middle_card');
+        $this->db->where('game_id', $game_id);
+        // $this->db->limit(1);
+        $this->db->order_by('id', 'DESC');
+        $Query = $this->db->get();
+        // echo $this->db->last_query();
+        // exit;
+        return $Query->result();
     }
 
     public function TableUser($TableId)
@@ -176,10 +204,13 @@ class Poker_model extends MY_Model
         return $Query->result();
     }
 
-    public function GameLog($game_id, $limit = '')
+    public function GameLog($game_id, $limit = '', $user_id = '')
     {
         $this->db->from('tbl_poker_log');
         $this->db->where('game_id', $game_id);
+        if (!empty($user_id)) {
+            $this->db->where('user_id', $user_id);
+        }
         $this->db->order_by('id', 'DESC');
         if (!empty($limit)) {
             $this->db->limit($limit);
@@ -252,7 +283,7 @@ class Poker_model extends MY_Model
         $this->db->where('game_id', $game_id); //which row want to upgrade
         $this->db->update('tbl_poker_card');  //table name
 
-        $this->db->select('card1,card2,card3');
+        $this->db->select('card1,card2');
         $this->db->from('tbl_poker_card');
         $this->db->where('game_id', $game_id);
         $this->db->where('user_id', $user_id);
@@ -378,34 +409,45 @@ class Poker_model extends MY_Model
         return true;
     }
 
-    public function Chaal($game_id, $amount, $user_id)
+    public function Chaal($game_id, $amount, $user_id, $round, $rule, $value, $chaal_type)
     {
-        $this->db->set('wallet', 'wallet-' . $amount, false);
-        $this->db->where('id', $user_id);
-        $this->db->update('tbl_users');
+        if ($chaal_type!=1) {
+            $this->db->set('wallet', 'wallet-' . $amount, false);
+            $this->db->where('id', $user_id);
+            $this->db->update('tbl_users');
 
-        $this->db->set('winning_wallet', 'winning_wallet-' . $amount, false);
-        $this->db->where('id', $user_id);
-        $this->db->where('winning_wallet>', 0);
-        $this->db->update('tbl_users');
+            $this->db->set('winning_wallet', 'winning_wallet-' . $amount, false);
+            $this->db->where('id', $user_id);
+            $this->db->where('winning_wallet>', 0);
+            $this->db->update('tbl_users');
 
-        $this->db->set('amount', 'amount+' . $amount, false);
-        $this->db->where('id', $game_id);
-        $this->db->update('tbl_poker');
+            $this->db->set('amount', 'amount+' . $amount, false);
+            $this->db->where('id', $game_id);
+            $this->db->update('tbl_poker');
+        } else {
+            $amount = 0;
+        }
 
-        $this->db->select('seen');
-        $this->db->from('tbl_poker_card');
+        $this->db->set('rule', $rule);
+        $this->db->set('value', $value);
         $this->db->where('game_id', $game_id);
         $this->db->where('user_id', $user_id);
-        $Query = $this->db->get();
-        $seen = $Query->row()->seen;
+        $this->db->update('tbl_poker_card');
+
+        // $this->db->select('seen');
+        // $this->db->from('tbl_poker_card');
+        // $this->db->where('game_id', $game_id);
+        // $this->db->where('user_id', $user_id);
+        // $Query = $this->db->get();
+        // $seen = $Query->row()->seen;
 
         $data = [
             'user_id' => $user_id,
             'game_id' => $game_id,
-            'seen' => $seen,
             'action' => 2,
+            'chaal_type' => $chaal_type,
             'amount' => $amount,
+            'round' => $round,
             'added_date' => date('Y-m-d H:i:s')
         ];
         $this->db->insert('tbl_poker_log', $data);

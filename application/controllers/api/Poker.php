@@ -186,10 +186,10 @@ class Poker extends REST_Controller
         }
 
 
-        // if ($user[0]->wallet<$isMaster[0]->boot_value) {
-        // $data['message'] = 'Required Minimum '.number_format($isMaster[0]->boot_value).' Coins to Play';
-        if ($user[0]->wallet<30) {
-            $data['message'] = 'Required Minimum 30 Coins to Play';
+        if ($user[0]->wallet<$isMaster[0]->boot_value) {
+            $data['message'] = 'Required Minimum '.number_format($isMaster[0]->boot_value).' Coins to Play';
+            // if ($user[0]->wallet<30) {
+        //     $data['message'] = 'Required Minimum 30 Coins to Play';
             $data['code'] = HTTP_NOT_ACCEPTABLE;
             $this->response($data, 200);
             exit();
@@ -226,7 +226,7 @@ class Poker extends REST_Controller
                 'updated_date' => date('Y-m-d H:i:s')
             ];
             $TableId = $this->Poker_model->CreateTable($table_data);
-            // $this->sendNotification($TableId);
+            $this->sendNotification($TableId);
 
             $bot = $this->Users_model->GetFreeBot();
 
@@ -678,8 +678,9 @@ class Poker extends REST_Controller
 
         $GameId = $this->Poker_model->Create($game_data);
 
-        $Cards = $this->Poker_model->GetCards(count($table_data)*2);
+        $Cards = $this->Poker_model->GetCards((count($table_data)*2));
 
+        $card_count=0;
         foreach ($table_data as $key => $value) {
             $table_user_data = [
                 'game_id' => $GameId,
@@ -689,6 +690,9 @@ class Poker extends REST_Controller
                 'added_date' => date('Y-m-d H:i:s'),
                 'updated_date' => date('Y-m-d H:i:s')
             ];
+
+            $card_count++;
+            $card_count++;
 
             $this->Poker_model->GiveGameCards($table_user_data);
 
@@ -700,22 +704,12 @@ class Poker extends REST_Controller
                 'game_id' => $GameId,
                 'user_id' => $value->user_id,
                 'action' => 0,
+                'round' => 1,
                 'amount' => $amount,
                 'added_date' => date('Y-m-d H:i:s')
             ];
 
             $this->Poker_model->AddGameLog($game_log);
-        }
-
-        $Cards = $this->Poker_model->GetCards(count($table_data)*2);
-
-        foreach ($Cards as $key => $card) {
-            $table_card = [
-                'game_id' => $GameId,
-                'card' => $card
-            ];
-
-            $this->Poker_model->TableCards($table_card);
         }
 
         $data['message'] = 'Success';
@@ -948,6 +942,9 @@ class Poker extends REST_Controller
     public function chaal_post()
     {
         $plus = $this->input->post('plus');
+        $rule = $this->input->post('rule');
+        $rule_value = $this->input->post('value');
+        $chaal_type = $this->input->post('chaal_type');
         if (empty($this->data['user_id'])) {
             $data['message'] = 'Invalid Parameter';
             $data['code'] = HTTP_NOT_ACCEPTABLE;
@@ -989,22 +986,22 @@ class Poker extends REST_Controller
 
         $lastChal = $this->Poker_model->LastChaal($game->id);
 
-        $seen = $lastChal->seen;
+        // $seen = $lastChal->seen;
         $amount = $lastChal->amount;
 
-        $card_seen = $this->Poker_model->isCardSeen($game->id, $user[0]->id);
+        // $card_seen = $this->Poker_model->isCardSeen($game->id, $user[0]->id);
 
-        if ($seen==0 && $card_seen==1) {
-            $amount = $amount*2;
-        }
+        // if ($seen==0 && $card_seen==1) {
+        //     $amount = $amount*2;
+        // }
 
-        if ($seen==1 && $card_seen==0) {
-            $amount = $amount/2;
-        }
+        // if ($seen==1 && $card_seen==0) {
+        //     $amount = $amount/2;
+        // }
 
-        if ($plus) {
-            $amount = $amount*2;
-        }
+        // if ($plus) {
+        //     $amount = $amount*2;
+        // }
 
         if ($user[0]->wallet<$amount) {
             $data['message'] = 'Insufficient Coins For '.$amount.' Coins Chaal';
@@ -1040,47 +1037,91 @@ class Poker extends REST_Controller
         if ($chaal==$this->data['user_id']) {
             $table = $this->Poker_model->isTableAvail($user[0]->poker_table_id);
 
-            if ($table->pot_limit <= ($game->amount+$amount)) {
-                $this->Poker_model->Show($game->id, $amount, $this->data['user_id']);
-                $active_game_users = $this->Poker_model->GameUser($game->id);
-                $winner = 0;
-                foreach ($active_game_users as $k => $val) {
-                    // echo $winner;
-                    $user1 = $this->Poker_model->CardValue($active_game_users[$winner]->card1, $active_game_users[$winner]->card2);
-                    $user2 = $this->Poker_model->CardValue($active_game_users[$k+1]->card1, $active_game_users[$k+1]->card2);
+            $round = $lastChal->round;
+            $game_users = $this->Poker_model->GameUser($game->id);
+            $chaal_count = count($this->Poker_model->GameLog($game->id, '', $game_users[0]->user_id));
+            $middle_card_count = count($this->Poker_model->getTableCards($game->id));
+            if (($middle_card_count<5) && (($chaal_count-2)>($middle_card_count-3))) {
+                $random_card = $this->Poker_model->GetRamdomGameCard($game->id);
 
-                    $winner_pos = $this->Poker_model->getPotWinnerPosition($user1, $user2);
-                    $winner = ($winner_pos==0) ? $winner : $k+1;
+                $table_card = [
+                    'game_id' => $game->id,
+                    'card' => $random_card[0]->cards
+                ];
 
-                    if (($k+2)==count($active_game_users)) {
-                        $user_id = $active_game_users[$winner]->user_id;
-                        break;
+                $round = $middle_card_count;
+                $this->Poker_model->TableCards($table_card);
+
+                // Flop
+                if ($middle_card_count==0) {
+                    $round = 2;
+                    for ($i=1; $i <= 2; $i++) {
+                        $random_card = $this->Poker_model->GetRamdomGameCard($game->id);
+
+                        $table_card = [
+                            'game_id' => $game->id,
+                            'card' => $random_card[0]->cards
+                        ];
+                        $this->Poker_model->TableCards($table_card);
                     }
                 }
-
-                $comission = $this->Setting_model->Setting()->admin_commission;
-                $this->Poker_model->MakeWinner($game->id, $game->amount+$amount, $user_id, $comission);
-                $data['message'] = 'Pot Show';
-                $data['winner'] = $user_id;
-                $data['code'] = HTTP_OK;
-                $this->response($data, HTTP_OK);
-                exit();
-            } else {
-                $this->Poker_model->Chaal($game->id, $amount, $this->data['user_id']);
-                if (count($game_users)==2) {
-                    $bot_id = $this->Poker_model->getGameBot($game->id);
-                    if ($bot_id) {
-                        sleep(10);
-                        $this->Poker_model->Chaal($game->id, $amount, $bot_id);
-                    }
-                }
+            } elseif (($middle_card_count==5) && (($chaal_count-2)>($middle_card_count-3))) {
+                $round = $middle_card_count;
             }
+
+            // if ($table->pot_limit <= ($game->amount+$amount)) {
+            //     $this->Poker_model->Show($game->id, $amount, $this->data['user_id']);
+            //     $active_game_users = $this->Poker_model->GameUser($game->id);
+            //     $winner = 0;
+            //     foreach ($active_game_users as $k => $val) {
+            //         // echo $winner;
+            //         $user1 = $this->Poker_model->CardValue($active_game_users[$winner]->card1, $active_game_users[$winner]->card2);
+            //         $user2 = $this->Poker_model->CardValue($active_game_users[$k+1]->card1, $active_game_users[$k+1]->card2);
+
+            //         $winner_pos = $this->Poker_model->getPotWinnerPosition($user1, $user2);
+            //         $winner = ($winner_pos==0) ? $winner : $k+1;
+
+            //         if (($k+2)==count($active_game_users)) {
+            //             $user_id = $active_game_users[$winner]->user_id;
+            //             break;
+            //         }
+            //     }
+
+            //     $comission = $this->Setting_model->Setting()->admin_commission;
+            //     $this->Poker_model->MakeWinner($game->id, $game->amount+$amount, $user_id, $comission);
+            //     $data['message'] = 'Pot Show';
+            //     $data['winner'] = $user_id;
+            //     $data['code'] = HTTP_OK;
+            //     $this->response($data, HTTP_OK);
+            //     exit();
+            // } else {
+            $this->Poker_model->Chaal($game->id, $amount, $this->data['user_id'], $round, $rule, $rule_value, $chaal_type);
+            // if (count($game_users)==2) {
+            //     $bot_id = $this->Poker_model->getGameBot($game->id);
+            //     if ($bot_id) {
+            //         sleep(10);
+            //         $this->Poker_model->Chaal($game->id, $amount, $bot_id);
+            //     }
+            // }
+            // }
 
             $data['message'] = 'Success';
             $data['code'] = HTTP_OK;
             $this->response($data, HTTP_OK);
             exit();
         }
+
+
+        // $middle_card_count = count($this->Poker_model->getTableCards($game->id));
+        // if($chaal_count){
+        //     $random_card = $this->Poker_model->GetRamdomGameCard($game->id);
+
+        //     $table_card = [
+        //         'game_id' => $game->id,
+        //         'card' => $random_card[0]->cards
+        //     ];
+        //     $this->Poker_model->TableCards($table_card);
+        // }
 
         $data['message'] = 'Invalid Chaal';
         $data['code'] = HTTP_NOT_ACCEPTABLE;
@@ -1691,9 +1732,10 @@ class Poker extends REST_Controller
         if (!empty($user_id)) {
             $user_card_seen = $this->Poker_model->isCardSeen($game->id, $user_id);
             $data['cards'] = array();
-            if ($user_card_seen==1) {
-                $data['cards'] = $this->Poker_model->getMyCards($game->id, $user_id);
-            }
+            // if ($user_card_seen==1) {
+            $data['cards'] = $this->Poker_model->getMyCards($game->id, $user_id);
+            // }
+            $data['middle_card'] = $this->Poker_model->getTableCards($game->id);
         }
 
         if ($game) {

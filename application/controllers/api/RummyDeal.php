@@ -296,21 +296,21 @@ class RummyDeal extends REST_Controller
         $this->RummyDeal_model->AddTableUser($table_user_data);
 
         if ($this->data['boot_value']==0) {
-            $bot = $this->Users_model->GetFreeBot();
-            for ($i=0; $i < 3; $i++) {
-                $seat_position = $seat_position+1;
-                if ($bot[$i]) {
-                    $table_user_data = [
-                        'table_id' => $TableId,
-                        'user_id' => $bot[$i]->id,
-                        'seat_position' => $seat_position,
-                        'added_date' => date('Y-m-d H:i:s'),
-                        'updated_date' => date('Y-m-d H:i:s')
-                    ];
+            // $bot = $this->Users_model->GetFreeBot();
+            // for ($i=0; $i < 3; $i++) {
+            //     $seat_position = $seat_position+1;
+            //     if ($bot[$i]) {
+            //         $table_user_data = [
+            //             'table_id' => $TableId,
+            //             'user_id' => $bot[$i]->id,
+            //             'seat_position' => $seat_position,
+            //             'added_date' => date('Y-m-d H:i:s'),
+            //             'updated_date' => date('Y-m-d H:i:s')
+            //         ];
 
-                    $this->RummyDeal_model->AddTableUser($table_user_data);
-                }
-            }
+            //         $this->RummyDeal_model->AddTableUser($table_user_data);
+            //     }
+            // }
         }
 
         $table_data = $this->RummyDeal_model->TableUser($TableId);
@@ -1523,7 +1523,6 @@ class RummyDeal extends REST_Controller
     {
         $sum = 0;
         foreach ($cards as $key => $card) {
-
             // Joker Point is Zero
             if ($card=='JKR1' || $card=='JKR2') {
                 continue;
