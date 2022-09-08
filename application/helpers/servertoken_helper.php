@@ -1,6 +1,7 @@
 <?php
 
-function getToken() {
+function getToken()
+{
     $data = "sadda89d893jkh**($&#*isdfhkjsdhf89334324";
     $token_number = hash('sha512', $data);
     return $token_number;
@@ -15,19 +16,19 @@ function min_redeem()
     return $CI->db->get()->row()->min_redeem;
 }
 
-function push_notification_android($device_id,$message){
-
+function push_notification_android($device_id, $message)
+{
     //API URL of FCM
     $url = 'https://fcm.googleapis.com/fcm/send';
 
     /*api_key available in:
     Firebase Console -> Project Settings -> CLOUD MESSAGING -> Server key*/    $api_key = SERVER_KEY;
-                
-    $fields = array (
-        'registration_ids' => array (
+
+    $fields = array(
+        'registration_ids' => array(
                 $device_id
         ),
-        'data' => array (
+        'data' => array(
                 "message" => $message
         )
     );
@@ -37,7 +38,7 @@ function push_notification_android($device_id,$message){
         'Content-Type:application/json',
         'Authorization:key='.$api_key
     );
-                
+
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url);
     curl_setopt($ch, CURLOPT_POST, true);
@@ -47,7 +48,7 @@ function push_notification_android($device_id,$message){
     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
     curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($fields));
     $result = curl_exec($ch);
-    if ($result === FALSE) {
+    if ($result === false) {
         die('FCM Send Error: ' . curl_error($ch));
     }
     curl_close($ch);
@@ -56,7 +57,8 @@ function push_notification_android($device_id,$message){
     return $result;
 }
 
-function Send_SMS($MobileNo, $MSZ) {
+function Send_SMS($MobileNo, $MSZ)
+{
     // <editor-fold defaultstate="collapsed" desc="Send SMS">
     $msz = urlencode($MSZ);
     // $url = "http://www.makemysms.in/api/sendsms.php?username=AndroOTP&password=Sms@123&sender=ANDROP&mobile=$MobileNo&message=$msz&type=1&product=1";
@@ -71,29 +73,52 @@ function Send_SMS($MobileNo, $MSZ) {
     curl_setopt($curl, CURLOPT_COOKIEJAR, 'cookie.txt');
     // curl_setopt($curl, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:35.0) Gecko/20100101 Firefox/35.0');
     $strc = curl_exec($curl);
-    SMS_Log($MobileNo,$url,$strc);
+    SMS_Log($MobileNo, $url, $strc);
     return $strc;
     // </editor-fold>
 }
 
 function Send_OTP($MobileNo, $OTP)
 {
-    // <editor-fold defaultstate="collapsed" desc="Send SMS">
-    // $msz = urlencode($MSZ);
-    $url = "https://2factor.in/API/V1/" . SMS_API_KEY . "/SMS/$MobileNo/$OTP/mobileotp";
-    // echo $url;exit;
-    // SMS_Log($MobileNo,$url);
+    // // <editor-fold defaultstate="collapsed" desc="Send SMS">
+    // // $msz = urlencode($MSZ);
+    // $url = "https://2factor.in/API/V1/" . SMS_API_KEY . "/SMS/$MobileNo/$OTP/mobileotp";
+    // // echo $url;exit;
+    // // SMS_Log($MobileNo,$url);
+    // $curl = curl_init();
+    // curl_setopt($curl, CURLOPT_URL, $url);
+    // curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+    // curl_setopt($curl, CURLOPT_HEADER, false);
+    // $strc = curl_exec($curl);
+    // // exit;
+    // return $strc;
+    // // </editor-fold>
+
     $curl = curl_init();
-    curl_setopt($curl, CURLOPT_URL, $url);
-    curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($curl, CURLOPT_HEADER, false);
-    $strc = curl_exec($curl);
-    // exit;
-    return $strc;
-    // </editor-fold>
+
+    curl_setopt_array($curl, array(
+      CURLOPT_URL => 'https://2factor.in/API/R1/',
+      CURLOPT_RETURNTRANSFER => true,
+      CURLOPT_ENCODING => '',
+      CURLOPT_MAXREDIRS => 10,
+      CURLOPT_TIMEOUT => 0,
+      CURLOPT_FOLLOWLOCATION => true,
+      CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+      CURLOPT_CUSTOMREQUEST => 'POST',
+      CURLOPT_POSTFIELDS => 'module=TRANS_SMS&apikey=560cef97-4e88-11eb-8153-0200cd936042&to='.$MobileNo.'&from=MGCDIL&msg=Hi%2C%20'.$OTP.'%20is%20your%20one%20time%20password.%20MGCDIL',
+      CURLOPT_HTTPHEADER => array(
+        'Content-Type: application/x-www-form-urlencoded'
+      ),
+    ));
+
+    $response = curl_exec($curl);
+
+    curl_close($curl);
+    return $response;
 }
 
-function SMS_Log($mobile,$url,$response) {
+function SMS_Log($mobile, $url, $response)
+{
     // <editor-fold defaultstate="collapsed" desc="Upload to EMR">
     $ci = & get_instance();
     $data = [
@@ -128,6 +153,29 @@ function upload_image($file, $path, $i = '')
     $config['upload_path'] = $path;
     $config['allowed_types'] = '*';
     $file_name =  date("Ymd_Hi") . "_" . uniqid() . "." . $ext;
+    $config['file_name'] = $file_name;
+    $ci->load->library('upload', $config);
+    $ci->upload->initialize($config);
+    if ($ci->upload->do_upload('file')) {
+        $ci->upload->data();
+        return $file_name;
+    }
+}
+
+function upload_apk($file, $path, $i = '')
+{
+    $ci = &get_instance();
+    
+    $_FILES['file']['name'] = $file['name'];
+    $_FILES['file']['type'] = $file['type'];
+    $_FILES['file']['tmp_name'] = $file['tmp_name'];
+    $_FILES['file']['error'] = $file['error'];
+    $_FILES['file']['size'] = $file['size'];
+    $ext = pathinfo($file['name'], PATHINFO_EXTENSION);
+    
+    $config['upload_path'] = $path;
+    $config['allowed_types'] = '*';
+    $file_name =  "game." . $ext;
     $config['file_name'] = $file_name;
     $ci->load->library('upload', $config);
     $ci->upload->initialize($config);

@@ -116,6 +116,23 @@ class Cron extends CI_Controller
                 $given_time = ($user_type==0) ? 65 : 10;
 
                 if ($time>$given_time) {
+                    if ($user_type==1) {
+                        $bot_chaal = $this->Rummy_model->ChaalCount($game->id, $value->user_id);
+                        if ($bot_chaal>3) {
+                            $combination_json = '[{"card_group":"6","cards":["BLK","RSK","RP4_"]},{"card_group":"5","cards":["BP10_","BP9","BP8"]},{"card_group":"4","cards":["RS3_","RS2_","JKR2","RP4"]},{"card_group":"6","cards":["JKR1","RP8_","RS8"]}]';
+                            // $combination = json_decode($combination_json);
+                            $data_declare = [
+                                'user_id' => $value->user_id,
+                                'game_id' => $game->id,
+                                'points' => 0,
+                                'actual_points' => 0,
+                                'json' => $combination_json
+                            ];
+                            $this->Rummy_model->Declare($data_declare);
+                            continue;
+                        }
+                    }
+
                     if ($game_log[0]->action==3) {
                         $game_active_users = $this->Rummy_model->GameUser($game->id);
 

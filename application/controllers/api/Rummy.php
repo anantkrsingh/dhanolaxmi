@@ -141,19 +141,19 @@ class Rummy extends REST_Controller
                     }
                 }
             }
-            // $bot = $this->Users_model->GetFreeRummyBot();
+            $bot = $this->Users_model->GetFreeRummyBot();
 
-            // if ($bot) {
-            //     $table_bot_data = [
-            //         'table_id' => $TableId,
-            //         'user_id' => $bot[0]->id,
-            //         'seat_position' => 2,
-            //         'added_date' => date('Y-m-d H:i:s'),
-            //         'updated_date' => date('Y-m-d H:i:s')
-            //     ];
+            if ($bot) {
+                $table_bot_data = [
+                    'table_id' => $TableId,
+                    'user_id' => $bot[0]->id,
+                    'seat_position' => 2,
+                    'added_date' => date('Y-m-d H:i:s'),
+                    'updated_date' => date('Y-m-d H:i:s')
+                ];
 
-            //     $this->Rummy_model->AddTableUser($table_bot_data);
-            // }
+                $this->Rummy_model->AddTableUser($table_bot_data);
+            }
         }
 
         $table_user_data = [

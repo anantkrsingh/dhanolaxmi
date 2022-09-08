@@ -198,7 +198,7 @@ define('VIOLET_MULTIPLE', 4.5);
 define('GREEN_RED_HALF_MULTIPLE', 1.5);
 define('GREEN_RED_MULTIPLE', 2);
 
-define('APP_URL', 'uploads/app/');
+define('APP_URL', '/');
 define('BANNER_URL', 'uploads/banner/');
 define('LOGO', 'uploads/logo/');
 define('IMAGE_URL', 'uploads/images/');

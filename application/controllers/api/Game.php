@@ -1575,6 +1575,22 @@ class Game extends REST_Controller
 
         if (!empty($table_id)) {
             $table_data = $this->Game_model->TableUser($table_id);
+            if (count($table_data)<2) {
+                $bot = $this->Users_model->GetFreeBot();
+
+                if ($bot) {
+                    $table_bot_data = [
+                        'table_id' => $table_id,
+                        'user_id' => $bot[0]->id,
+                        'seat_position' => 5,
+                        'added_date' => date('Y-m-d H:i:s'),
+                        'updated_date' => date('Y-m-d H:i:s')
+                    ];
+
+                    $this->Game_model->AddTableUser($table_bot_data);
+                }
+                $table_data = $this->Game_model->TableUser($table_id);
+            }
             // $data['table_users'] = $table_data;
 
             $table_new_data = array();

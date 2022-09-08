@@ -16,7 +16,7 @@
                      <div class="dropdown notification-list nav-pro-img">
                          <a class="dropdown-toggle nav-link arrow-none waves-effect nav-user" data-toggle="dropdown"
                              href="#" role="button" aria-haspopup="false" aria-expanded="false"><img
-                                 src="<?= base_url('assets/images/bu.png') ?>" alt="user" class="rounded-circle"></a>
+                                 src="<?= base_url(LOGO.$logo->logo) ?>" alt="user" class="rounded-circle"></a>
                          <div class="dropdown-menu dropdown-menu-right profile-dropdown">
                              <a class="dropdown-item" href="<?= base_url('backend/Profile/add'); ?>"><i
                                      class="mdi mdi-account-circle m-r-5"></i> Profile</a>

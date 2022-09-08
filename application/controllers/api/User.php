@@ -62,6 +62,31 @@ class User extends REST_Controller
         }
     }
 
+    public function only_send_otp_post()
+    {
+        $mobile = $this->data['mobile'];
+        // $user = $this->Users_model->UserProfileByMobile($mobile);
+        // if ($user) {
+        //     $data['message'] = 'Mobile Already Exist, Please Login';
+        //     $data['code'] = HTTP_NOT_FOUND;
+        //     $this->response($data, HTTP_OK);
+        //     exit();
+        // } else {
+        $otp = rand(1000, 9999);
+
+        // $otp = 9988;
+        $otp_id = $this->Users_model->InsertOTP($mobile, $otp);
+        $msg = "Yout OTP code is : ".$otp;
+        // Send_SMS($mobile,$msg);
+        Send_OTP($mobile, $otp);
+        $data['message'] = 'Success';
+        $data['otp_id'] = $otp_id;
+        $data['code'] = HTTP_OK;
+        $this->response($data, HTTP_OK);
+        exit();
+        // }
+    }
+
     public function register_post()
     {
         // if($this->Users_model->OTPConfirm($this->data['otp_id'], $this->data['otp'], $this->data['mobile']) || $this->data['otp']==$this->Setting_model->Setting()->default_otp)
@@ -231,8 +256,9 @@ class User extends REST_Controller
     {
         $user_data = $this->Users_model->UserProfileByMobile($this->data['mobile']);
         if ($user_data) {
-            $msg = "Your Password is ".$user_data[0]->password.", Keep Playing Teen Patti.";
-            Send_SMS($this->data['mobile'], $msg);
+            // $msg = "Your Password is ".$user_data[0]->password.", Keep Playing Teen Patti.";
+            // Send_SMS($this->data['mobile'], $msg);
+            Send_OTP($this->data['mobile'], $user_data[0]->password);
             $data['message'] = 'Password Sent.';
             $data['code'] = HTTP_OK;
             $this->response($data, HTTP_OK);

@@ -5,6 +5,8 @@ if (!function_exists('render')) {
     function template($view, $data) {
         $title['title'] = $data['title'];
         $ci = &get_instance();
+        $ci->load->model('Setting_model');
+        $title['logo'] = $ci->Setting_model->Setting();
         $ci->load->view('src/header', $title);
         $ci->load->view('src/nav', $title);
         $ci->load->view('src/sidebar',$data);
