@@ -9,7 +9,7 @@ include APPPATH . '/libraries/Format.php';
 class Plan extends REST_Controller
 {
     private $data;
-    
+
     public function __construct()
     {
         parent::__construct();
@@ -30,7 +30,7 @@ class Plan extends REST_Controller
         }
 
         $this->data = $this->input->post();
-        
+
         $this->load->model('Users_model');
         $this->load->model('Coin_plan_model');
         $this->load->model('Setting_model');
@@ -93,7 +93,7 @@ class Plan extends REST_Controller
         }
 
         $plan_id = $this->input->post('plan_id');
-        
+
         if (empty($user_id) || empty($plan_id)) {
             $data['message'] = 'Invalid Params';
             $data['code'] = HTTP_BLANK;
@@ -119,7 +119,7 @@ class Plan extends REST_Controller
         $Amount = $plan->price;             //Product Amount While the Time OF Order
 
         $Order_ID = $this->Coin_plan_model->GetCoin($user_id, $plan_id, $plan->coin, $Amount);
-        
+
         if (empty($Order_ID)) {
             $data['message'] = 'Error while Creating Ticket';
             $data['code'] = HTTP_NOT_ACCEPTABLE;
@@ -136,12 +136,12 @@ class Plan extends REST_Controller
         $paytm_body['custId'] = $user_id;
         $paytm_body['callbackUrl'] = 'https://securegw.paytm.in/theia/paytmCallback?ORDER_ID='.$Order_ID;
         $paytm_body['requestType'] = 'Payment';
-        
+
         $paytm_token = $this->paytm_token($paytm_body);
-        
+
         $Update_Order_Master = $this->Coin_plan_model->UpdateOrder($user_id, $Order_ID, $paytm_token);
 
-        
+
         if ($Update_Order_Master) {
             $data['order_id'] = $Order_ID_paytm;
             $data['Total_Amount'] = $Amount;
@@ -163,7 +163,7 @@ class Plan extends REST_Controller
         $setting = $this->Setting_model->Setting();
         $paytmParams = array();
 
-        $paytm_url = ($setting->cashfree_stage=='PROD')?PAYTM_LIVE_URL:PAYTM_TEST_URL;
+        $paytm_url = ($setting->cashfree_stage=='PROD') ? PAYTM_LIVE_URL : PAYTM_TEST_URL;
 
         $paytmParams["body"] = array(
             "requestType" => $data['requestType'],
@@ -206,14 +206,14 @@ class Plan extends REST_Controller
         $response = curl_exec($ch);
         $reponse_arr = json_decode($response);
         // print_r($reponse_arr->body->resultInfo);
-        return (isset($reponse_arr->body->txnToken))?$reponse_arr->body->txnToken:$reponse_arr->body->resultInfo->resultMsg;
+        return (isset($reponse_arr->body->txnToken)) ? $reponse_arr->body->txnToken : $reponse_arr->body->resultInfo->resultMsg;
     }
 
     public function paytm_pay_now_api_post()
     {
         $user_id = $this->input->post('user_id');
         $order_id = $this->input->post('order_id');
-        
+
         if (empty($user_id) || empty($order_id)) {
             $data['message'] = 'Invalid Params';
             $data['code'] = HTTP_BLANK;
@@ -268,7 +268,7 @@ class Plan extends REST_Controller
         $post_data = json_encode($paytmParams, JSON_UNESCAPED_SLASHES);
 
         /* for Staging */
-        $paytm_url = ($setting->cashfree_stage=='PROD')?PAYTM_LIVE_URL:PAYTM_TEST_URL;
+        $paytm_url = ($setting->cashfree_stage=='PROD') ? PAYTM_LIVE_URL : PAYTM_TEST_URL;
         $url = $paytm_url."/v3/order/status";
 
         /* for Production */
@@ -290,12 +290,12 @@ class Plan extends REST_Controller
         }
 
         $Amount = $CheckTicket[0]->price;
-        
+
         if ($CheckTicket[0]->payment==0 && $response_arr->body->txnAmount == $Amount) {
             $this->Coin_plan_model->UpdateOrderPayment($CheckTicket[0]->razor_payment_id);
             $this->Users_model->UpdateWalletOrder($CheckTicket[0]->coin, $CheckTicket[0]->user_id);
 
-            
+
             for ($i=1; $i <= 3; $i++) {
                 if ($user[0]->referred_by!=0) {
                     $level = 'level_'.$i;
@@ -316,7 +316,7 @@ class Plan extends REST_Controller
                     break;
                 }
             }
-            
+
             $data['message'] = 'Success';
             $data['code'] = HTTP_OK;
             $this->response($data, 200);
@@ -341,7 +341,7 @@ class Plan extends REST_Controller
         }
 
         $plan_id = $this->input->post('plan_id');
-        
+
         if (empty($user_id) || empty($plan_id)) {
             $data['message'] = 'Invalid Params';
             $data['code'] = HTTP_BLANK;
@@ -367,7 +367,7 @@ class Plan extends REST_Controller
         $Amount = $plan->price;             //Product Amount While the Time OF Order
 
         $Order_ID = $this->Coin_plan_model->GetCoin($user_id, $plan_id, $plan->coin, $Amount);
-        
+
         if (empty($Order_ID)) {
             $data['message'] = 'Error while Creating Ticket';
             $data['code'] = HTTP_NOT_ACCEPTABLE;
@@ -383,11 +383,11 @@ class Plan extends REST_Controller
         } else {
             $cftoken = $cashfree_token->message;
         }
-        
-        
+
+
         $Update_Order_Master = $this->Coin_plan_model->UpdateOrder($user_id, $Order_ID, $cftoken);
 
-        
+
         if ($Update_Order_Master) {
             $data['order_id'] = $Order_ID;
             $data['Total_Amount'] = $Amount;
@@ -407,7 +407,7 @@ class Plan extends REST_Controller
     public function cashkaro_token($order_id, $amount)
     {
         $setting = $this->Setting_model->Setting();
-        $url = ($setting->cashfree_stage=='PROD')?CLIENT_LIVE_URL:CLIENT_TEST_URL;
+        $url = ($setting->cashfree_stage=='PROD') ? CLIENT_LIVE_URL : CLIENT_TEST_URL;
         // print_r($setting);
         $curl = curl_init();
 
@@ -442,7 +442,7 @@ class Plan extends REST_Controller
     {
         $user_id = $this->input->post('user_id');
         $order_id = $this->input->post('order_id');
-        
+
         if (empty($user_id) || empty($order_id)) {
             $data['message'] = 'Invalid Params';
             $data['code'] = HTTP_BLANK;
@@ -494,12 +494,12 @@ class Plan extends REST_Controller
         }
 
         $Amount = $CheckTicket[0]->price;
-        
+
         if ($CheckTicket[0]->payment==0 && $orderAmount == $Amount) {
             $this->Coin_plan_model->UpdateOrderPayment($CheckTicket[0]->razor_payment_id);
             $this->Users_model->UpdateWalletOrder($CheckTicket[0]->coin, $CheckTicket[0]->user_id);
 
-            
+
             for ($i=1; $i <= 3; $i++) {
                 if ($user[0]->referred_by!=0) {
                     $level = 'level_'.$i;
@@ -520,7 +520,7 @@ class Plan extends REST_Controller
                     break;
                 }
             }
-            
+
             $data['message'] = 'Success';
             $data['code'] = HTTP_OK;
             $this->response($data, 200);
@@ -545,7 +545,7 @@ class Plan extends REST_Controller
         // }
 
         $plan_id = $this->input->post('plan_id');
-        
+
         if (empty($user_id) || empty($plan_id)) {
             $data['message'] = 'Invalid Params';
             $data['code'] = HTTP_BLANK;
@@ -572,7 +572,7 @@ class Plan extends REST_Controller
         $Amount = $plan->price;             //Product Amount While the Time OF Order
 
         $Order_ID = $this->Coin_plan_model->GetCoin($user_id, $plan_id, $plan->coin, $Amount);
-        
+
         if (empty($Order_ID)) {
             $data['message'] = 'Error while Creating Ticket';
             $data['code'] = HTTP_NOT_ACCEPTABLE;
@@ -585,10 +585,10 @@ class Plan extends REST_Controller
         $paytm_body['orderId'] = $txn_id;
         $paytm_body['plan_id'] = $plan_id;
         $paytm_body['name'] = $user_data[0]->name;
-        $paytm_body['email'] = ($user_data[0]->email)?$user_data[0]->email:'support@androappstech.com';
+        $paytm_body['email'] = ($user_data[0]->email) ? $user_data[0]->email : 'support@androappstech.com';
         $paytm_body['mobile'] = $user_data[0]->mobile;
         $paytm_body['amount'] = number_format($Amount, 1);
-        
+
         // $payumoney_token = $this->payumoney_salt($paytm_body);
         $Update_Order_Master = $this->Coin_plan_model->UpdateOrder($user_id, $Order_ID, $txn_id);
 
@@ -621,10 +621,10 @@ class Plan extends REST_Controller
         // $customer_email = $data['email'];
         // $customer_mobile = $data['mobile'];
         // $customer_address = $data['email'];
-        
+
         // //payumoney details
-        
-        
+
+
         // $MERCHANT_KEY = $setting->payumoney_key; //change  merchant with yours
         $SALT = $setting->payumoney_salt;  //change salt with yours
 
@@ -636,7 +636,7 @@ class Plan extends REST_Controller
         // $udf3 = '';
         // $udf4 = '';
         // $udf5 = '';
-            
+
         // $return['string'] = $hashstring = $MERCHANT_KEY . '|' . $txnid . '|' . $amount . '|' . $product_info . '|' . $customer_name . '|' . $customer_email . '|' . $udf1 . '|' . $udf2 . '|' . $udf3 . '|' . $udf4 . '|' . $udf5 . '||||||' . $SALT;
         // $return['string'] = $hashstring = $MERCHANT_KEY . '|payment_related_details_for_mobile_sdk|'.$customer_email.'|' . $SALT;
         // $return['hash'] = strtolower(hash('sha512', $hashstring));
@@ -668,7 +668,7 @@ class Plan extends REST_Controller
         }
 
         $plan_id = $this->input->post('plan_id');
-        
+
         if (empty($user_id) || empty($plan_id)) {
             $data['message'] = 'Invalid Params';
             $data['code'] = HTTP_BLANK;
@@ -694,7 +694,7 @@ class Plan extends REST_Controller
         $Amount = $plan->price;             //Product Amount While the Time OF Order
 
         $Order_ID = $this->Coin_plan_model->GetCoin($user_id, $plan_id, $plan->coin, $Amount);
-        
+
         if (empty($Order_ID)) {
             $data['message'] = 'Error while Creating Ticket';
             $data['code'] = HTTP_NOT_ACCEPTABLE;
@@ -703,15 +703,83 @@ class Plan extends REST_Controller
         }
         // create ORder in razor pay
         $RazorPay_order = $this->RazorPay_order($Order_ID, $Amount);
-        
-        
+
+
         $Update_Order_Master = $this->Coin_plan_model->UpdateOrder($user_id, $Order_ID, $RazorPay_order->id);
 
-        
+
         if ($Update_Order_Master) {
             $data['order_id'] = $Order_ID;
             $data['Total_Amount'] = $Amount;
             $data['RazorPay_ID'] = $RazorPay_order->id;
+            $data['message'] = 'Success';
+            $data['code'] = HTTP_OK;
+            $this->response($data, 200);
+            exit();
+        } else {
+            $data['message'] = 'Technical Error';
+            $data['code'] = HTTP_NOT_ACCEPTABLE;
+            $this->response($data, 200);
+            exit();
+        }
+    }
+
+    public function Place_Order_upi_Post()
+    {
+        $user_id = $this->input->post('user_id');
+
+        if (!$this->Users_model->TokenConfirm($this->data['user_id'], $this->data['token'])) {
+            $data['message'] = 'Invalid User';
+            $data['code'] = HTTP_INVALID;
+            $this->response($data, HTTP_OK);
+            exit();
+        }
+
+        $plan_id = $this->input->post('plan_id');
+
+        if (empty($user_id) || empty($plan_id)) {
+            $data['message'] = 'Invalid Params';
+            $data['code'] = HTTP_BLANK;
+            $this->response($data, 200);
+            exit();
+        }
+
+        if (empty($this->Users_model->UserProfile($user_id))) {
+            $data['message'] = 'Invalid User';
+            $data['code'] = HTTP_NOT_ACCEPTABLE;
+            $this->response($data, 200);
+            exit();
+        }
+
+        $plan = $this->Coin_plan_model->View($plan_id);
+        if (empty($plan)) {
+            $data['message'] = 'Invalid Plan';
+            $data['code'] = HTTP_NOT_ACCEPTABLE;
+            $this->response($data, 200);
+            exit();
+        }
+
+        $Amount = $plan->price;             //Product Amount While the Time OF Order
+
+        $Order_ID = $this->Coin_plan_model->GetCoin($user_id, $plan_id, $plan->coin, $Amount);
+
+        if (empty($Order_ID)) {
+            $data['message'] = 'Error while Creating Ticket';
+            $data['code'] = HTTP_NOT_ACCEPTABLE;
+            $this->response($data, 200);
+            exit();
+        }
+        // create ORder in razor pay
+        // $RazorPay_order = $this->RazorPay_order($Order_ID, $Amount);
+
+
+        // $Update_Order_Master = $this->Coin_plan_model->UpdateOrder($user_id, $Order_ID, $RazorPay_order->id);
+
+
+        if ($Order_ID) {
+            $data['order_id'] = $Order_ID;
+            $data['Total_Amount'] = $Amount;
+            // $data['RazorPay_ID'] = $RazorPay_order->id;
             $data['message'] = 'Success';
             $data['code'] = HTTP_OK;
             $this->response($data, 200);
@@ -744,7 +812,7 @@ class Plan extends REST_Controller
         $user_id = $this->input->post('user_id');
         $order_id = $this->input->post('order_id');
         $Payment_ID = $this->input->post('payment_id');
-        
+
         if (empty($user_id) || empty($order_id)  || empty($Payment_ID)) {
             $data['message'] = 'Invalid Params';
             $data['code'] = HTTP_BLANK;
@@ -803,7 +871,7 @@ class Plan extends REST_Controller
                 $this->Coin_plan_model->UpdateOrderPayment($CheckTicket[0]->razor_payment_id, $payment);
                 $this->Users_model->UpdateWalletOrder($CheckTicket[0]->coin, $CheckTicket[0]->user_id);
 
-                
+
                 for ($i=1; $i <= 3; $i++) {
                     if ($user[0]->referred_by!=0) {
                         $level = 'level_'.$i;
@@ -824,7 +892,7 @@ class Plan extends REST_Controller
                         break;
                     }
                 }
-                
+
                 $data['message'] = 'Success';
                 $data['code'] = HTTP_OK;
                 $this->response($data, 200);

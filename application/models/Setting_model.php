@@ -12,7 +12,7 @@ class Setting_model extends MY_Model
         return $Query->row();
     }
 
-    public function update($mobile, $referral_amount, $level_1, $level_2, $level_3, $referral_id, $referral_link, $contact_us, $terms, $privacy_policy, $help_support, $default_otp, $game_for_private, $app_version, $joining_amount, $admin_commission, $whats_no, $bonus, $bonus_amount, $payment_gateway, $symbol, $razor_api_key, $razor_secret_key, $cashfree_client_id, $cashfree_client_secret, $cashfree_stage, $paytm_mercent_id, $paytm_mercent_key, $share_text, $bank_detail_field, $adhar_card_field, $upi_field, $about_us, $refund_policy, $app_message, $app_url, $logo, $payumoney_key, $payumoney_salt)
+    public function update($mobile, $referral_amount, $level_1, $level_2, $level_3, $referral_id, $referral_link, $contact_us, $terms, $privacy_policy, $help_support, $default_otp, $game_for_private, $app_version, $joining_amount, $admin_commission, $whats_no, $bonus, $bonus_amount, $payment_gateway, $symbol, $razor_api_key, $razor_secret_key, $cashfree_client_id, $cashfree_client_secret, $cashfree_stage, $paytm_mercent_id, $paytm_mercent_key, $share_text, $bank_detail_field, $adhar_card_field, $upi_field, $about_us, $refund_policy, $app_message, $app_url, $logo, $payumoney_key, $payumoney_salt, $upi_merchant_id, $upi_secret_key)
     {
         $data = ['updated_date' => date('Y-m-d H:i:s')];
 
@@ -53,6 +53,12 @@ class Setting_model extends MY_Model
         }
         if (!empty($default_otp)) {
             $data['default_otp'] = $default_otp;
+        }
+        if (!empty($upi_merchant_id)) {
+            $data['upi_merchant_id'] = $upi_merchant_id;
+        }
+        if (!empty($upi_secret_key)) {
+            $data['upi_secret_key'] = $upi_secret_key;
         }
         if (!empty($game_for_private)) {
             $data['game_for_private'] = $game_for_private;

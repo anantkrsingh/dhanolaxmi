@@ -123,7 +123,7 @@ class Cron extends CI_Controller
                             $combination_json[] = '[{"card_group":"6","cards":["RS9_","BL9_","BP9"]},{"card_group":"4","cards":["RPA_","RP4_","RP3","RP2"]},{"card_group":"4","cards":["BLA","BLK_","BLQ_"]},{"card_group":"5","cards":["RPQ","RPJ","RP10_"]}]';
                             $combination_json[] = '[{"card_group":"6","cards":["RS6_","RP6_","BP6"]},{"card_group":"5","cards":["RPA_","RP4_","RP3","RP2"]},{"card_group":"4","cards":["BP4_","BP3_","JKR2"]},{"card_group":"5","cards":["BL8_","BL7_","BL6_"]}]';
                             $combination_json[] = '[{"card_group":"6","cards":["RS2_","BL2_","BP2","RP2_"]},{"card_group":"6","cards":["RS4_","BP4","RP4_"]},{"card_group":"5","cards":["RP7_","RP6_","RP5_"]},{"card_group":"4","cards":["BL5","BL4_","RP3"]}]';
-                            $combination_json[] = '[{"card_group":"6","cards":["RPK_","BLK","RSK_"]},{"card_group":"5","cards":["BLJ","BL10","BL9_"]},{"card_group":"4","cards":["BPQ","BPJ","JKR1"]},{"card_group":"4","cards":["RP5","RP4_","RP3_","RP2"]}]';
+                            $combination_json[] = '[{"card_group":"6","cards":["RS2_","BL2_","BP2","RP2_"]},{"card_group":"6","cards":["RS4_","BP4","RP4_"]},{"card_group":"5","cards":["RP7_","RP6_","RP5_"]},{"card_group":"4","cards":["BL5","BL4_","RP3"]}]';
                             $bot_combination_json = $combination_json[array_rand($combination_json)];
                             // $combination = json_decode($combination_json);
                             $data_declare = [

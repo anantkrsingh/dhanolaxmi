@@ -132,6 +132,21 @@
                     </div>
                 </div>
 
+                <div class="form-group row"><label for="upi_merchant_id" class="col-sm-2 col-form-label">Upi Merchant Id *</label>
+                    <div class="col-sm-10">
+                        <input class="form-control" type="text" name="upi_merchant_id"
+                            value="<?= $Setting->upi_merchant_id ?>" required>
+                    </div>
+                </div>
+
+                <div class="form-group row"><label for="upi_secret_key" class="col-sm-2 col-form-label">Upi Secret Key
+                        *</label>
+                    <div class="col-sm-10">
+                        <input class="form-control" type="text" name="upi_secret_key"
+                            value="<?= $Setting->upi_secret_key ?>" required>
+                    </div>
+                </div>
+
                 <div class="form-group row"><label for="admin_commission" class="col-sm-2 col-form-label">Admin
                         Comission *</label>
                     <div class="col-sm-10">
