@@ -1,4 +1,5 @@
 <?php
+
 class Setting extends MY_Controller
 {
     public function __construct()
@@ -76,7 +77,7 @@ class Setting extends MY_Controller
         } else {
             $logo = '';
         }
-        $UpdateProduct = $this->Setting_model->update($mobile, $referral_amount, $level_1, $level_2, $level_3, $referral_id, $referral_link, $contact_us, $terms, $privacy_policy, $help_support, $default_otp, $game_for_private, $app_version, $joining_amount, $admin_commission, $whats_no, $bonus, $bonus_amount, $payment_gateway, $symbol, $razor_api_key, $razor_secret_key, $cashfree_client_id, $cashfree_client_secret, $cashfree_stage, $paytm_mercent_id, $paytm_mercent_key, $share_text, $bank_detail_field, $adhar_card_field, $upi_field, $about_us, $refund_policy, $app_message,$app_url,$logo, $payumoney_key, $payumoney_salt);
+        $UpdateProduct = $this->Setting_model->update($mobile, $referral_amount, $level_1, $level_2, $level_3, $referral_id, $referral_link, $contact_us, $terms, $privacy_policy, $help_support, $default_otp, $game_for_private, $app_version, $joining_amount, $admin_commission, $whats_no, $bonus, $bonus_amount, $payment_gateway, $symbol, $razor_api_key, $razor_secret_key, $cashfree_client_id, $cashfree_client_secret, $cashfree_stage, $paytm_mercent_id, $paytm_mercent_key, $share_text, $bank_detail_field, $adhar_card_field, $upi_field, $about_us, $refund_policy, $app_message, $app_url, $logo, $payumoney_key, $payumoney_salt);
         if ($UpdateProduct) {
             $this->session->set_flashdata('msg', array('message' => 'Setting Updated Successfully', 'class' => 'success', 'position' => 'top-right'));
         } else {
@@ -100,6 +101,32 @@ class Setting extends MY_Controller
         $status = $this->input->post('status');
 
         $Change = $this->Setting_model->update_jackpot_status($status);
+        if ($Change) {
+            $this->session->set_flashdata('message', array('message' => 'Status Change Successfully', 'class' => 'success'));
+        } else {
+            $this->session->set_flashdata('message', array('message' => 'Something went to wrong', 'class' => 'success'));
+        }
+        echo 'true';
+    }
+
+    public function ChangeRummyBotStatus()
+    {
+        $status = $this->input->post('status');
+
+        $Change = $this->Setting_model->update_rummy_bot_status($status);
+        if ($Change) {
+            $this->session->set_flashdata('message', array('message' => 'Status Change Successfully', 'class' => 'success'));
+        } else {
+            $this->session->set_flashdata('message', array('message' => 'Something went to wrong', 'class' => 'success'));
+        }
+        echo 'true';
+    }
+
+    public function ChangeTeenpattiBotStatus()
+    {
+        $status = $this->input->post('status');
+
+        $Change = $this->Setting_model->update_teenpatti_bot_status($status);
         if ($Change) {
             $this->session->set_flashdata('message', array('message' => 'Status Change Successfully', 'class' => 'success'));
         } else {

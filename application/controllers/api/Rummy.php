@@ -135,24 +135,27 @@ class Rummy extends REST_Controller
                 if ($admin_user) {
                     if (!empty($admin_user->fcm)) {
                         $fcm_data['msg'] = PROJECT_NAME;
-                        $fcm_data['title'] = "New User On Rummy Table";
+                        $fcm_data['title'] = "New User On Rummy Table Boot Value ".$table_amount;
                         $return = push_notification_android($admin_user->fcm, $fcm_data);
                         // print_r($return);
                     }
                 }
             }
-            $bot = $this->Users_model->GetFreeRummyBot();
+            $robot_rummy = $this->Setting_model->Setting()->robot_rummy;
+            if ($robot_rummy==0) {
+                $bot = $this->Users_model->GetFreeRummyBot();
 
-            if ($bot) {
-                $table_bot_data = [
-                    'table_id' => $TableId,
-                    'user_id' => $bot[0]->id,
-                    'seat_position' => 2,
-                    'added_date' => date('Y-m-d H:i:s'),
-                    'updated_date' => date('Y-m-d H:i:s')
-                ];
+                if ($bot) {
+                    $table_bot_data = [
+                        'table_id' => $TableId,
+                        'user_id' => $bot[0]->id,
+                        'seat_position' => 2,
+                        'added_date' => date('Y-m-d H:i:s'),
+                        'updated_date' => date('Y-m-d H:i:s')
+                    ];
 
-                $this->Rummy_model->AddTableUser($table_bot_data);
+                    $this->Rummy_model->AddTableUser($table_bot_data);
+                }
             }
         }
 

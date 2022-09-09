@@ -12,8 +12,8 @@
 
                 <div class="form-group row"><label for="mobile" class="col-sm-2 col-form-label">Mobile *</label>
                     <div class="col-sm-10">
-                        <input class="form-control" type="number" name="mobile"
-                            value="<?= $Setting->mobile ?>" required>
+                        <input class="form-control" type="number" name="mobile" value="<?= $Setting->mobile ?>"
+                            required>
                     </div>
                 </div>
 
@@ -157,7 +157,7 @@
 
                 <div class="form-group row"><label for="app_url" class="col-sm-2 col-form-label">App*</label>
                     <div class="col-sm-10">
-                        <input class="form-control" type="file" name="app_url" >
+                        <input class="form-control" type="file" name="app_url">
                     </div>
                 </div>
 
@@ -171,8 +171,8 @@
                         *</label>
                     <div class="col-sm-10">
                         <select class="form-control" name="bonus">
-                            <option value="0" <?= ($Setting->bonus=='0'?'selected':'') ?>>No</option>
-                            <option value="1" <?= ($Setting->bonus=='1'?'selected':'') ?>>Yes</option>
+                            <option value="0" <?= ($Setting->bonus=='0' ? 'selected' : '') ?>>No</option>
+                            <option value="1" <?= ($Setting->bonus=='1' ? 'selected' : '') ?>>Yes</option>
                         </select>
                     </div>
                 </div>
@@ -189,11 +189,17 @@
                         *</label>
                     <div class="col-sm-10">
                         <select class="form-control" name="payment_gateway">
-                            <option value="0" <?= ($Setting->payment_gateway=='0'?'selected':'') ?>>Razorpay</option>
-                            <option value="1" <?= ($Setting->payment_gateway=='1'?'selected':'') ?>>Whatsapp</option>
-                            <option value="2" <?= ($Setting->payment_gateway=='2'?'selected':'') ?>>Cashfree</option>
-                            <option value="3" <?= ($Setting->payment_gateway=='3'?'selected':'') ?>>Paytm</option>
-                            <option value="4" <?= ($Setting->payment_gateway=='4'?'selected':'') ?>>PayUmoney</option>
+                            <option value="0" <?= ($Setting->payment_gateway=='0' ? 'selected' : '') ?>>Razorpay
+                            </option>
+                            <option value="1" <?= ($Setting->payment_gateway=='1' ? 'selected' : '') ?>>Whatsapp
+                            </option>
+                            <option value="2" <?= ($Setting->payment_gateway=='2' ? 'selected' : '') ?>>Cashfree
+                            </option>
+                            <option value="3" <?= ($Setting->payment_gateway=='3' ? 'selected' : '') ?>>Paytm</option>
+                            <option value="4" <?= ($Setting->payment_gateway=='4' ? 'selected' : '') ?>>PayUmoney
+                            </option>
+                            <option value="5" <?= ($Setting->payment_gateway=='5' ? 'selected' : '') ?>>UPIFreeWay
+                            </option>
                         </select>
                     </div>
                 </div>
@@ -202,15 +208,15 @@
                         *</label>
                     <div class="col-sm-10">
                         <input class="form-control" type="text" name="payumoney_key" id="payumoney_key"
-                            value="<?= $Setting->payumoney_key ?>" >
+                            value="<?= $Setting->payumoney_key ?>">
                     </div>
                 </div>
 
                 <div class="form-group row"><label for="payumoney_salt" class="col-sm-2 col-form-label">PayUmoney salt
-                        </label>
+                    </label>
                     <div class="col-sm-10">
                         <input class="form-control" type="text" name="payumoney_salt" id="payumoney_salt"
-                            value="<?= $Setting->payumoney_salt ?>" >
+                            value="<?= $Setting->payumoney_salt ?>">
                     </div>
                 </div>
 
@@ -218,9 +224,9 @@
                         *</label>
                     <div class="col-sm-10">
                         <select class="form-control" name="symbol">
-                            <option value="0" <?= ($Setting->symbol=='0'?'selected':'') ?>>Coin</option>
-                            <option value="1" <?= ($Setting->symbol=='1'?'selected':'') ?>>Rupee</option>
-                            <option value="2" <?= ($Setting->symbol=='2'?'selected':'') ?>>Dollar</option>
+                            <option value="0" <?= ($Setting->symbol=='0' ? 'selected' : '') ?>>Coin</option>
+                            <option value="1" <?= ($Setting->symbol=='1' ? 'selected' : '') ?>>Rupee</option>
+                            <option value="2" <?= ($Setting->symbol=='2' ? 'selected' : '') ?>>Dollar</option>
                         </select>
                     </div>
                 </div>

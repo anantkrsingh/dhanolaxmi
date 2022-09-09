@@ -228,18 +228,21 @@ class Game extends REST_Controller
             $TableId = $this->Game_model->CreateTable($table_data);
             // $this->sendNotification($TableId);
 
-            $bot = $this->Users_model->GetFreeBot();
+            $robot_teenpatti = $this->Setting_model->Setting()->robot_teenpatti;
+            if ($robot_teenpatti==0) {
+                $bot = $this->Users_model->GetFreeBot();
 
-            if ($bot) {
-                $table_bot_data = [
-                    'table_id' => $TableId,
-                    'user_id' => $bot[0]->id,
-                    'seat_position' => 2,
-                    'added_date' => date('Y-m-d H:i:s'),
-                    'updated_date' => date('Y-m-d H:i:s')
-                ];
+                if ($bot) {
+                    $table_bot_data = [
+                        'table_id' => $TableId,
+                        'user_id' => $bot[0]->id,
+                        'seat_position' => 2,
+                        'added_date' => date('Y-m-d H:i:s'),
+                        'updated_date' => date('Y-m-d H:i:s')
+                    ];
 
-                $this->Game_model->AddTableUser($table_bot_data);
+                    $this->Game_model->AddTableUser($table_bot_data);
+                }
             }
 
             $admin_mobile = $this->Setting_model->Setting()->mobile;
@@ -248,7 +251,7 @@ class Game extends REST_Controller
                 if ($admin_user) {
                     if (!empty($admin_user->fcm)) {
                         $fcm_data['msg'] = PROJECT_NAME;
-                        $fcm_data['title'] = "New User On Teenpatti Table";
+                        $fcm_data['title'] = "New User On Teenpatti Table Boot Value ".$isMaster[0]->boot_value;
                         $return = push_notification_android($admin_user->fcm, $fcm_data);
                         // print_r($return);
                     }
@@ -356,18 +359,20 @@ class Game extends REST_Controller
         if (empty($TableId)) {
             $TableId = $this->Game_model->CreateTable($table_data);
             // $this->sendNotification($TableId);
+            $robot_teenpatti = $this->Setting_model->Setting()->robot_teenpatti;
+            if ($robot_teenpatti==0) {
+                $bot = $this->Users_model->GetFreeBot();
 
-            $bot = $this->Users_model->GetFreeBot();
+                $table_bot_data = [
+                    'table_id' => $TableId,
+                    'user_id' => $bot[0]->id,
+                    'seat_position' => 2,
+                    'added_date' => date('Y-m-d H:i:s'),
+                    'updated_date' => date('Y-m-d H:i:s')
+                ];
 
-            $table_bot_data = [
-                'table_id' => $TableId,
-                'user_id' => $bot[0]->id,
-                'seat_position' => 2,
-                'added_date' => date('Y-m-d H:i:s'),
-                'updated_date' => date('Y-m-d H:i:s')
-            ];
-
-            $this->Game_model->AddTableUser($table_bot_data);
+                $this->Game_model->AddTableUser($table_bot_data);
+            }
         }
 
         $table_user_data = [
@@ -1575,21 +1580,24 @@ class Game extends REST_Controller
 
         if (!empty($table_id)) {
             $table_data = $this->Game_model->TableUser($table_id);
-            if (count($table_data)<2) {
-                $bot = $this->Users_model->GetFreeBot();
+            if (count($table_data)==1) {
+                $robot_teenpatti = $this->Setting_model->Setting()->robot_teenpatti;
+                if ($robot_teenpatti==0) {
+                    $bot = $this->Users_model->GetFreeBot();
 
-                if ($bot) {
-                    $table_bot_data = [
-                        'table_id' => $table_id,
-                        'user_id' => $bot[0]->id,
-                        'seat_position' => 5,
-                        'added_date' => date('Y-m-d H:i:s'),
-                        'updated_date' => date('Y-m-d H:i:s')
-                    ];
+                    if ($bot) {
+                        $table_bot_data = [
+                            'table_id' => $table_id,
+                            'user_id' => $bot[0]->id,
+                            'seat_position' => 5,
+                            'added_date' => date('Y-m-d H:i:s'),
+                            'updated_date' => date('Y-m-d H:i:s')
+                        ];
 
-                    $this->Game_model->AddTableUser($table_bot_data);
+                        $this->Game_model->AddTableUser($table_bot_data);
+                    }
+                    $table_data = $this->Game_model->TableUser($table_id);
                 }
-                $table_data = $this->Game_model->TableUser($table_id);
             }
             // $data['table_users'] = $table_data;
 
