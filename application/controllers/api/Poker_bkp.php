@@ -1094,14 +1094,13 @@ class Poker extends REST_Controller
             $middle_card_count = count($this->Poker_model->getTableCards($game->id));
             $active_game_users = $this->Poker_model->GameUser($game->id);
 
-            $is_equal = true;
+            $is_equal = 0;
             $max_amount = 0;
             $increase_round=false;
             foreach ($active_game_users as $key => $value) {
                 $user_game_amount = $this->Poker_model->GameTotalAmount($game->id, $value->user_id);
                 $max_amount = ($max_amount>$user_game_amount) ? $max_amount : $user_game_amount;
             }
-
             $user_amount = $this->Poker_model->GameTotalAmount($game->id, $this->data['user_id']);
             // echo $max_amount;
             $diff_amount = $max_amount - $user_amount;
@@ -1109,69 +1108,19 @@ class Poker extends REST_Controller
                 $lastChal_amount = $this->Poker_model->LastChaalAmount($game->id);
                 $amount = ($diff_amount==0) ? $lastChal_amount : $diff_amount;
             }
-            // if ($diff_amount>0) {
-            $diff_amount = $diff_amount - $amount;
-            if ($diff_amount!=0) {
-                $is_equal = false;
+            if ($diff_amount>0) {
+                $diff_amount = $diff_amount - $amount;
             }
 
-            if ($is_equal) {
-                foreach ($active_game_users as $key => $value) {
-                    if ($value->user_id!=$this->data['user_id']) {
-                        $user_game_amount = $this->Poker_model->GameTotalAmount($game->id, $value->user_id);
-                        $diff_amount = $max_amount - $user_game_amount;
-                        if ($diff_amount!=0) {
-                            $is_equal = false;
-                            break;
-                        }
-                    }
-                }
-            }
-
-            // }
-            // if ($middle_card_count!=5) {
-            switch ($middle_card_count) {
-                case 0:
-                    $round = 1;
-                    break;
-
-                case 3:
-                    $round = 2;
-                    break;
-
-                case 4:
-                    $round = 3;
-                    break;
-
-                case 5:
-                    $round = 4;
-                    break;
-
-                case 6:
-                    $round = 5;
-                    break;
-
-                default:
-                    $round = 1;
-                    break;
-            }
-            $this->Poker_model->Chaal($game->id, $amount, $this->data['user_id'], $round, $rule, $rule_value, $chaal_type);
-            // }
-            // $round_count = count($this->Poker_model->GameLog($game->id, '', '', $lastChal->round));
-            $round_count = count($this->Poker_model->GameLog($game->id, '', '', $round));
+            $round_count = count($this->Poker_model->GameLog($game->id, '', '', $lastChal->round));
             // echo count($active_game_users);
             // echo $round_count;
-            if (count($active_game_users)<=($round_count) && $is_equal) {
+            if (count($active_game_users)<=($round_count+1) && $diff_amount==0) {
                 // echo 'done';
                 // $increase_round = true;
-                // $round = (count($active_game_users)==($round_count+1)) ? $lastChal->round : $lastChal->round+1;
-                // $round = $lastChal->round+1;
-                $increase_round = (count($active_game_users)<=($round_count+1)) ? true : false;
-                // echo ($increase_round) ? 'yes' : 'no';
-                // exit;
+                $round = (count($active_game_users)==($round_count+1)) ? $lastChal->round : $lastChal->round+1;
+                $increase_round = (count($active_game_users)==($round_count+1)) ? true : false;
             }
-            // echo 'hi';
-            // exit;
             // echo ($increase_round) ? '1' : '2';
             // echo $middle_card_count;
             // if (($middle_card_count<5) && (($chaal_count-2)>($middle_card_count-3))) {
@@ -1257,7 +1206,7 @@ class Poker extends REST_Controller
             // }
 
             // echo $amount;
-
+            $this->Poker_model->Chaal($game->id, $amount, $this->data['user_id'], $round, $rule, $rule_value, $chaal_type);
             // if ($table->pot_limit <= ($game->amount+$amount)) {
             //     $this->Poker_model->Show($game->id, $amount, $this->data['user_id']);
             //     $active_game_users = $this->Poker_model->GameUser($game->id);
@@ -1945,8 +1894,7 @@ class Poker extends REST_Controller
 
             $lastChal_amount = $this->Poker_model->LastChaalAmount($game->id);
             $data['check'] = ($diff_amount==0) ? 1 : 0;
-            // $data['table_amount'] = ($diff_amount==0) ? $lastChal_amount : $diff_amount;
-            $data['table_amount'] = $diff_amount;
+            $data['table_amount'] = ($diff_amount==0) ? $lastChal_amount : $diff_amount;
             $data['round'] = $lastChal->round;
             $data['slide_show'] = $this->Poker_model->GetSlideShow($game->id);
         }
