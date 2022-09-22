@@ -140,6 +140,9 @@ class SevenUp extends REST_Controller
             $data['game_cards'] = $game_cards;
             $data['online'] = $this->SevenUp_model->getRoomOnline($this->data['room_id']);
             $data['online_users'] = $this->SevenUp_model->getRoomOnlineUser($this->data['room_id']);
+            $data['my_dragon_bet'] = $this->SevenUp_model->TotalBetAmount($game_data[0]->id, 0, $this->data['user_id']);
+            $data['my_tiger_bet'] = $this->SevenUp_model->TotalBetAmount($game_data[0]->id, 1, $this->data['user_id']);
+            $data['my_tie_bet'] = $this->SevenUp_model->TotalBetAmount($game_data[0]->id, 2, $this->data['user_id']);
             $data['last_bet'] = $this->SevenUp_model->ViewBet('', $game_data[0]->id, '', '', 1);
             $data['last_winning'] = $this->SevenUp_model->LastWinningBet($this->data['room_id']);
             $data['profile'] = $user;

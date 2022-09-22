@@ -40,50 +40,50 @@
             <div class=" p-4 text-white text-center position-relative" style="background:#000000;">
                 <!-- <h4 class="font-20 m-b-5">Welcome Back !</h4> -->
                 <p class="mb-4" style="color: #f7c5c5a1 !important;">Sign in to continue to <?= PROJECT_NAME ?>.</p><a
-                    href="#" class="logo logo-admin"><img src="<?= base_url('assets/images/bu.png') ?>" height="80"
+                    href="#" class="logo logo-admin"><img src="<?= base_url(LOGO.$Setting->logo) ?>" height="80"
                         alt="logo"></a>
             </div>
             <div class="account-card-content">
                 <?php
-                echo  $this->load->view('src/notification', TRUE, true);
-                $form = array(
-                    'class' => 'form-horizontal m-t-30',
-                    'id' => 'login',
-                    'autocomplete' => 'off'
-                );
-                echo form_open('backend/auth/index', $form);
-                ?>
+                echo  $this->load->view('src/notification', true, true);
+    $form = array(
+        'class' => 'form-horizontal m-t-30',
+        'id' => 'login',
+        'autocomplete' => 'off'
+    );
+    echo form_open('backend/auth/index', $form);
+    ?>
 
 
                 <div class="form-group"><label for="username">Username</label>
                     <?php
-                    $email = array(
+        $email = array(
 
-                        'id' => 'email',
-                        'name' => 'email',
-                        'type' => 'email',
-                        'class' => 'form-control',
-                        'required' => '',
-                        'value' => set_value('email'),
-                        'placeholder' => 'Username'
-                    );
-                    echo form_input($email);
-                    ?>
+            'id' => 'email',
+            'name' => 'email',
+            'type' => 'email',
+            'class' => 'form-control',
+            'required' => '',
+            'value' => set_value('email'),
+            'placeholder' => 'Username'
+        );
+    echo form_input($email);
+    ?>
 
                     <div class="form-group"><label for="userpassword">Password</label>
                         <?php
-                        $password = array(
+        $password = array(
 
-                            'id' => 'password',
-                            'name' => 'password',
-                            'type' => 'password',
-                            'class' => 'form-control',
-                            'required' => '',
-                            'value' => set_value('password'),
-                            'placeholder' => 'Password'
-                        );
-                        echo form_input($password);
-                        ?>
+            'id' => 'password',
+            'name' => 'password',
+            'type' => 'password',
+            'class' => 'form-control',
+            'required' => '',
+            'value' => set_value('password'),
+            'placeholder' => 'Password'
+        );
+    echo form_input($password);
+    ?>
                         <div class="form-group row m-t-20">
                             <div class="col-sm-6">
                                 <div class="custom-control custom-checkbox"><input type="checkbox"
@@ -92,8 +92,8 @@
                             </div>
                             <div class="col-sm-6 text-right">
                                 <?php
-                                echo form_submit('submit', 'Log In', array('class' => 'btn btn-primary login_bt w-md waves-effect waves-light'));
-                                ?>
+            echo form_submit('submit', 'Log In', array('class' => 'btn btn-primary login_bt w-md waves-effect waves-light'));
+    ?>
                                 <!-- <button class="btn btn-primary w-md waves-effect waves-light" type="submit">Log In</button></div> -->
                             </div>
                             <div class="form-group m-t-10 mb-0 row">

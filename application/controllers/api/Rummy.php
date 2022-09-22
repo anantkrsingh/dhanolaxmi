@@ -36,19 +36,19 @@ class Rummy extends REST_Controller
         ]);
     }
 
-    public function sendNotification($TableId)
-    {
-        $userdata = $this->Users_model->FreeUserList();
+    // public function sendNotification($TableId)
+    // {
+    //     $userdata = $this->Users_model->FreeUserList();
 
-        foreach ($userdata as $value) {
-            if (!empty($value->fcm)) {
-                $data['msg'] = "New User Joined Table";
-                $data['title'] = "Teen Patti";
-                $data['table_id'] = $TableId;
-                push_notification_android($value->fcm, $data);
-            }
-        }
-    }
+    //     foreach ($userdata as $value) {
+    //         if (!empty($value->fcm)) {
+    //             $data['msg'] = "New User Joined Table";
+    //             $data['title'] = "Teen Patti";
+    //             $data['table_id'] = $TableId;
+    //             push_notification_android($value->fcm, $data);
+    //         }
+    //     }
+    // }
 
     public function get_table_post()
     {
@@ -1565,9 +1565,11 @@ class Rummy extends REST_Controller
         $data['chaal'] = $chaal;
         $data['game_amount'] = $game->amount;
         $chaalCount = $this->Rummy_model->ChaalCount($game->id, $chaal);
-        if ($chaalCount>3) {
-            $this->Rummy_model->getMyCards($game->id, $chaal);
-        }
+        $percent = $chaalCount>0 ? CHAAL_PERCENT : NO_CHAAL_PERCENT;
+        $data['cut_point'] = round(($percent / 100) * MAX_POINTS, 2);
+        // if ($chaalCount>3) {
+        //     $this->Rummy_model->getMyCards($game->id, $chaal);
+        // }
 
         if (!empty($user_id)) {
             // $data['cards'] = $this->Rummy_model->getMyCards($game->id,$user_id);

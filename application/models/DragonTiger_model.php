@@ -218,8 +218,8 @@ class DragonTiger_model extends MY_Model
         $this->db->where('id', $game_id);
         $this->db->update('tbl_dragon_tiger');
 
-        $this->db->set('wallet', 'wallet+' . $amount, false);
-        $this->db->set('winning_wallet', 'winning_wallet+' . $amount, false);
+        $this->db->set('wallet', 'wallet+' . $user_winning_amt, false);
+        $this->db->set('winning_wallet', 'winning_wallet+' . $user_winning_amt, false);
         $this->db->where('id', $user_id);
         $this->db->update('tbl_users');
 
@@ -257,9 +257,10 @@ class DragonTiger_model extends MY_Model
         return $Query->result();
     }
 
-    public function AllGames(){
+    public function AllGames()
+    {
         $this->db->from('tbl_dragon_tiger');
-        $this->db->order_by('id','DESC');
+        $this->db->order_by('id', 'DESC');
         $this->db->limit(10);
         $Query = $this->db->get();
         // echo $this->db->last_query();

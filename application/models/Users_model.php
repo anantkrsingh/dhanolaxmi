@@ -465,6 +465,7 @@ class Users_model extends MY_Model
     {
         $this->db->from('tbl_users');
         $this->db->where('isDeleted', false);
+        $this->db->where('status', false);
         $this->db->where('table_id', 0);
         $this->db->where('wallet>=', 10000);
         $this->db->where('user_type', 1);
@@ -479,6 +480,7 @@ class Users_model extends MY_Model
     {
         $this->db->from('tbl_users');
         $this->db->where('isDeleted', false);
+        $this->db->where('status', false);
         $this->db->where('rummy_table_id', 0);
         $this->db->where('wallet>=', 100);
         $this->db->where('user_type', 1);

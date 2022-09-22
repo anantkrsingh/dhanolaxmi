@@ -131,7 +131,25 @@ class Poker_model extends MY_Model
         $this->db->join('tbl_users', 'tbl_poker_table_user.user_id=tbl_users.id');
         $this->db->where('tbl_poker_table_user.isDeleted', false);
         $this->db->where('tbl_poker_table_user.poker_table_id', $TableId);
-        $this->db->order_by('tbl_poker_table_user.seat_position', 'asc');
+        $array_of_ordered_ids = array(2,3,0,1);
+        $order = sprintf('FIELD(role, %s)', implode(', ', $array_of_ordered_ids));
+        $this->db->order_by($order);
+        // $this->db->order_by('tbl_poker_table_user.seat_position', 'asc');
+        $Query = $this->db->get();
+        return $Query->result();
+    }
+
+    public function TableUserRound($TableId)
+    {
+        $this->db->select('tbl_poker_table_user.*,tbl_users.user_type,tbl_users.name,tbl_users.mobile,tbl_users.profile_pic,tbl_users.wallet');
+        $this->db->from('tbl_poker_table_user');
+        $this->db->join('tbl_users', 'tbl_poker_table_user.user_id=tbl_users.id');
+        $this->db->where('tbl_poker_table_user.isDeleted', false);
+        $this->db->where('tbl_poker_table_user.poker_table_id', $TableId);
+        $array_of_ordered_ids = array(3,0,1,2);
+        $order = sprintf('FIELD(role, %s)', implode(', ', $array_of_ordered_ids));
+        $this->db->order_by($order);
+        // $this->db->order_by('tbl_poker_table_user.seat_position', 'asc');
         $Query = $this->db->get();
         return $Query->result();
     }
@@ -190,6 +208,9 @@ class Poker_model extends MY_Model
         $this->db->from('tbl_poker_card');
         $this->db->join('tbl_users', 'tbl_users.id=tbl_poker_card.user_id');
         $this->db->where('tbl_poker_card.game_id', $game_id);
+        $array_of_ordered_ids = array(2,3,0,1);
+        $order = sprintf('FIELD(role, %s)', implode(', ', $array_of_ordered_ids));
+        $this->db->order_by($order);
         $Query = $this->db->get();
         // echo $this->db->last_query();
         return $Query->result();
@@ -204,12 +225,15 @@ class Poker_model extends MY_Model
         return $Query->result();
     }
 
-    public function GameLog($game_id, $limit = '', $user_id = '')
+    public function GameLog($game_id, $limit = '', $user_id = '', $round = '')
     {
         $this->db->from('tbl_poker_log');
         $this->db->where('game_id', $game_id);
         if (!empty($user_id)) {
             $this->db->where('user_id', $user_id);
+        }
+        if (!empty($round)) {
+            $this->db->where('round', $round);
         }
         $this->db->order_by('id', 'DESC');
         if (!empty($limit)) {
@@ -219,11 +243,21 @@ class Poker_model extends MY_Model
         return $Query->result();
     }
 
+    public function GameTotalAmount($game_id, $user_id)
+    {
+        $this->db->select('sum(tbl_poker_log.amount) as total', false);
+        $this->db->from('tbl_poker_log');
+        $this->db->where('game_id', $game_id);
+        $this->db->where('user_id', $user_id);
+        $Query = $this->db->get();
+        return $Query->row()->total;
+    }
+
     public function LastChaalAmount($game_id)
     {
         $this->db->from('tbl_poker_log');
         $this->db->where('game_id', $game_id);
-        $this->db->where_in('action', [0, 2]);
+        $this->db->where('amount>', 0);
         $this->db->order_by('id', 'DESC');
         $this->db->limit(1);
         $Query = $this->db->get();
@@ -357,6 +391,12 @@ class Poker_model extends MY_Model
         return true;
     }
 
+    public function UpdateTableUser($id, $data)
+    {
+        $this->db->where('id', $id);
+        $this->db->update('tbl_poker_table_user', $data);  //table name
+    }
+
     public function PackGame($user_id, $game_id, $timeout = 0)
     {
         $this->db->set('packed', 1); //value that used to update column
@@ -465,7 +505,7 @@ class Poker_model extends MY_Model
         return ($Query->num_rows()) ? $Query->row()->seen : 0;
     }
 
-    public function Show($game_id, $amount, $user_id)
+    public function Show($game_id, $amount, $user_id, $round, $rule, $value, $chaal_type)
     {
         $this->db->set('wallet', 'wallet-' . $amount, false);
         $this->db->where('id', $user_id);
@@ -490,9 +530,11 @@ class Poker_model extends MY_Model
         $data = [
             'user_id' => $user_id,
             'game_id' => $game_id,
-            'seen' => $seen,
             'action' => 3,
             'amount' => $amount,
+            'chaal_type' => $chaal_type,
+            'amount' => $amount,
+            'round' => $round,
             'added_date' => date('Y-m-d H:i:s')
         ];
         $this->db->insert('tbl_poker_log', $data);
@@ -801,52 +843,53 @@ class Poker_model extends MY_Model
         $winner = '';
 
         if ($user1[0] == $user2[0]) {
-            switch ($user1[0]) {
-                case 6:
-                    $winner = ($user1[1] > $user2[1]) ? 0 : 1;
-                    break;
+            // switch ($user1[0]) {
+            // case 6:
+                //     $winner = ($user1[1] > $user2[1]) ? 0 : 1;
+                //     break;
 
-                case 5:
-                case 4:
-                case 3:
-                    if ($user1[1] == $user2[1]) {
-                        $winner = 2;
-                    } else {
-                        $winner = ($user1[1] > $user2[1]) ? 0 : 1;
-                    }
-                    break;
+            // case 5:
+            // case 4:
+            // case 3:
+                //     if ($user1[1] == $user2[1]) {
+                //         $winner = 2;
+                //     } else {
+                //         $winner = ($user1[1] > $user2[1]) ? 0 : 1;
+                //     }
+                //     break;
 
-                case 2:
-                    if ($user1[1] == $user2[1]) {
-                        if ($user1[2] == $user2[2]) {
-                            $winner = 0;
-                        } else {
-                            $winner = ($user1[2] > $user2[2]) ? 0 : 1;
-                        }
-                    } else {
-                        $winner = ($user1[1] > $user2[1]) ? 0 : 1;
-                    }
-                    break;
+            // case 2:
+                //     if ($user1[1] == $user2[1]) {
+                //         if ($user1[2] == $user2[2]) {
+                //             $winner = 0;
+                //         } else {
+                //             $winner = ($user1[2] > $user2[2]) ? 0 : 1;
+                //         }
+                //     } else {
+                //         $winner = ($user1[1] > $user2[1]) ? 0 : 1;
+                //     }
+                //     break;
 
-                case 1:
+            // case 1:
 
-                    if ($user1[1] == $user2[1]) {
-                        if ($user1[2] == $user2[2]) {
-                            if ($user1[3] == $user2[3]) {
-                                $winner = 2;
-                            } else {
-                                $winner = ($user1[3] > $user2[3]) ? 0 : 1;
-                            }
-                        } else {
-                            $winner = ($user1[2] > $user2[2]) ? 0 : 1;
-                        }
-                    } else {
-                        $winner = ($user1[1] > $user2[1]) ? 0 : 1;
-                    }
-                    break;
-            }
+                //     if ($user1[1] == $user2[1]) {
+                //         if ($user1[2] == $user2[2]) {
+                //             if ($user1[3] == $user2[3]) {
+                //                 $winner = 2;
+                //             } else {
+                //                 $winner = ($user1[3] > $user2[3]) ? 0 : 1;
+                //             }
+                //         } else {
+                //             $winner = ($user1[2] > $user2[2]) ? 0 : 1;
+                //         }
+                //     } else {
+                //         $winner = ($user1[1] > $user2[1]) ? 0 : 1;
+                //     }
+                //     break;
+            // }
+            $winner = ($user1[1] > $user2[1]) ? 0 : 1;
         } else {
-            $winner = ($user1[0] > $user2[0]) ? 0 : 1;
+            $winner = ($user1[0] < $user2[0]) ? 0 : 1;
         }
 
         return $winner;

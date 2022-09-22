@@ -63,6 +63,16 @@ class Cron extends CI_Controller
                 if (count($game_users)==1) {
                     $comission = $this->Setting_model->Setting()->admin_commission;
                     $this->Game_model->MakeWinner($game->id, $game->amount, $game_users[0]->user_id, $comission);
+
+                    $user = $this->Users_model->UserProfile($game_users[0]->user_id);
+                    if ($user[0]->user_type==1) {
+                        $table_user_data = [
+                            'table_id' => $val->table_id,
+                            'user_id' => $user[0]->id
+                        ];
+
+                        $this->Game_model->RemoveTableUser($table_user_data);
+                    }
                 }
 
                 $table_user_data = [
@@ -122,8 +132,8 @@ class Cron extends CI_Controller
                             $combination_json[] = '[{"card_group":"6","cards":["BLK","RSK","RP4_"]},{"card_group":"5","cards":["BP10_","BP9","BP8"]},{"card_group":"4","cards":["RS3_","RS2_","JKR2","RP4"]},{"card_group":"6","cards":["JKR1","RP8_","RS8"]}]';
                             $combination_json[] = '[{"card_group":"6","cards":["RS9_","BL9_","BP9"]},{"card_group":"4","cards":["RPA_","RP4_","RP3","RP2"]},{"card_group":"4","cards":["BLA","BLK_","BLQ_"]},{"card_group":"5","cards":["RPQ","RPJ","RP10_"]}]';
                             $combination_json[] = '[{"card_group":"6","cards":["RS6_","RP6_","BP6"]},{"card_group":"5","cards":["RPA_","RP4_","RP3","RP2"]},{"card_group":"4","cards":["BP4_","BP3_","JKR2"]},{"card_group":"5","cards":["BL8_","BL7_","BL6_"]}]';
-                            $combination_json[] = '[{"card_group":"6","cards":["RS2_","BL2_","BP2","RP2_"]},{"card_group":"6","cards":["RS4_","BP4","RP4_"]},{"card_group":"5","cards":["RP7_","RP6_","RP5_"]},{"card_group":"4","cards":["BL5","BL4_","RP3"]}]';
-                            $combination_json[] = '[{"card_group":"6","cards":["RS2_","BL2_","BP2","RP2_"]},{"card_group":"6","cards":["RS4_","BP4","RP4_"]},{"card_group":"5","cards":["RP7_","RP6_","RP5_"]},{"card_group":"4","cards":["BL5","BL4_","RP3"]}]';
+                            $combination_json[] = '[{"card_group":"6","cards":["RS2_","BL2_","BP2","RP2_"]},{"card_group":"6","cards":["RS4_","BP4","RP4_"]},{"card_group":"5","cards":["RP7_","RP6_","RP5_"]},{"card_group":"4","cards":["BL5","BL4_","BL3"]}]';
+                            $combination_json[] = '[{"card_group":"6","cards":["RS2_","BL2_","BP2","RP2_"]},{"card_group":"6","cards":["RS4_","BP4","RP4_"]},{"card_group":"5","cards":["RP7_","RP6_","RP5_"]},{"card_group":"4","cards":["BL5","BL4_","BL3"]}]';
                             $bot_combination_json = $combination_json[array_rand($combination_json)];
                             // $combination = json_decode($combination_json);
                             $data_declare = [
@@ -813,7 +823,7 @@ class Cron extends CI_Controller
                             $comission = $this->Setting_model->Setting()->admin_commission;
                             foreach ($bets as $key => $value) {
                                 if ($winning==TIE) {
-                                    $this->DragonTiger_model->MakeWinner($value->user_id, $value->id, $value->amount*8, $comission, $game_data[0]->id);
+                                    $this->DragonTiger_model->MakeWinner($value->user_id, $value->id, $value->amount*11, $comission, $game_data[0]->id);
                                 } else {
                                     $this->DragonTiger_model->MakeWinner($value->user_id, $value->id, $value->amount*2, $comission, $game_data[0]->id);
                                 }

@@ -85,7 +85,12 @@ class Rummy_model extends MY_Model
     {
         $sql = "SELECT * FROM ( SELECT 1 AS mycolumn UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 ) a WHERE mycolumn NOT in ( SELECT seat_position FROM `tbl_rummy_table_user` WHERE table_id=" . $TableId . " AND isDeleted=0 ) LIMIT 1";
         $Query = $this->db->query($sql, false);
-        return $Query->row()->mycolumn;
+        // echo $this->db->last_query();
+        if ($Query->row()) {
+            return $Query->row()->mycolumn;
+        } else {
+            return false;
+        }
     }
 
     public function TableUser($TableId)
@@ -961,7 +966,6 @@ class Rummy_model extends MY_Model
                     if ($user1[1] == $user2[1]) {
                         $winner = 2;
                     } else {
-
                         //Exception for A23
                         $user1[1] = ($user1[1]==14) ? 15 : $user1[1];
                         $user2[1] = ($user2[1]==14) ? 15 : $user2[1];
@@ -1112,5 +1116,31 @@ class Rummy_model extends MY_Model
         } else {
             return false;
         }
+    }
+
+    public function AllGames()
+    {
+        $this->db->select('tbl_rummy.*,tbl_users.name');
+        $this->db->from('tbl_rummy');
+        $this->db->join('tbl_users', 'tbl_users.id=tbl_rummy.winner_id', 'left');
+        $this->db->order_by('tbl_rummy.id', 'DESC');
+        $this->db->limit(10);
+        $Query = $this->db->get();
+        // echo $this->db->last_query();
+        // die();
+        return $Query->result();
+    }
+
+    public function Comission()
+    {
+        $this->db->select('tbl_rummy.*');
+        $this->db->from('tbl_rummy');
+        // $this->db->where('isDeleted', false);
+        $this->db->where('winning_amount>', 0);
+
+        $Query = $this->db->get();
+        // echo $this->db->last_query();
+        // die();
+        return $Query->result();
     }
 }
