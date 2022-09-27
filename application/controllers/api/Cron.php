@@ -18,7 +18,8 @@ class Cron extends CI_Controller
             'SevenUp_model',
             'RummyPool_model',
             'RummyDeal_model',
-            'Rummy_model'
+            'Rummy_model',
+            'Poker_model'
         ]);
     }
 
@@ -28,15 +29,17 @@ class Cron extends CI_Controller
         // print_r($tables);
 
         foreach ($tables as $val) {
+            $chaal = 0;
             $game = $this->Game_model->getActiveGameOnTable($val->table_id);
+            // print_r($game);
             if ($game) {
                 $game_log = $this->Game_model->GameLog($game->id, 1);
                 $time = time()-strtotime($game_log[0]->added_date);
-
+                print_r($game_log);
                 if ($time>35) {
                     $game_users = $this->Game_model->GameAllUser($game->id);
 
-                    $chaal = 0;
+
                     $element = 0;
                     foreach ($game_users as $key => $value) {
                         if ($value->user_id==$game_log[0]->user_id) {
@@ -56,31 +59,33 @@ class Cron extends CI_Controller
                         }
                     }
                 }
+                // echo $chaal;
+                if ($chaal!=0) {
+                    $this->Game_model->PackGame($chaal, $game->id, 1);
+                    $game_users = $this->Game_model->GameUser($game->id);
 
-                $this->Game_model->PackGame($chaal, $game->id, 1);
-                $game_users = $this->Game_model->GameUser($game->id);
+                    if (count($game_users)==1) {
+                        $comission = $this->Setting_model->Setting()->admin_commission;
+                        $this->Game_model->MakeWinner($game->id, $game->amount, $game_users[0]->user_id, $comission);
 
-                if (count($game_users)==1) {
-                    $comission = $this->Setting_model->Setting()->admin_commission;
-                    $this->Game_model->MakeWinner($game->id, $game->amount, $game_users[0]->user_id, $comission);
+                        $user = $this->Users_model->UserProfile($game_users[0]->user_id);
+                        if ($user[0]->user_type==1) {
+                            $table_user_data = [
+                                'table_id' => $val->table_id,
+                                'user_id' => $user[0]->id
+                            ];
 
-                    $user = $this->Users_model->UserProfile($game_users[0]->user_id);
-                    if ($user[0]->user_type==1) {
-                        $table_user_data = [
-                            'table_id' => $val->table_id,
-                            'user_id' => $user[0]->id
-                        ];
-
-                        $this->Game_model->RemoveTableUser($table_user_data);
+                            $this->Game_model->RemoveTableUser($table_user_data);
+                        }
                     }
+
+                    $table_user_data = [
+                        'table_id' => $val->table_id,
+                        'user_id' =>$chaal
+                    ];
+
+                    $this->Game_model->RemoveTableUser($table_user_data);
                 }
-
-                $table_user_data = [
-                    'table_id' => $val->table_id,
-                    'user_id' =>$chaal
-                ];
-
-                $this->Game_model->RemoveTableUser($table_user_data);
             }
 
             echo '<br>Success';
@@ -1564,10 +1569,10 @@ class Cron extends CI_Controller
 
                         $this->ColorPrediction_model->CreateMap($game_data[0]->id, $number);
 
+                        $comission = $this->Setting_model->Setting()->admin_commission;
                         // Give winning Amount to Number user
                         $bets = $this->ColorPrediction_model->ViewBet("", $game_data[0]->id, $number);
                         if ($bets) {
-                            $comission = $this->Setting_model->Setting()->admin_commission;
                             foreach ($bets as $key => $value) {
                                 $this->ColorPrediction_model->MakeWinner($value->user_id, $value->id, $value->amount*$number_multiply, $comission, $game_data[0]->id);
                             }
@@ -1581,7 +1586,7 @@ class Cron extends CI_Controller
                             $color_bets = $this->ColorPrediction_model->ViewBet("", $game_data[0]->id, $color);
                             if ($color_bets) {
                                 foreach ($color_bets as $key => $value) {
-                                    $this->ColorPrediction_model->MakeWinner($value->user_id, $value->id, $value->amount*$color_multiply);
+                                    $this->ColorPrediction_model->MakeWinner($value->user_id, $value->id, $value->amount*$color_multiply, $comission, $game_data[0]->id);
                                 }
                                 echo "Winning Amount Given".PHP_EOL;
                             } else {
@@ -1594,7 +1599,7 @@ class Cron extends CI_Controller
                             $color_1_bets = $this->ColorPrediction_model->ViewBet("", $game_data[0]->id, $color_1);
                             if ($color_1_bets) {
                                 foreach ($color_1_bets as $key => $value) {
-                                    $this->ColorPrediction_model->MakeWinner($value->user_id, $value->id, $value->amount*$color_1_multiply);
+                                    $this->ColorPrediction_model->MakeWinner($value->user_id, $value->id, $value->amount*$color_1_multiply, $comission, $game_data[0]->id);
                                 }
                                 echo "Winning Amount Given".PHP_EOL;
                             } else {
@@ -1627,6 +1632,75 @@ class Cron extends CI_Controller
             }
         } else {
             echo 'No Rooms Available'.PHP_EOL;
+        }
+    }
+
+    public function poker()
+    {
+        $tables = $this->Poker_model->getActiveTable();
+        // print_r($tables);
+
+        foreach ($tables as $val) {
+            $chaal = 0;
+            $game = $this->Poker_model->getActiveGameOnTable($val->poker_table_id);
+            // print_r($game);
+            if ($game) {
+                $game_log = $this->Poker_model->GameLog($game->id, 1);
+                $time = time()-strtotime($game_log[0]->added_date);
+                // print_r($game_log);
+                if ($time>35) {
+                    $game_users = $this->Poker_model->GameAllUser($game->id);
+
+
+                    $element = 0;
+                    foreach ($game_users as $key => $value) {
+                        if ($value->user_id==$game_log[0]->user_id) {
+                            $element = $key;
+                            break;
+                        }
+                    }
+
+                    $index = 0;
+                    foreach ($game_users as $key => $value) {
+                        $index = ($key+$element)%count($game_users);
+                        if ($key>0) {
+                            if (!$game_users[$index]->packed) {
+                                $chaal = $game_users[$index]->user_id;
+                                break;
+                            }
+                        }
+                    }
+                }
+                // echo $chaal;
+                if ($chaal!=0) {
+                    $this->Poker_model->PackGame($chaal, $game->id, 1);
+                    $game_users = $this->Poker_model->GameUser($game->id);
+
+                    if (count($game_users)==1) {
+                        $comission = $this->Setting_model->Setting()->admin_commission;
+                        $this->Poker_model->MakeWinner($game->id, $game->amount, $game_users[0]->user_id, $comission);
+
+                        $user = $this->Users_model->UserProfile($game_users[0]->user_id);
+                        if ($user[0]->user_type==1) {
+                            $table_user_data = [
+                                'table_id' => $val->poker_table_id,
+                                'user_id' => $user[0]->id
+                            ];
+
+                            $this->Poker_model->RemoveTableUser($table_user_data);
+                        }
+                    }
+
+                    $table_user_data = [
+                        'table_id' => $val->poker_table_id,
+                        'user_id' =>$chaal
+                    ];
+
+                    $this->Poker_model->RemoveTableUser($table_user_data);
+                }
+            }
+
+            echo '<br>Success';
         }
     }
 }

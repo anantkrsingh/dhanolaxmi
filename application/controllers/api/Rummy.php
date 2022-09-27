@@ -429,6 +429,20 @@ class Rummy extends REST_Controller
             }
         }
 
+        if (count($table_data)>2) {
+            foreach ($table_data as $key => $value) {
+                if ($value->user_type==1) {
+                    $table_user_data = [
+                        'table_id' => $value->table_id,
+                        'user_id' => $value->user_id
+                    ];
+
+                    $this->Rummy_model->RemoveTableUser($table_user_data);
+                    $table_data = $this->Rummy_model->TableUser($user[0]->rummy_table_id);
+                }
+            }
+        }
+
         $amount = 0;
         $Cards = $this->Rummy_model->GetStartCards((count($table_data)*13)+1);
         $game_data = [
@@ -1586,7 +1600,7 @@ class Rummy extends REST_Controller
             foreach ($data['game_users'] as $key => $value) {
                 $declare_log = $this->Rummy_model->GameLog($game->id, 1, '', $value->user_id);
                 $game_users_cards[$key]['user'] = $value;
-                $game_users_cards[$key]['user']->win = ($game->winner_id==$value->user_id) ? $game->amount : $declare_log[0]->amount;
+                $game_users_cards[$key]['user']->win = ($game->winner_id==$value->user_id) ? $game->user_winning_amt : $declare_log[0]->amount;
                 $game_users_cards[$key]['user']->result = $declare_log[0]->action;
                 $game_users_cards[$key]['user']->score = $declare_log[0]->points;
                 $game_users_cards[$key]['user']->cards = json_decode($this->Rummy_model->GameLogJson($game->id, $value->user_id));
