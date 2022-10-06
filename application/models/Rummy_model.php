@@ -425,7 +425,7 @@ class Rummy_model extends MY_Model
 
     public function MakeWinner($game_id, $win_amount, $user_id, $comission)
     {
-        $admin_winning_amt = round($win_amount * round($comission/100, 2));
+        $admin_winning_amt = round($win_amount * round($comission/100, 2), 2);
         $user_winning_amt = round($win_amount - $admin_winning_amt, 2);
         $this->db->set('wallet', 'wallet+' . $user_winning_amt, false);
         $this->db->set('winning_wallet', 'winning_wallet+' . $user_winning_amt, false);

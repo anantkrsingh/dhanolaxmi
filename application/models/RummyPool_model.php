@@ -168,8 +168,9 @@ class RummyPool_model extends MY_Model
 
     public function GameOnlyUser($game_id)
     {
-        $this->db->select('user_id,packed');
+        $this->db->select('tbl_rummy_pool_card.user_id,tbl_rummy_pool_card.packed,tbl_users.name');
         $this->db->from('tbl_rummy_pool_card');
+        $this->db->join('tbl_users', 'tbl_users.id=tbl_rummy_pool_card.user_id');
         $this->db->where('game_id', $game_id);
         $this->db->group_by('user_id');
         $Query = $this->db->get();
@@ -1083,7 +1084,6 @@ class RummyPool_model extends MY_Model
                     if ($user1[1] == $user2[1]) {
                         $winner = 2;
                     } else {
-
                         //Exception for A23
                         $user1[1] = ($user1[1]==14) ? 15 : $user1[1];
                         $user2[1] = ($user2[1]==14) ? 15 : $user2[1];

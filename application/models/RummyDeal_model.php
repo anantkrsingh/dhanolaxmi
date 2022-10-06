@@ -168,10 +168,11 @@ class RummyDeal_model extends MY_Model
 
     public function GameOnlyUser($game_id)
     {
-        $this->db->select('user_id,packed');
+        $this->db->select('tbl_rummy_deal_card.user_id,tbl_rummy_deal_card.packed,tbl_users.name');
         $this->db->from('tbl_rummy_deal_card');
-        $this->db->where('game_id', $game_id);
-        $this->db->group_by('user_id');
+        $this->db->join('tbl_users', 'tbl_users.id=tbl_rummy_deal_card.user_id');
+        $this->db->where('tbl_rummy_deal_card.game_id', $game_id);
+        $this->db->group_by('tbl_rummy_deal_card.user_id');
         $Query = $this->db->get();
         return $Query->result();
     }
@@ -413,9 +414,9 @@ class RummyDeal_model extends MY_Model
 
     public function MakeWinner($game_id, $amount, $user_id, $admin_winning_amt=0)
     {
-        $this->db->set('wallet', 'wallet+' . $amount, false);
-        $this->db->where('id', $user_id);
-        $this->db->update('tbl_users');
+        // $this->db->set('wallet', 'wallet+' . $amount, false);
+        // $this->db->where('id', $user_id);
+        // $this->db->update('tbl_users');
         // echo $this->db->affected_rows();
         // echo $this->db->last_query();
         // exit;
@@ -1083,7 +1084,6 @@ class RummyDeal_model extends MY_Model
                     if ($user1[1] == $user2[1]) {
                         $winner = 2;
                     } else {
-
                         //Exception for A23
                         $user1[1] = ($user1[1]==14) ? 15 : $user1[1];
                         $user2[1] = ($user2[1]==14) ? 15 : $user2[1];
@@ -1350,8 +1350,8 @@ class RummyDeal_model extends MY_Model
     public function updateTotalWinningAmtTable($amount, $user_winning_amt, $admin_winning_amt, $table_id, $winner_id)
     {
         $this->db->set('winning_amount', $amount, false);
-        $this->db->set('user_winning_amt', $user_winning_amt, false);
-        $this->db->set('admin_winning_amt', $admin_winning_amt, false);
+        $this->db->set('user_amount', $user_winning_amt, false);
+        $this->db->set('commission_amount', $admin_winning_amt, false);
         $this->db->set('winner_id', $winner_id);
         $this->db->where('id', $table_id);
         $this->db->update('tbl_rummy_deal_table');

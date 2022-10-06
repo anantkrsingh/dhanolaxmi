@@ -1429,21 +1429,17 @@ class RummyDeal extends REST_Controller
         ];
         $this->RummyDeal_model->Declare($data_log);
 
+        $this->RummyDeal_model->MakeWinner($game->id, 0, $winner_id);
+
         if (count($remain_game_users)<=$declare_count) {
             $amount = 0;
             $winner_id = $declare_log[$declare_count-1]->user_id;
             // $this->RummyDeal_model->MakeWinner($game->id, $amount, $winner_id);
-            $comission = $this->Setting_model->Setting()->admin_commission;
 
-            $TotalAmount = $this->RummyDeal_model->TotalAmountOnTable($user[0]->rummy_deal_table_id);
-
-            $admin_winning_amt = round($TotalAmount * round($comission/100, 2));
-            $user_winning_amt = round($TotalAmount - $admin_winning_amt, 2);
-
-            $this->RummyDeal_model->MakeWinner($game->id, 0, $winner_id, $admin_winning_amt);
 
             $table = $this->RummyDeal_model->isTableAvail($user[0]->rummy_deal_table_id);
-            $game_count = $table->game_count;
+            $table_master = $this->RummyDeal_model->getTableMaster($table->boot_value);
+            $game_count = $table_master[0]->game_count;
             $table_games = $this->RummyDeal_model->getAllGameOnTable($user[0]->rummy_deal_table_id);
             if (count($table_games)>=$game_count) {
                 $All_table_users =$this->RummyDeal_model->TableUser($user[0]->rummy_deal_table_id);
@@ -1462,6 +1458,14 @@ class RummyDeal extends REST_Controller
                     ];
 
                 $this->RummyDeal_model->RemoveTableUser($table_user_data);
+
+                $comission = $this->Setting_model->Setting()->admin_commission;
+                $TotalAmount = $this->RummyDeal_model->TotalAmountOnTable($user[0]->rummy_deal_table_id);
+
+                $admin_winning_amt = round($TotalAmount * round($comission/100, 2));
+                $user_winning_amt = round($TotalAmount - $admin_winning_amt, 2);
+
+                // $this->RummyDeal_model->MakeWinner($game->id, 0, $winner_id, $admin_winning_amt);
                 // }
                 // // Make Winner Code
                 // $TotalAmount = $this->RummyDeal_model->TotalAmountOnTable($user[0]->rummy_deal_table_id);
@@ -1470,6 +1474,12 @@ class RummyDeal extends REST_Controller
 
                 $this->RummyDeal_model->updateTotalWinningAmtTable($TotalAmount, $user_winning_amt, $admin_winning_amt, $user[0]->rummy_deal_table_id, $winner_user_id);
                 $this->RummyDeal_model->AddToWallet($user_winning_amt, $winner_user_id);
+
+                $data['message'] = 'Success';
+                $data['winner'] = $winner_user_id;
+                $data['code'] = HTTP_OK;
+                $this->response($data, HTTP_OK);
+                exit();
             }
 
             // $All_table_users = $this->RummyDeal_model->TableUser($user[0]->rummy_deal_table_id);

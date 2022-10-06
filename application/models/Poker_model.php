@@ -218,9 +218,10 @@ class Poker_model extends MY_Model
 
     public function GameOnlyUser($game_id)
     {
-        $this->db->select('user_id,packed,seen');
+        $this->db->select('tbl_poker_card.user_id,tbl_poker_card.packed,tbl_poker_card.seen,tbl_users.name');
         $this->db->from('tbl_poker_card');
-        $this->db->where('game_id', $game_id);
+        $this->db->join('tbl_users', 'tbl_users.id=tbl_poker_card.user_id');
+        $this->db->where('tbl_poker_card.game_id', $game_id);
         $Query = $this->db->get();
         return $Query->result();
     }

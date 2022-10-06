@@ -602,7 +602,7 @@ class RummyPool extends REST_Controller
         $table_data = $this->RummyPool_model->TableUserCardPosition($user[0]->rummy_pool_table_id);
 
         if (count($table_data)<2) {
-            $data['message'] = 'Minimum 3 Players Required to Start the Game';
+            $data['message'] = 'Minimum 2 Players Required to Start the Game';
             $data['code'] = HTTP_NOT_ACCEPTABLE;
             $this->response($data, 200);
             exit();

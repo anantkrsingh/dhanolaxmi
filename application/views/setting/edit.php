@@ -132,7 +132,8 @@
                     </div>
                 </div>
 
-                <div class="form-group row"><label for="upi_merchant_id" class="col-sm-2 col-form-label">Upi Merchant Id *</label>
+                <div class="form-group row"><label for="upi_merchant_id" class="col-sm-2 col-form-label">Upi Merchant Id
+                        *</label>
                     <div class="col-sm-10">
                         <input class="form-control" type="text" name="upi_merchant_id"
                             value="<?= $Setting->upi_merchant_id ?>" required>
@@ -214,6 +215,8 @@
                             <option value="4" <?= ($Setting->payment_gateway=='4' ? 'selected' : '') ?>>PayUmoney
                             </option>
                             <option value="5" <?= ($Setting->payment_gateway=='5' ? 'selected' : '') ?>>UPIFreeWay
+                            </option>
+                            <option value="5" <?= ($Setting->payment_gateway=='6' ? 'selected' : '') ?>>AtomPay
                             </option>
                         </select>
                     </div>

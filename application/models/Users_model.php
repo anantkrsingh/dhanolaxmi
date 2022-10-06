@@ -579,10 +579,10 @@ class Users_model extends MY_Model
     public function View_AllPurchase($user_id)
     {
         $Query = $this->db->query("SELECT * FROM (
-            SELECT `coin`,`price`,`updated_date`, 'ONLINE PURCHASE' as type FROM `tbl_purchase` WHERE `payment`=1
+            SELECT `coin`,`price`,`updated_date`, 'ONLINE PURCHASE' as type,`user_id` FROM `tbl_purchase` WHERE `payment`=1
             UNION
-            SELECT `coin`,0 as price,`added_date`, IF(`bonus`=1,'BONUS','ADMIN PURCHASE') as type FROM `tbl_wallet_log`
-            ) as a ORDER BY updated_date DESC");
+            SELECT `coin`,0 as price,`added_date`, IF(`bonus`=1,'BONUS','ADMIN PURCHASE') as type,`user_id` FROM `tbl_wallet_log`
+            ) as a WHERE user_id='".$user_id."'ORDER BY updated_date DESC");
         return $Query->result();
     }
 

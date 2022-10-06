@@ -232,6 +232,9 @@ class User extends REST_Controller
                 exit();
             }
 
+            $token = md5(uniqid(rand(), true));
+            $this->Users_model->UpdateToken($user[0]->id, $token);
+            $user = $this->Users_model->LoginUser($this->data['mobile'], $this->data['password']);
             $data['message'] = 'Success';
             $data['user_data'] = $user;
             $data['code'] = HTTP_OK;

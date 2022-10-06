@@ -44,9 +44,9 @@
                 <?php } ?>
 
                 <?php if (DEAL_TABLE_MASTER==true) { ?>
-                <li><a href="<?= base_url('backend/dealTableMaster') ?>" class="waves-effect"><i
+                <!-- <li><a href="<?= base_url('backend/dealTableMaster') ?>" class="waves-effect"><i
                             class="ion ion-md-contact"></i>
-                        <span>Deal Table Master</span></a></li>
+                        <span>Deal Table Master</span></a></li> -->
                 <?php } ?>
 
                 <?php if (ANDER_BAHAR_TABLE_MASTER==true) { ?>

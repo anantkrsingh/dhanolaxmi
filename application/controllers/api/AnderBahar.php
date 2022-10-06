@@ -87,6 +87,8 @@ class AnderBahar extends REST_Controller
 
     public function get_active_game_post()
     {
+        $total_bet_ander = $this->input->post('total_bet_ander');
+        $total_bet_bahar = $this->input->post('total_bet_bahar');
         if (empty($this->data['user_id']) || empty($this->data['token']) || empty($this->data['room_id'])) {
             $data['message'] = 'Invalid Parameter';
             $data['code'] = HTTP_NOT_ACCEPTABLE;
@@ -140,13 +142,17 @@ class AnderBahar extends REST_Controller
             $data['message'] = 'Success';
             $data['game_data'] = $new_game_data;
             $data['game_cards'] = $game_cards;
-            $data['online'] = $this->AnderBahar_model->getRoomOnline($this->data['room_id']);
+            // $data['online'] = $this->AnderBahar_model->getRoomOnline($this->data['room_id']);
+            // $data['online'] = rand(100, 500);
             $data['online_users'] = $this->AnderBahar_model->getRoomOnlineUser($this->data['room_id']);
+            $data['online'] = rand(300, 350)+count($data['online_users']);
             $data['last_bet'] = $this->AnderBahar_model->ViewBet('', $game_data[0]->id, '', '', 1);
             $data['my_ander_bet'] = $this->AnderBahar_model->TotalBetAmount($game_data[0]->id, 0, $this->data['user_id']);
             $data['my_bahar_bet'] = $this->AnderBahar_model->TotalBetAmount($game_data[0]->id, 1, $this->data['user_id']);
-            $data['ander_bet'] = $this->AnderBahar_model->TotalBetAmount($game_data[0]->id, 0);
-            $data['bahar_bet'] = $this->AnderBahar_model->TotalBetAmount($game_data[0]->id, 1);
+            $ander_bet = $this->AnderBahar_model->TotalBetAmount($game_data[0]->id, 0);
+            $bahar_bet = $this->AnderBahar_model->TotalBetAmount($game_data[0]->id, 1);
+            $data['ander_bet'] = rand($total_bet_ander, $total_bet_ander+10000)+$ander_bet;
+            $data['bahar_bet'] = rand($total_bet_bahar, $total_bet_bahar+10000)+$bahar_bet;
             $data['last_winning'] = $this->AnderBahar_model->LastWinningBet($this->data['room_id']);
             $data['profile'] = $user;
             $data['code'] = HTTP_OK;
