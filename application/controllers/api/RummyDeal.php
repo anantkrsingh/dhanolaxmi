@@ -852,7 +852,10 @@ class RummyDeal extends REST_Controller
         // echo $chaal;
         // if($chaal==$this->data['user_id'])
         // {
-        $this->RummyDeal_model->PackGame($this->data['user_id'], $game->id, $timeout, $this->input->post('json'));
+        $ChaalCount = $this->RummyDeal_model->ChaalCount($game->id, $this->data['user_id']);
+
+        $percent = $ChaalCount>0 ? CHAAL_PERCENT : NO_CHAAL_PERCENT;
+        $this->RummyDeal_model->PackGame($this->data['user_id'], $game->id, $timeout, $this->input->post('json'), '', $percent);
         $game_users = $this->RummyDeal_model->GameUser($game->id);
 
         if (count($game_users)==1) {
@@ -1452,12 +1455,12 @@ class RummyDeal extends REST_Controller
                 }
                 // Remove From Table Code
                 // foreach ($user_ids as $val) {
-                $table_user_data = [
-                        'table_id' => $user[0]->rummy_deal_table_id,
-                        'user_id' =>$loser_user_id
-                    ];
+                // $table_user_data = [
+                //         'table_id' => $user[0]->rummy_deal_table_id,
+                //         'user_id' =>$loser_user_id
+                //     ];
 
-                $this->RummyDeal_model->RemoveTableUser($table_user_data);
+                // $this->RummyDeal_model->RemoveTableUser($table_user_data);
 
                 $comission = $this->Setting_model->Setting()->admin_commission;
                 $TotalAmount = $this->RummyDeal_model->TotalAmountOnTable($user[0]->rummy_deal_table_id);
@@ -1850,9 +1853,11 @@ class RummyDeal extends REST_Controller
             //     $points_arr[0]->total_points = 160;
             //     $points_arr[1]->total_points = 160;
             // }
+            $win_points = array();
             foreach ($points as $key => $value) {
                 if ($key%3!=0) {
                     $points_arr[] = $value;
+                    $win_points[$value->user_id] = $value->points;
                 }
             }
             $data['points'] = $points_arr;
@@ -1915,6 +1920,8 @@ class RummyDeal extends REST_Controller
         $data['chaal'] = $chaal;
         $data['game_amount'] = $game->amount;
         $data['total_table_amount'] = $this->RummyDeal_model->TotalAmountOnTable($table_id);
+        $table_master = $this->RummyDeal_model->getTableMaster($table->boot_value);
+        $data['max_round'] = $table_master[0]->game_count;
         // $data['share_wallet'] = $this->RummyDeal_model->GetShareWallet($table_id);
 
         // $chaalCount = $this->RummyDeal_model->ChaalCount($game->id,$chaal);
@@ -1936,6 +1943,7 @@ class RummyDeal extends REST_Controller
             $data['joker'] = $game->joker;
         }
 
+        $data['table_winner_id'] = $table->winner_id;
         $data['message'] = 'Success';
         if ($game->winner_id>0) {
             $chaal = 0;
@@ -1944,9 +1952,10 @@ class RummyDeal extends REST_Controller
             $game_users_cards = array();
             foreach ($data['game_users'] as $key => $value) {
                 $game_users_cards[$key]['user'] = $value;
-                $game_users_cards[$key]['user']->win = ($game->winner_id==$value->user_id) ? 50 : 0;
+                $game_users_cards[$key]['user']->score = (isset($win_points[$value->user_id]) && $win_points[$value->user_id]<0) ? abs($win_points[$value->user_id]) : 0;
+                $game_users_cards[$key]['user']->win = (isset($win_points[$value->user_id])) ? $win_points[$value->user_id] : 0;
                 // $game_users_cards[$key]['user']->score = ($game->winner_id==$value->user_id)?50:-50;
-                $game_users_cards[$key]['user']->score = $this->RummyDeal_model->getTotalPoints($table_id, $value->user_id);
+                $game_users_cards[$key]['user']->total = $this->RummyDeal_model->getTotalPoints($table_id, $value->user_id);
                 $game_users_cards[$key]['user']->cards = json_decode($this->RummyDeal_model->GameLogJson($game->id, $value->user_id));
             }
             $data['game_users_cards'] = $game_users_cards;

@@ -25,7 +25,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 |
 */
 
-$config['base_url'] = 'http://139.59.68.158/AllInOneDemo/';
+$config['base_url'] = 'https://dev.androappstech.com/lets_card/';
 
 
 /*

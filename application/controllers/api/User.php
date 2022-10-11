@@ -199,7 +199,7 @@ class User extends REST_Controller
 
             $gender = (strtolower(trim($this->input->post('gender')))=='female') ? 'f' : 'm';
             $user_id = $this->Users_model->RegisterUserEmail($this->data['email'], $this->data['name'], $this->data['source'], $profile_pic, $gender, $token);
-            $this->Users_model->UpdateReferralCode($user_id);
+            $this->Users_model->UpdateReferralCode($user_id, $setting->referral_id);
             if (!empty($referral_user)) {
                 $setting = $this->Users_model->Setting();
                 $this->Users_model->UpdateWallet($referral_user[0]->id, $setting->referral_amount, $user_id);

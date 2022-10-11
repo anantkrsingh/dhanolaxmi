@@ -209,7 +209,7 @@ class AnimalRoulette_model extends MY_Model
     {
         // echo $bet;
         $this->db->from('tbl_animal_roulette');
-
+        $this->db->where('status', 1);
         if (!empty($room_id)) {
             $this->db->where('room_id', $room_id);
         }
