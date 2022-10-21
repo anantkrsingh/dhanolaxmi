@@ -769,6 +769,16 @@ class Users_model extends MY_Model
         return $Query->result();
     }
 
+    public function getHistory($user_id)
+    {
+        $this->db->select('tbl_ludo.*,tbl_users.name');
+        $this->db->from('tbl_ludo');
+        $this->db->join('tbl_users', 'tbl_users.id=tbl_ludo.winner_id');
+        $this->db->where('tbl_ludo.winner_id', $user_id);
+        $Query = $this->db->get();
+        return $Query->result();
+    }
+
     public function UpdateOfflineUsers()
     {
         $this->db->query('UPDATE `tbl_users` SET `ander_bahar_room_id`=0,`dragon_tiger_room_id`=0,`jackpot_room_id`=0,`seven_up_room_id`=0,`color_prediction_room_id`=0,`car_roulette_room_id`=0,`animal_roulette_room_id`=0 WHERE TIME_TO_SEC(TIMEDIFF(NOW(), updated_date))>30');

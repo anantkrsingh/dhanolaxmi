@@ -22,6 +22,7 @@
                     <li><a data-toggle="tab" href="#car_roulette">Car Roulette Log</a></li>
                     <li><a data-toggle="tab" href="#animal_roulette">Animal Roulette Log</a></li>
                     <li><a data-toggle="tab" href="#jackpot">Jackpot Log</a></li>
+                    <li><a data-toggle="tab" href="#ludoHistory">Ludo Log</a></li>
                 </ul>
                 <div class="tab-content">
                     <br>
@@ -598,6 +599,38 @@
                                     <td><?= $jackpot->user_amount ?></td>
                                     <td><?= $jackpot->comission_amount ?></td>
                                     <td><?= date("d-m-Y", strtotime($jackpot->added_date)) ?></td>
+                                </tr>
+                                <?php }
+                                ?>
+
+
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="ludoHistory" class="tab-pane fade">
+                        <table class="table table-bordered dt-responsive nowrap"
+                            style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                            <thead>
+                                <tr>
+                                <th>Sr. No.</th>
+                                    <th>Game ID</th>
+                                    <th>User Id</th>
+                                    <th>Amount</th>
+                                    <th>Added Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php
+                                $i = 0;
+                                foreach ($Ludos as $key => $ludo) {
+                                    $i++;
+                                ?>
+                                <tr>
+                                    <td><?= $i ?></td>
+                                    <td><?= $ludo->ludo_table_id ?></td>
+                                    <td><?= $ludo->winner_id ?></td>
+                                    <td><?= $ludo->amount ?></td>
+                                    <td><?= date("d-m-Y", strtotime($ludo->added_date)) ?></td>
                                 </tr>
                                 <?php }
                                 ?>

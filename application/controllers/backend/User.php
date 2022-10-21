@@ -169,6 +169,7 @@ class User extends MY_Controller
             'CarRoulette' => $this->Users_model->CarRouletteAmount($user_id),
             'AnimalRoulette' => $this->Users_model->AnimalRouletteAmount($user_id),
             'Jackpot' => $this->Users_model->JackpotAmount($user_id),
+            'Ludos' => $this->Users_model->getHistory($user_id),
         ];
         // echo '<pre>';print_r($data);die;
         template('user/view', $data);
