@@ -1,4 +1,5 @@
 <?php
+
 class Coin_plan_model extends MY_Model
 {
     public function List()
@@ -20,12 +21,13 @@ class Coin_plan_model extends MY_Model
         return $Query->row();
     }
 
-    public function GetCoin($user_id, $plan_id, $coin, $price)
+    public function GetCoin($user_id, $plan_id, $coin, $price, $extra=0)
     {
         $data = [
             'user_id' => $user_id,
             'plan_id' => $plan_id,
             'coin' => $coin,
+            'extra' => $extra,
             'price' => $price
         ];
 

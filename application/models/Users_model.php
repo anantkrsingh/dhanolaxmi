@@ -353,6 +353,27 @@ class Users_model extends MY_Model
         return true;
     }
 
+    public function UpdateWalletSpin($user_id, $coin)
+    {
+        $this->db->set('wallet', 'wallet+' . $coin, false);
+        $this->db->set('spin_remaining', 'spin_remaining-1', false);
+        $this->db->set('updated_date', date('Y-m-d H:i:s'));
+        $this->db->where('id', $user_id);
+        $this->db->update('tbl_users');
+
+        return true;
+    }
+
+    public function UpdateSpin($user_id, $spin_count)
+    {
+        $this->db->set('spin_remaining', 'spin_remaining+' . $spin_count, false);
+        $this->db->set('updated_date', date('Y-m-d H:i:s'));
+        $this->db->where('id', $user_id);
+        $this->db->update('tbl_users');
+
+        return true;
+    }
+
     public function WalletLog($amount, $bonus, $user_id)
     {
         $data = [

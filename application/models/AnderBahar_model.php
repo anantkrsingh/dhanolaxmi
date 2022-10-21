@@ -107,10 +107,19 @@ class AnderBahar_model extends MY_Model
         $this->db->where('id', $user_id);
         $this->db->update('tbl_users');
 
-        $this->db->set('winning_wallet', 'winning_wallet-' . $amount, false);
+        $this->db->select('winning_wallet');
+        $this->db->from('tbl_users');
         $this->db->where('id', $user_id);
-        $this->db->where('winning_wallet>', 0);
-        $this->db->update('tbl_users');
+        $Query = $this->db->get();
+        $winning_wallet = $Query->row()->winning_wallet;
+
+        $winning_wallet_minus = ($winning_wallet>$amount) ? $amount : $winning_wallet;
+
+        if ($winning_wallet_minus>0) {
+            $this->db->set('winning_wallet', 'winning_wallet-' . $winning_wallet_minus, false);
+            $this->db->where('id', $user_id);
+            $this->db->update('tbl_users');
+        }
 
         return $this->db->affected_rows();
     }

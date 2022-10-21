@@ -20,7 +20,8 @@ class Cron extends CI_Controller
             'RummyDeal_model',
             'Rummy_model',
             'Poker_model',
-            'HeadTail_model'
+            'HeadTail_model',
+            'RedBlack_model'
         ]);
     }
 
@@ -656,43 +657,43 @@ class Cron extends CI_Controller
                     if ((strtotime($game_data[0]->added_date)+DRAGON_TIME_FOR_BET)<=time()) {
                         $DragonBetAmount = $this->HeadTail_model->TotalBetAmount($game_data[0]->id, DRAGON)*2;
                         $TigerBetAmount = $this->HeadTail_model->TotalBetAmount($game_data[0]->id, TIGER)*2;
-                        $TieBetAmount = $this->HeadTail_model->TotalBetAmount($game_data[0]->id, TIE)*11;
+                        // $TieBetAmount = $this->HeadTail_model->TotalBetAmount($game_data[0]->id, TIE)*11;
 
-                        if ($DragonBetAmount>$TieBetAmount && $TigerBetAmount>$TieBetAmount) {
-                            $winning = TIE;
+                        // if ($DragonBetAmount>$TieBetAmount && $TigerBetAmount>$TieBetAmount) {
+                        //     $winning = TIE;
+                        // } else {
+                        $winning = ($DragonBetAmount>$TigerBetAmount) ? TIGER : DRAGON; //0=Dragon,1=Tiger
+                        // }
+
+                        // if ($winning==TIE) {
+                        //     $number = rand(2, 10);
+                        //     $card_dragon = 'BP'.$number;
+                        //     $card_tiger = 'RP'.$number;
+
+                        //     $this->HeadTail_model->CreateMap($game_data[0]->id, $card_dragon);
+                        //     $this->HeadTail_model->CreateMap($game_data[0]->id, $card_tiger);
+                        // } else {
+                        $limit = 2;
+                        $cards = $this->HeadTail_model->GetCards($limit);
+                        $card1_point = $this->card_points($cards[0]->cards);
+                        $card2_point = $this->card_points($cards[1]->cards);
+
+                        $card_big = '';
+                        $card_small = '';
+                        if ($card1_point>$card2_point) {
+                            $card_big = $cards[0]->cards;
+                            $card_small = $cards[1]->cards;
                         } else {
-                            $winning = ($DragonBetAmount>$TigerBetAmount) ? TIGER : DRAGON; //0=Dragon,1=Tiger
+                            $card_big = $cards[1]->cards;
+                            $card_small = $cards[0]->cards;
                         }
 
-                        if ($winning==TIE) {
-                            $number = rand(2, 10);
-                            $card_dragon = 'BP'.$number;
-                            $card_tiger = 'RP'.$number;
+                        $card_dragon = ($winning==DRAGON) ? $card_big : $card_small;
+                        $card_tiger = ($winning==TIGER) ? $card_big : $card_small;
 
-                            $this->HeadTail_model->CreateMap($game_data[0]->id, $card_dragon);
-                            $this->HeadTail_model->CreateMap($game_data[0]->id, $card_tiger);
-                        } else {
-                            $limit = 2;
-                            $cards = $this->HeadTail_model->GetCards($limit);
-                            $card1_point = $this->card_points($cards[0]->cards);
-                            $card2_point = $this->card_points($cards[1]->cards);
-
-                            $card_big = '';
-                            $card_small = '';
-                            if ($card1_point>$card2_point) {
-                                $card_big = $cards[0]->cards;
-                                $card_small = $cards[1]->cards;
-                            } else {
-                                $card_big = $cards[1]->cards;
-                                $card_small = $cards[0]->cards;
-                            }
-
-                            $card_dragon = ($winning==DRAGON) ? $card_big : $card_small;
-                            $card_tiger = ($winning==TIGER) ? $card_big : $card_small;
-
-                            $this->HeadTail_model->CreateMap($game_data[0]->id, $card_dragon);
-                            $this->HeadTail_model->CreateMap($game_data[0]->id, $card_tiger);
-                        }
+                        $this->HeadTail_model->CreateMap($game_data[0]->id, $card_dragon);
+                        $this->HeadTail_model->CreateMap($game_data[0]->id, $card_tiger);
+                        // }
 
                         // Give winning Amount to user
                         $bets = $this->HeadTail_model->ViewBet("", $game_data[0]->id, $winning);
@@ -700,11 +701,11 @@ class Cron extends CI_Controller
                             // print_r($bets);
                             $comission = $this->Setting_model->Setting()->admin_commission;
                             foreach ($bets as $key => $value) {
-                                if ($winning==TIE) {
-                                    $this->HeadTail_model->MakeWinner($value->user_id, $value->id, $value->amount*11, $comission, $game_data[0]->id);
-                                } else {
-                                    $this->HeadTail_model->MakeWinner($value->user_id, $value->id, $value->amount*2, $comission, $game_data[0]->id);
-                                }
+                                // if ($winning==TIE) {
+                                //     $this->HeadTail_model->MakeWinner($value->user_id, $value->id, $value->amount*11, $comission, $game_data[0]->id);
+                                // } else {
+                                $this->HeadTail_model->MakeWinner($value->user_id, $value->id, $value->amount*2, $comission, $game_data[0]->id);
+                                // }
                             }
                             echo "Winning Amount Given".PHP_EOL;
                         } else {
@@ -984,6 +985,301 @@ class Cron extends CI_Controller
                             $this->Jackpot_model->Create($room->id);
 
                             echo 'Jackpot Created Successfully'.PHP_EOL;
+                        } else {
+                            echo 'No Online User Found'.PHP_EOL;
+                        }
+                    } else {
+                        echo "No Game to End".PHP_EOL;
+                    }
+                }
+            }
+        } else {
+            echo 'No Rooms Available'.PHP_EOL;
+        }
+    }
+
+    public function red_black()
+    {
+        $room_data = $this->RedBlack_model->getRoom();
+
+        if ($room_data) {
+            foreach ($room_data as $key => $room) {
+                $game_data = $this->RedBlack_model->getActiveGameOnTable($room->id);
+
+                if (!$game_data) {
+                    $card = '';
+                    $this->RedBlack_model->Create($room->id, $card);
+
+                    echo 'First Red Black Created Successfully'.PHP_EOL;
+                    continue;
+                }
+
+                if ($game_data[0]->status==0) {
+                    if ((strtotime($game_data[0]->added_date)+DRAGON_TIME_FOR_BET)<=time()) {
+                        // $RedAmount = $this->RedBlack_model->TotalBetAmount($game_data[0]->id, RB_RED);
+                        // $BlackAmount = $this->RedBlack_model->TotalBetAmount($game_data[0]->id, RB_BLACK);
+                        // $PairAmount = $this->RedBlack_model->TotalBetAmount($game_data[0]->id, RB_PAIR);
+                        // $ColorAmount = $this->RedBlack_model->TotalBetAmount($game_data[0]->id, RB_COLOR);
+                        // $SequenceAmount = $this->RedBlack_model->TotalBetAmount($game_data[0]->id, RB_SEQUENCE);
+                        // $PureSequenceAmount = $this->RedBlack_model->TotalBetAmount($game_data[0]->id, RB_PURE_SEQUENCE);
+                        // $SetAmount = $this->RedBlack_model->TotalBetAmount($game_data[0]->id, RB_SET);
+
+                        // //1=High Card, 2=Pair, 3=Color, 4=Sequence, 5=Pure Sequence, 6=Set
+                        // // $total = $HighCardAmount+$PairAmount+$ColorAmount+$SequenceAmount+$PureSequenceAmount+$SetAmount;
+                        // $arr['RED'] = $HighCardAmount*RB_RED_MULTIPLE;
+                        // $arr['BLACK'] = $HighCardAmount*RB_BLACK_MULTIPLE;
+                        // $arr['PAIR'] = $PairAmount*RB_PAIR_MULTIPLE;
+                        // $arr['COLOR'] = $ColorAmount*RB_COLOR_MULTIPLE;
+                        // $arr['SEQUENCE'] = $SequenceAmount*RB_SEQUENCE_MULTIPLE;
+                        // $arr['PURE_SEQUENCE'] = $PureSequenceAmount*RB_PURE_SEQUENCE_MULTIPLE;
+                        // $arr['SET'] = $PureSequenceAmount*RB_SET_MULTIPLE;
+
+                        // $min_arr = array_keys($arr, min($arr));
+                        // $min = $min_arr[0];
+
+                        // $multiply = 0;
+                        // $color_arr = array('BP','BL','RS','RP');
+                        // $number_arr = array('A','2','3','4','5','6','7','8','9','10','J','Q','K');
+
+                        // switch ($min) {
+                        //     case 'HIGH_CARD':
+                        //         $high = rand(1, 10);
+                        //         switch ($high) {
+                        //             case 1:
+                        //                 $card1 = 'BPA';
+                        //                 $card2 = 'RS8';
+                        //                 $card3 = 'BL3';
+                        //                 break;
+
+                        //             case 2:
+                        //                 $card1 = 'BPK';
+                        //                 $card2 = 'RS7';
+                        //                 $card3 = 'BL4';
+                        //                 break;
+
+                        //             case 3:
+                        //                 $card1 = 'BP9';
+                        //                 $card2 = 'RS7';
+                        //                 $card3 = 'BL2';
+                        //                 break;
+
+                        //             case 4:
+                        //                 $card1 = 'BPK';
+                        //                 $card2 = 'RSA';
+                        //                 $card3 = 'BLJ';
+                        //                 break;
+
+                        //             case 5:
+                        //                 $card1 = 'BP9';
+                        //                 $card2 = 'RS5';
+                        //                 $card3 = 'BL6';
+                        //                 break;
+
+                        //             case 6:
+                        //                 $card1 = 'BP3';
+                        //                 $card2 = 'RS2';
+                        //                 $card3 = 'BL8';
+                        //                 break;
+
+                        //             case 7:
+                        //                 $card1 = 'BP4';
+                        //                 $card2 = 'RS5';
+                        //                 $card3 = 'BL9';
+                        //                 break;
+
+                        //             case 8:
+                        //                 $card1 = 'BP3';
+                        //                 $card2 = 'RS5';
+                        //                 $card3 = 'BL6';
+                        //                 break;
+
+                        //             case 9:
+                        //                 $card1 = 'BPQ';
+                        //                 $card2 = 'RSK';
+                        //                 $card3 = 'BL8';
+                        //                 break;
+
+                        //             case 10:
+                        //                 $card1 = 'BP4';
+                        //                 $card2 = 'RS6';
+                        //                 $card3 = 'BL9';
+                        //                 break;
+
+                        //             default:
+                        //                 $card1 = 'BPA';
+                        //                 $card2 = 'RS8';
+                        //                 $card3 = 'BL3';
+                        //                 break;
+                        //         }
+
+                        //         $winning = HIGH_CARD;
+                        //         $multiply = HIGH_CARD_MULTIPLY;
+                        //         break;
+
+                        //     case 'PAIR':
+                        //         $number_index = array_rand($number_arr, 2);
+                        //         $number1 = $number_arr[$number_index[0]];
+                        //         $number2 = $number_arr[$number_index[1]];
+
+                        //         $card1 = 'BP'.$number1;
+                        //         $card2 = 'RP'.$number1;
+                        //         $card3 = 'BL'.$number2;
+                        //         $winning = PAIR;
+                        //         $multiply = PAIR_MULTIPLY;
+                        //         break;
+
+                        //     case 'COLOR':
+                        //         $color_index = array_rand($color_arr);
+                        //         $color = $color_arr[$color_index];
+
+                        //         $card1 = $color.'A';
+                        //         $card2 = $color.'5';
+                        //         $card3 = $color.'7';
+                        //         $winning = COLOR;
+                        //         $multiply = COLOR_MULTIPLY;
+                        //         break;
+
+                        //     case 'SEQUENCE':
+                        //         $number = rand(2, 7);
+
+                        //         $card1 = 'RP'.$number;
+                        //         $card2 = 'BL'.($number+1);
+                        //         $card3 = 'BP'.($number+2);
+                        //         $winning = SEQUENCE;
+                        //         $multiply = SEQUENCE_MULTIPLY;
+                        //         break;
+
+                        //     case 'PURE_SEQUENCE':
+                        //         $color_index = array_rand($color_arr);
+                        //         $color = $color_arr[$color_index];
+
+                        //         $number = rand(2, 7);
+                        //         $card1 = $color.$number;
+                        //         $card2 = $color.($number+1);
+                        //         $card3 = $color.($number+2);
+                        //         $winning = PURE_SEQUENCE;
+                        //         $multiply = PURE_SEQUENCE_MULTIPLY;
+                        //         break;
+
+                        //     case 'SET':
+                        //         $number_index = array_rand($number_arr);
+                        //         $number = $number_arr[$number_index];
+                        //         $card1 = 'BP'.$number;
+                        //         $card2 = 'RP'.$number;
+                        //         $card3 = 'BL'.$number;
+                        //         $winning = SET;
+                        //         $SetAmount = $this->Jackpot_model->TotalBetAmount($game_data[0]->id, SET);
+                        //         $jackpot_coin = $this->Setting_model->Setting()->jackpot_coin;
+                        //         $give_coins = round(0.2*$jackpot_coin);
+                        //         $minus_jackpot_coin = '-'.$jackpot_coin;
+                        //         $this->Setting_model->update_jackpot_amount($minus_jackpot_coin);
+                        //         break;
+
+                        //     default:
+                        //         $card1 = 'BPA';
+                        //         $card2 = 'RP7';
+                        //         $card3 = 'BL4';
+                        //         $winning = HIGH_CARD;
+                        //         $multiply = HIGH_CARD_MULTIPLY;
+                        //         break;
+                        // }
+
+                        $cards = $this->RedBlack_model->GetCards(6);
+                        $card1 = $cards[0]->cards;
+                        $card2 = $cards[1]->cards;
+                        $card3 = $cards[2]->cards;
+                        $card4 = $cards[3]->cards;
+                        $card5 = $cards[4]->cards;
+                        $card6 = $cards[5]->cards;
+
+                        $this->RedBlack_model->CreateMap($game_data[0]->id, $card1);
+                        $this->RedBlack_model->CreateMap($game_data[0]->id, $card2);
+                        $this->RedBlack_model->CreateMap($game_data[0]->id, $card3);
+                        $this->RedBlack_model->CreateMap($game_data[0]->id, $card4);
+                        $this->RedBlack_model->CreateMap($game_data[0]->id, $card5);
+                        $this->RedBlack_model->CreateMap($game_data[0]->id, $card6);
+
+                        $redPoint = $this->RedBlack_model->CardValue($card1, $card2, $card3);
+                        $blackPoint = $this->RedBlack_model->CardValue($card4, $card5, $card6);
+                        $winningPosition = $this->RedBlack_model->getWinnerPosition($redPoint, $blackPoint);
+                        $winning = ($winningPosition==0) ? RB_RED : RB_BLACK;
+
+                        $multiply = ($winning==RB_RED) ? RB_RED_MULTIPLE : RB_BLACK_MULTIPLE;
+                        // Give winning Amount to user
+                        $bets = $this->RedBlack_model->ViewBet("", $game_data[0]->id, $winning);
+                        if ($bets) {
+                            // print_r($bets);
+                            $comission = $this->Setting_model->Setting()->admin_commission;
+                            foreach ($bets as $key => $value) {
+                                // if ($winning==SET) {
+                                //     $winning_percent = round(($value->amount/$SetAmount)*100);
+                                //     $winning_amount = round(($winning_percent/100)*$give_coins);
+                                //     $this->RedBlack_model->MakeWinner($value->user_id, $value->id, $winning_amount, $comission, $game_data[0]->id);
+                                // } else {
+                                $this->RedBlack_model->MakeWinner($value->user_id, $value->id, $value->amount*$multiply, $comission, $game_data[0]->id);
+                                // }
+                            }
+                            echo "Winning Amount Given".PHP_EOL;
+                        } else {
+                            echo "No Winning Bet Found".PHP_EOL;
+                        }
+                        $winning_rule = ($winning==RB_RED) ? $redPoint[0] : $blackPoint[0];
+                        $update_data['status'] = 1;
+                        $update_data['winning'] = $winning;
+                        $update_data['winning_rule'] = $winning_rule;
+                        $update_data['updated_date'] = date('Y-m-d H:i:s');
+                        $update_data['end_datetime'] = date('Y-m-d H:i:s', strtotime('+'.DRAGON_TIME_FOR_START_NEW_GAME.' seconds'));
+                        $this->RedBlack_model->Update($update_data, $game_data[0]->id);
+
+
+                        if ($winning_rule>0) {
+                            switch ($winning_rule) {
+                                case (RB_PAIR+1):
+                                    $multiply_rule = RB_PAIR_MULTIPLE;
+                                    break;
+
+                                case (RB_COLOR+1):
+                                    $multiply_rule = RB_COLOR_MULTIPLE;
+                                    break;
+
+                                case (RB_SEQUENCE+1):
+                                    $multiply_rule = RB_SEQUENCE_MULTIPLE;
+                                    break;
+
+                                case (RB_PURE_SEQUENCE+1):
+                                    $multiply_rule = RB_PURE_SEQUENCE_MULTIPLE;
+                                    break;
+
+                                case (RB_SET+1):
+                                    $multiply_rule = RB_SET_MULTIPLE;
+                                    break;
+
+                                default:
+                                    $multiply_rule = 0;
+                                    break;
+                            }
+                            $bets = $this->RedBlack_model->ViewBet("", $game_data[0]->id, $winning_rule);
+                            if ($bets && $multiply_rule>0) {
+                                // print_r($bets);
+                                $comission = $this->Setting_model->Setting()->admin_commission;
+                                foreach ($bets as $key => $value) {
+                                    $this->RedBlack_model->MakeWinner($value->user_id, $value->id, $value->amount*$multiply_rule, $comission, $game_data[0]->id);
+                                }
+                                echo "Winning Amount Given".PHP_EOL;
+                            } else {
+                                echo "No Winning Bet Found".PHP_EOL;
+                            }
+                        }
+                    } else {
+                        echo "No Game to Start".PHP_EOL;
+                    }
+                } else {
+                    if (strtotime($game_data[0]->end_datetime)<=time()) {
+                        $count = $this->Users_model->getOnlineUsers($room->id, 'red_black_id');
+                        if ($count>0) {
+                            $this->RedBlack_model->Create($room->id);
+
+                            echo 'Red Black Created Successfully'.PHP_EOL;
                         } else {
                             echo 'No Online User Found'.PHP_EOL;
                         }
@@ -1574,6 +1870,117 @@ class Cron extends CI_Controller
             }
 
             echo '<br>Success';
+        }
+    }
+
+    public function baccarat()
+    {
+        $room_data = $this->Baccarat_model->getRoom();
+
+        if ($room_data) {
+            foreach ($room_data as $key => $room) {
+                $game_data = $this->Baccarat_model->getActiveGameOnTable($room->id);
+
+                if (!$game_data) {
+                    $card = '';
+                    $this->Baccarat_model->Create($room->id, $card);
+
+                    echo 'First Baccarat Created Successfully'.PHP_EOL;
+                    continue;
+                }
+
+                if ($game_data[0]->status==0) {
+                    if ((strtotime($game_data[0]->added_date)+DRAGON_TIME_FOR_BET)<=time()) {
+                        $cards = $this->Baccarat_model->GetCards(6);
+                        $card1 = $cards[0]->cards;
+                        $card2 = $cards[1]->cards;
+                        $card3 = $cards[2]->cards;
+                        $card4 = $cards[3]->cards;
+                        $card5 = $cards[4]->cards;
+                        $card6 = $cards[5]->cards;
+
+                        $this->Baccarat_model->CreateMap($game_data[0]->id, $card1);
+                        $this->Baccarat_model->CreateMap($game_data[0]->id, $card2);
+                        $this->Baccarat_model->CreateMap($game_data[0]->id, $card3);
+                        $this->Baccarat_model->CreateMap($game_data[0]->id, $card4);
+
+                        $playerPoint = $this->Baccarat_model->CardValue($card1, $card2);
+                        $bankerPoint = $this->Baccarat_model->CardValue($card3, $card4);
+                        $winning = $this->Baccarat_model->getWinner($playerPoint, $bankerPoint);
+                        $multiply = $this->Baccarat_model->getMultiply($winning);
+
+                        // Give winning Amount to user
+                        $bets = $this->Baccarat_model->ViewBet("", $game_data[0]->id, $winning);
+                        if ($bets) {
+                            // print_r($bets);
+                            $comission = $this->Setting_model->Setting()->admin_commission;
+                            foreach ($bets as $key => $value) {
+                                $this->Baccarat_model->MakeWinner($value->user_id, $value->id, $value->amount*$multiply, $comission, $game_data[0]->id);
+                            }
+                            echo "Winning Amount Given".PHP_EOL;
+                        } else {
+                            echo "No Winning Bet Found".PHP_EOL;
+                        }
+                        $playerPair = $this->Baccarat_model->isPair($card1, $card2);
+                        $playerPairMultiply = PLAYER_PAIR_MULTIPLE;
+                        $bankerPair = $this->Baccarat_model->isPair($card3, $card4);
+                        $bankerPairMultiply = BANKER_PAIR_MULTIPLE;
+
+                        $update_data['status'] = 1;
+                        $update_data['winning'] = $winning;
+                        $update_data['player_pair'] = $playerPair;
+                        $update_data['banker_pair'] = $bankerPair;
+                        $update_data['updated_date'] = date('Y-m-d H:i:s');
+                        $update_data['end_datetime'] = date('Y-m-d H:i:s', strtotime('+'.DRAGON_TIME_FOR_START_NEW_GAME.' seconds'));
+                        $this->Baccarat_model->Update($update_data, $game_data[0]->id);
+
+                        if ($playerPair) {
+                            $bets = $this->Baccarat_model->ViewBet("", $game_data[0]->id, PLAYER_PAIR);
+                            if ($bets) {
+                                // print_r($bets);
+                                $comission = $this->Setting_model->Setting()->admin_commission;
+                                foreach ($bets as $key => $value) {
+                                    $this->Baccarat_model->MakeWinner($value->user_id, $value->id, $value->amount*$playerPairMultiply, $comission, $game_data[0]->id);
+                                }
+                                echo "Winning Amount Given".PHP_EOL;
+                            } else {
+                                echo "No Winning Bet Found".PHP_EOL;
+                            }
+                        }
+
+                        if ($bankerPair) {
+                            $bets = $this->Baccarat_model->ViewBet("", $game_data[0]->id, BANKER_PAIR);
+                            if ($bets) {
+                                // print_r($bets);
+                                $comission = $this->Setting_model->Setting()->admin_commission;
+                                foreach ($bets as $key => $value) {
+                                    $this->Baccarat_model->MakeWinner($value->user_id, $value->id, $value->amount*$bankerPairMultiply, $comission, $game_data[0]->id);
+                                }
+                                echo "Winning Amount Given".PHP_EOL;
+                            } else {
+                                echo "No Winning Bet Found".PHP_EOL;
+                            }
+                        }
+                    } else {
+                        echo "No Game to Start".PHP_EOL;
+                    }
+                } else {
+                    if (strtotime($game_data[0]->end_datetime)<=time()) {
+                        $count = $this->Users_model->getOnlineUsers($room->id, 'baccarat_id');
+                        if ($count>0) {
+                            $this->Baccarat_model->Create($room->id);
+
+                            echo 'Baccarat Created Successfully'.PHP_EOL;
+                        } else {
+                            echo 'No Online User Found'.PHP_EOL;
+                        }
+                    } else {
+                        echo "No Game to End".PHP_EOL;
+                    }
+                }
+            }
+        } else {
+            echo 'No Rooms Available'.PHP_EOL;
         }
     }
 }

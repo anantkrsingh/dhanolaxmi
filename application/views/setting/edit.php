@@ -216,9 +216,19 @@
                             </option>
                             <option value="5" <?= ($Setting->payment_gateway=='5' ? 'selected' : '') ?>>UPIFreeWay
                             </option>
-                            <option value="5" <?= ($Setting->payment_gateway=='6' ? 'selected' : '') ?>>AtomPay
+                            <option value="6" <?= ($Setting->payment_gateway=='6' ? 'selected' : '') ?>>AtomPay
+                            </option>
+                            <option value="7" <?= ($Setting->payment_gateway=='7' ? 'selected' : '') ?>>Custom
                             </option>
                         </select>
+                    </div>
+                </div>
+
+                <div class="form-group row"><label for="upi_id" class="col-sm-2 col-form-label">UPI ID
+                        *</label>
+                    <div class="col-sm-10">
+                        <input class="form-control" type="text" name="upi_id" id="upi_id"
+                            value="<?= $Setting->upi_id ?>">
                     </div>
                 </div>
 

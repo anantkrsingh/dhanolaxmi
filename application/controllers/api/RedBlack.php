@@ -5,7 +5,7 @@ use Restserver\Libraries\REST_Controller;
 
 include APPPATH . '/libraries/REST_Controller.php';
 include APPPATH . '/libraries/Format.php';
-class SevenUp extends REST_Controller
+class RedBlack extends REST_Controller
 {
     public function __construct()
     {
@@ -29,7 +29,8 @@ class SevenUp extends REST_Controller
         $this->data = $this->input->post();
         // print_r($this->data['user_id']);
         $this->load->model([
-            'SevenUp_model',
+            'RedBlack_model',
+            'Setting_model',
             'Users_model'
         ]);
     }
@@ -58,7 +59,7 @@ class SevenUp extends REST_Controller
             exit();
         }
 
-        $room_data = $this->SevenUp_model->getRoom();
+        $room_data = $this->RedBlack_model->getRoom();
         if ($room_data) {
             $rooms = array();
 
@@ -69,7 +70,7 @@ class SevenUp extends REST_Controller
                 $rooms[$key]['added_date'] = $value->added_date;
                 $rooms[$key]['updated_date'] = $value->updated_date;
                 $rooms[$key]['isDeleted'] = $value->isDeleted;
-                $rooms[$key]['online'] = $this->SevenUp_model->getRoomOnline($value->id);
+                $rooms[$key]['online'] = $this->RedBlack_model->getRoomOnline($value->id);
             }
 
             $data['message'] = 'Success';
@@ -87,6 +88,14 @@ class SevenUp extends REST_Controller
 
     public function get_active_game_post()
     {
+        $total_bet_red = $this->input->post('total_bet_red');
+        $total_bet_black = $this->input->post('total_bet_black');
+        $total_bet_pair = $this->input->post('total_bet_pair');
+        $total_bet_color = $this->input->post('total_bet_color');
+        $total_bet_sequence = $this->input->post('total_bet_sequence');
+        $total_bet_pure_sequence = $this->input->post('total_bet_pure_sequence');
+        $total_bet_set = $this->input->post('total_bet_set');
+
         if (empty($this->data['user_id']) || empty($this->data['token']) || empty($this->data['room_id'])) {
             $data['message'] = 'Invalid Parameter';
             $data['code'] = HTTP_NOT_ACCEPTABLE;
@@ -109,7 +118,7 @@ class SevenUp extends REST_Controller
             exit();
         }
 
-        $room = $this->SevenUp_model->getRoom($this->data['room_id'], $this->data['user_id']);
+        $room = $this->RedBlack_model->getRoom($this->data['room_id'], $this->data['user_id']);
         if (empty($room)) {
             $data['message'] = 'Invalid Room';
             $data['code'] = HTTP_NOT_ACCEPTABLE;
@@ -117,34 +126,61 @@ class SevenUp extends REST_Controller
             exit();
         }
 
-        $game_data = $this->SevenUp_model->getActiveGameOnTable($this->data['room_id']);
+        $game_data = $this->RedBlack_model->getActiveGameOnTable($this->data['room_id']);
         if ($game_data) {
             $game_cards = array();
             if ($game_data[0]->status) {
-                $game_cards = $this->SevenUp_model->GetGameCards($game_data[0]->id);
+                $game_cards = $this->RedBlack_model->GetGameCards($game_data[0]->id);
             }
 
             $new_game_data[0]['id'] = $game_data[0]->id;
             $new_game_data[0]['room_id'] = $game_data[0]->room_id;
-            $new_game_data[0]['main_card'] = $game_data[0]->main_card;
+            // $new_game_data[0]['main_card'] = $game_data[0]->main_card;
             $new_game_data[0]['winning'] = $game_data[0]->winning;
+            $new_game_data[0]['winning_rule'] = $game_data[0]->winning_rule;
             $new_game_data[0]['status'] = $game_data[0]->status;
             $new_game_data[0]['added_date'] = $game_data[0]->added_date;
             $added_datetime_sec = strtotime($game_data[0]->added_date);
-            $new_game_data[0]['time_remaining'] = ($added_datetime_sec+30) - time();
+            $new_game_data[0]['time_remaining'] = ($added_datetime_sec+DRAGON_TIME_FOR_BET) - time();
             $new_game_data[0]['end_datetime'] = $game_data[0]->end_datetime;
             $new_game_data[0]['updated_date'] = $game_data[0]->updated_date;
 
             $data['message'] = 'Success';
             $data['game_data'] = $new_game_data;
             $data['game_cards'] = $game_cards;
-            $data['online'] = $this->SevenUp_model->getRoomOnline($this->data['room_id']);
-            $data['online_users'] = $this->SevenUp_model->getRoomOnlineUser($this->data['room_id']);
-            $data['my_down_bet'] = $this->SevenUp_model->TotalBetAmount($game_data[0]->id, 0, $this->data['user_id']);
-            $data['my_up_bet'] = $this->SevenUp_model->TotalBetAmount($game_data[0]->id, 1, $this->data['user_id']);
-            $data['my_tie_bet'] = $this->SevenUp_model->TotalBetAmount($game_data[0]->id, 2, $this->data['user_id']);
-            $data['last_bet'] = $this->SevenUp_model->ViewBet('', $game_data[0]->id, '', '', 1);
-            $data['last_winning'] = $this->SevenUp_model->LastWinningBet($this->data['room_id']);
+            $data['online'] = $this->RedBlack_model->getRoomOnline($this->data['room_id']);
+            $data['online_users'] = $this->RedBlack_model->getRoomOnlineUser($this->data['room_id']);
+
+            $RedAmount = $this->RedBlack_model->TotalBetAmount($game_data[0]->id, RB_RED);
+            $BlackAmount = $this->RedBlack_model->TotalBetAmount($game_data[0]->id, RB_BLACK);
+            $PairAmount = $this->RedBlack_model->TotalBetAmount($game_data[0]->id, PAIR);
+            $ColorAmount = $this->RedBlack_model->TotalBetAmount($game_data[0]->id, COLOR);
+            $SequenceAmount = $this->RedBlack_model->TotalBetAmount($game_data[0]->id, SEQUENCE);
+            $PureSequenceAmount = $this->RedBlack_model->TotalBetAmount($game_data[0]->id, PURE_SEQUENCE);
+            $SetAmount = $this->RedBlack_model->TotalBetAmount($game_data[0]->id, SET);
+
+            $data['red_amount'] = rand($total_bet_red, $total_bet_red+10000)+$RedAmount;
+            $data['black_amount'] = rand($total_bet_black, $total_bet_black+10000)+$BlackAmount;
+            $data['pair_amount'] = rand($total_bet_pair, $total_bet_pair+10000)+$PairAmount;
+            $data['color_amount'] = rand($total_bet_color, $total_bet_color+10000)+$ColorAmount;
+            $data['sequence_amount'] = rand($total_bet_sequence, $total_bet_sequence+10000)+$SequenceAmount;
+            $data['pure_sequence_amount'] = rand($total_bet_pure_sequence, $total_bet_pure_sequence+10000)+$PureSequenceAmount;
+            $data['set_amount'] = rand($total_bet_set, $total_bet_set+10000)+$SetAmount;
+
+            $data['last_bet'] = $this->RedBlack_model->ViewBet('', $game_data[0]->id, '', '', 1);
+
+            // $data['jackpot_amount'] = $this->Setting_model->Setting()->jackpot_coin;
+
+            $data['last_winning'] = $this->RedBlack_model->LastWinningBet($this->data['room_id'], 15);
+
+            // $winners = $this->RedBlack_model->getJackpotWinners(1);
+            // if ($winners) {
+            //     foreach ($winners as $key => $value) {
+            //         $value->user_data = $this->RedBlack_model->getJackpotBigWinners($value->id);
+            //     }
+            // }
+            // $data['big_winner'] = $winners;
+
             $data['profile'] = $user;
             $data['code'] = HTTP_OK;
             $this->response($data, HTTP_OK);
@@ -181,7 +217,7 @@ class SevenUp extends REST_Controller
             exit();
         }
 
-        $room = $this->SevenUp_model->getRoom($this->data['room_id'], $this->data['user_id']);
+        $room = $this->RedBlack_model->getRoom($this->data['room_id'], $this->data['user_id']);
         if (empty($room)) {
             $data['message'] = 'Invalid Room';
             $data['code'] = HTTP_NOT_ACCEPTABLE;
@@ -189,7 +225,7 @@ class SevenUp extends REST_Controller
             exit();
         }
 
-        $leave_room = $this->SevenUp_model->leave_room($this->data['user_id']);
+        $leave_room = $this->RedBlack_model->leave_room($this->data['user_id']);
         if ($leave_room) {
             $data['message'] = 'Success';
             $data['code'] = HTTP_OK;
@@ -219,12 +255,12 @@ class SevenUp extends REST_Controller
             exit();
         }
 
-        if (!in_array($this->data['bet'], array(DRAGON,TIGER,TIE))) {
-            $data['message'] = 'Invalid Bet';
-            $data['code'] = HTTP_INVALID;
-            $this->response($data, HTTP_OK);
-            exit();
-        }
+        // if (!in_array($this->data['bet'], array(DRAGON,TIGER,TIE))) {
+        //     $data['message'] = 'Invalid Bet';
+        //     $data['code'] = HTTP_INVALID;
+        //     $this->response($data, HTTP_OK);
+        //     exit();
+        // }
 
         $user = $this->Users_model->UserProfile($this->data['user_id']);
         if (empty($user)) {
@@ -248,7 +284,7 @@ class SevenUp extends REST_Controller
             exit();
         }
 
-        $game = $this->SevenUp_model->View($this->data['game_id']);
+        $game = $this->RedBlack_model->View($this->data['game_id']);
         if (!$game) {
             $data['message'] = 'Invalid Game Id';
             $data['code'] = HTTP_NOT_ACCEPTABLE;
@@ -263,10 +299,9 @@ class SevenUp extends REST_Controller
             exit();
         }
 
-        // $bet = $this->SevenUp_model->ViewBet($this->data['user_id'],$this->data['game_id']);
+        // $bet = $this->RedBlack_model->ViewBet($this->data['user_id'], $this->data['game_id'], $this->data['bet']);
 
-        // if($bet)
-        // {
+        // if ($bet) {
         //     $data['message'] = 'One Bet Already Placed';
         //     $data['code'] = HTTP_NOT_ACCEPTABLE;
         //     $this->response($data, 200);
@@ -274,7 +309,7 @@ class SevenUp extends REST_Controller
         // }
 
         $bet_data = [
-            'seven_up_id' => $this->data['game_id'],
+            'red_black_id' => $this->data['game_id'],
             'user_id' => $this->data['user_id'],
             'bet' => $this->data['bet'],
             'amount' => $this->data['amount'],
@@ -282,10 +317,10 @@ class SevenUp extends REST_Controller
 
         ];
 
-        $bet_id = $this->SevenUp_model->PlaceBet($bet_data);
+        $bet_id = $this->RedBlack_model->PlaceBet($bet_data);
 
         if ($bet_id) {
-            $this->SevenUp_model->MinusWallet($this->data['user_id'], $this->data['amount']);
+            $this->RedBlack_model->MinusWallet($this->data['user_id'], $this->data['amount']);
             $data['message'] = 'Success';
             $data['bet_id'] = $bet_id;
             $user_wallet = $this->Users_model->UserProfile($this->data['user_id']);
@@ -325,7 +360,7 @@ class SevenUp extends REST_Controller
             exit();
         }
 
-        $game = $this->SevenUp_model->View($this->data['game_id']);
+        $game = $this->RedBlack_model->View($this->data['game_id']);
         if (!$game) {
             $data['message'] = 'Invalid Game Id';
             $data['code'] = HTTP_NOT_ACCEPTABLE;
@@ -340,7 +375,7 @@ class SevenUp extends REST_Controller
             exit();
         }
 
-        $bet = $this->SevenUp_model->ViewBet($this->data['user_id'], $this->data['game_id']);
+        $bet = $this->RedBlack_model->ViewBet($this->data['user_id'], $this->data['game_id']);
         if ($bet) {
             $data['message'] = 'One Bet Already Placed';
             $data['code'] = HTTP_NOT_ACCEPTABLE;
@@ -348,7 +383,7 @@ class SevenUp extends REST_Controller
             exit();
         }
 
-        $last_bet = $this->SevenUp_model->ViewBet($this->data['user_id']);
+        $last_bet = $this->RedBlack_model->ViewBet($this->data['user_id']);
         if ($user[0]->wallet<$last_bet[0]->amount) {
             $data['message'] = 'Insufficient Wallet Amount';
             $data['code'] = HTTP_NOT_ACCEPTABLE;
@@ -357,7 +392,7 @@ class SevenUp extends REST_Controller
         }
 
         // $bet_data = [
-        //     'seven_up_id' => $this->data['game_id'],
+        //     'dragon_tiger_id' => $this->data['game_id'],
         //     'user_id' => $this->data['user_id'],
         //     'bet' => $last_bet[0]->bet,
         //     'amount' => $last_bet[0]->amount,
@@ -365,11 +400,11 @@ class SevenUp extends REST_Controller
 
         // ];
 
-        // $bet_id = $this->SevenUp_model->PlaceBet($bet_data);
+        // $bet_id = $this->RedBlack_model->PlaceBet($bet_data);
 
         // if($bet_id)
         // {
-        // $this->SevenUp_model->MinusWallet($this->data['user_id'], $last_bet[0]->amount);
+        // $this->RedBlack_model->MinusWallet($this->data['user_id'], $last_bet[0]->amount);
         $data['message'] = 'Success';
         // $data['bet_id'] = $bet_id;
         $data['bet'] = $last_bet[0]->bet;
@@ -413,7 +448,7 @@ class SevenUp extends REST_Controller
             exit();
         }
 
-        $game = $this->SevenUp_model->View($this->data['game_id']);
+        $game = $this->RedBlack_model->View($this->data['game_id']);
         if (!$game) {
             $data['message'] = 'Invalid Game Id';
             $data['code'] = HTTP_NOT_ACCEPTABLE;
@@ -428,7 +463,7 @@ class SevenUp extends REST_Controller
             exit();
         }
 
-        $bet = $this->SevenUp_model->ViewBet($this->data['user_id'], $this->data['game_id']);
+        $bet = $this->RedBlack_model->ViewBet($this->data['user_id'], $this->data['game_id']);
         if ($bet) {
             $data['message'] = 'One Bet Already Placed';
             $data['code'] = HTTP_NOT_ACCEPTABLE;
@@ -436,7 +471,7 @@ class SevenUp extends REST_Controller
             exit();
         }
 
-        $last_bet = $this->SevenUp_model->ViewBet($this->data['user_id']);
+        $last_bet = $this->RedBlack_model->ViewBet($this->data['user_id']);
         $amount = $last_bet[0]->amount*2;
         if ($user[0]->wallet<$amount) {
             $data['message'] = 'Insufficient Wallet Amount';
@@ -446,17 +481,17 @@ class SevenUp extends REST_Controller
         }
 
         $bet_data = [
-            'seven_up_id' => $this->data['game_id'],
+            'red_black_id' => $this->data['game_id'],
             'user_id' => $this->data['user_id'],
             'bet' => $last_bet[0]->bet,
             'amount' => $amount,
             'added_date' => date('Y-m-d H:i:s')
         ];
 
-        $bet_id = $this->SevenUp_model->PlaceBet($bet_data);
+        $bet_id = $this->RedBlack_model->PlaceBet($bet_data);
 
         if ($bet_id) {
-            $this->SevenUp_model->MinusWallet($this->data['user_id'], $amount);
+            $this->RedBlack_model->MinusWallet($this->data['user_id'], $amount);
             $data['message'] = 'Success';
             $data['bet_id'] = $bet_id;
             $data['bet'] = $last_bet[0]->bet;
@@ -498,7 +533,7 @@ class SevenUp extends REST_Controller
             exit();
         }
 
-        $game = $this->SevenUp_model->View($this->data['game_id']);
+        $game = $this->RedBlack_model->View($this->data['game_id']);
         if (!$game) {
             $data['message'] = 'Invalid Game Id';
             $data['code'] = HTTP_NOT_ACCEPTABLE;
@@ -506,7 +541,7 @@ class SevenUp extends REST_Controller
             exit();
         }
 
-        $bet = $this->SevenUp_model->ViewBet($this->data['user_id'], $this->data['game_id'], '', '');
+        $bet = $this->RedBlack_model->ViewBet($this->data['user_id'], $this->data['game_id'], '', '');
         if (!$bet) {
             $data['message'] = 'Invalid Bet';
             $data['code'] = HTTP_NOT_ACCEPTABLE;
@@ -521,8 +556,8 @@ class SevenUp extends REST_Controller
             exit();
         }
 
-        if ($this->SevenUp_model->DeleteBet($bet[0]->id, $this->data['user_id'], $this->data['game_id'])) {
-            $this->SevenUp_model->AddWallet($this->data['user_id'], $bet[0]->amount);
+        if ($this->RedBlack_model->DeleteBet($bet[0]->id, $this->data['user_id'], $this->data['game_id'])) {
+            $this->RedBlack_model->AddWallet($this->data['user_id'], $bet[0]->amount);
             $data['message'] = 'Bet Cancel Successfully';
             $user_wallet = $this->Users_model->UserProfile($this->data['user_id']);
             $data['wallet'] = $user_wallet[0]->wallet;
@@ -531,6 +566,85 @@ class SevenUp extends REST_Controller
             exit();
         } else {
             $data['message'] = 'Something Wents Wrong';
+            $data['code'] = HTTP_NOT_ACCEPTABLE;
+            $this->response($data, 200);
+            exit();
+        }
+    }
+
+    public function jackpot_winners_post()
+    {
+        if (empty($this->data['user_id']) || empty($this->data['token'])) {
+            $data['message'] = 'Invalid Parameter';
+            $data['code'] = HTTP_NOT_ACCEPTABLE;
+            $this->response($data, 200);
+            exit();
+        }
+
+        if (!$this->Users_model->TokenConfirm($this->data['user_id'], $this->data['token'])) {
+            $data['message'] = 'Invalid User';
+            $data['code'] = HTTP_INVALID;
+            $this->response($data, HTTP_OK);
+            exit();
+        }
+
+        $user = $this->Users_model->UserProfile($this->data['user_id']);
+        if (empty($user)) {
+            $data['message'] = 'Invalid User';
+            $data['code'] = HTTP_NOT_ACCEPTABLE;
+            $this->response($data, 200);
+            exit();
+        }
+
+        $winners = $this->RedBlack_model->getJackpotWinners();
+        if ($winners) {
+            foreach ($winners as $key => $value) {
+                $value->user_data = $this->RedBlack_model->getJackpotBigWinners($value->id);
+            }
+            $data['winners'] = $winners;
+            $data['code'] = HTTP_OK;
+            $this->response($data, HTTP_OK);
+            exit();
+        } else {
+            $data['message'] = 'No Jackpot Till Now';
+            $data['code'] = HTTP_NOT_ACCEPTABLE;
+            $this->response($data, 200);
+            exit();
+        }
+    }
+
+    public function last_winners_post()
+    {
+        if (empty($this->data['user_id']) || empty($this->data['token'])) {
+            $data['message'] = 'Invalid Parameter';
+            $data['code'] = HTTP_NOT_ACCEPTABLE;
+            $this->response($data, 200);
+            exit();
+        }
+
+        if (!$this->Users_model->TokenConfirm($this->data['user_id'], $this->data['token'])) {
+            $data['message'] = 'Invalid User';
+            $data['code'] = HTTP_INVALID;
+            $this->response($data, HTTP_OK);
+            exit();
+        }
+
+        $user = $this->Users_model->UserProfile($this->data['user_id']);
+        if (empty($user)) {
+            $data['message'] = 'Invalid User';
+            $data['code'] = HTTP_NOT_ACCEPTABLE;
+            $this->response($data, 200);
+            exit();
+        }
+
+        $winners = $this->RedBlack_model->LastWinningBet($this->data['room_id'], 50);
+        if ($winners) {
+            $data['winners'] = $winners;
+            $data['code'] = HTTP_OK;
+            $this->response($data, HTTP_OK);
+            exit();
+        } else {
+            $data['message'] = 'No Jackpot Till Now';
             $data['code'] = HTTP_NOT_ACCEPTABLE;
             $this->response($data, 200);
             exit();

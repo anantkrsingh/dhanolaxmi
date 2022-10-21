@@ -31,6 +31,12 @@
                         <span>Teen Patti Table Master</span></a></li>
                 <?php } ?>
 
+
+                <?php if (LUDO_TABLE_MASTER==true) { ?>
+                <li><a href="<?= base_url('backend/ludoTableMaster') ?>" class="waves-effect"><i
+                            class="ion ion-md-contact"></i>
+                        <span>Ludo Table Master</span></a></li>
+                <?php } ?>
                 <?php if (POINT_TABLE_MASTER==true) { ?>
                 <li><a href="<?= base_url('backend/rummyTableMaster') ?>" class="waves-effect"><i
                             class="ion ion-md-contact"></i>
@@ -143,6 +149,11 @@
                 <?php if (TEENPATTI_HISTORY==true) { ?>
                 <li><a href="<?= base_url('backend/Game') ?>" class="waves-effect"><i class="ion ion-md-list-box"></i>
                         <span>Teenpatti History</span></a></li>
+                <?php } ?>
+
+                <?php if (LUDO_HISTORY==true) { ?>
+                <li><a href="<?= base_url('backend/LudoHistory') ?>" class="waves-effect"><i class="ion ion-md-list-box"></i>
+                        <span>Ludo History</span></a></li>
                 <?php } ?>
 
                 <?php if (RUMMY_HISTORY==true) { ?>

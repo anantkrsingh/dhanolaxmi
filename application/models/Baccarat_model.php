@@ -1,11 +1,11 @@
 <?php
 
-class AnimalRoulette_model extends MY_Model
+class Baccarat_model extends MY_Model
 {
     public function getRoom($RoomId='', $user_id='')
     {
         // $this->db->select('id,main_card,status,added_date');
-        $this->db->from('tbl_animal_roulette_room');
+        $this->db->from('tbl_baccarat_room');
         $this->db->where('isDeleted', false);
         if (!empty($RoomId)) {
             $this->db->where('id', $RoomId);
@@ -13,7 +13,7 @@ class AnimalRoulette_model extends MY_Model
         $this->db->order_by('id', 'asc');
         $Query = $this->db->get();
 
-        $this->db->set('animal_roulette_room_id', $RoomId); //value that used to update column
+        $this->db->set('baccarat_id', $RoomId); //value that used to update column
         $this->db->where('id', $user_id); //which row want to upgrade
         $this->db->update('tbl_users');  //table name
 
@@ -22,7 +22,7 @@ class AnimalRoulette_model extends MY_Model
 
     public function leave_room($user_id='')
     {
-        $this->db->set('animal_roulette_room_id', ''); //value that used to update column
+        $this->db->set('baccarat_id', ''); //value that used to update column
         $this->db->where('id', $user_id); //which row want to upgrade
         $this->db->update('tbl_users');  //table name
 
@@ -31,20 +31,20 @@ class AnimalRoulette_model extends MY_Model
 
     public function getRoomOnline($RoomId)
     {
-        $Query = $this->db->query('SELECT COUNT(`id`) as online FROM `tbl_animal_roulette_bet` WHERE `animal_roulette_id` = (SELECT `id` FROM `tbl_animal_roulette` WHERE `room_id`='.$RoomId.' ORDER BY `id` DESC LIMIT 1)');
+        $Query = $this->db->query('SELECT COUNT(`id`) as online FROM `tbl_baccarat_bet` WHERE `baccarat_id` = (SELECT `id` FROM `tbl_baccarat` WHERE `room_id`='.$RoomId.' ORDER BY `id` DESC LIMIT 1)');
         return $Query->row()->online;
     }
 
     public function getRoomOnlineUser($RoomId)
     {
-        $Query = $this->db->query('SELECT * FROM `tbl_users`  WHERE animal_roulette_room_id = '.$RoomId);
+        $Query = $this->db->query('SELECT * FROM `tbl_users`  WHERE baccarat_id = '.$RoomId);
         return $Query->result();
     }
 
     public function getActiveGameOnTable($RoomId='')
     {
         // $this->db->select('id,main_card,status,added_date');
-        $this->db->from('tbl_animal_roulette');
+        $this->db->from('tbl_baccarat');
         if (!empty($RoomId)) {
             $this->db->where('room_id', $RoomId);
         }
@@ -68,29 +68,29 @@ class AnimalRoulette_model extends MY_Model
 
     public function GetGameCards($game_id)
     {
-        $this->db->from('tbl_animal_roulette_map');
-        $this->db->where('animal_roulette_id', $game_id);
+        $this->db->from('tbl_baccarat_map');
+        $this->db->where('baccarat_id', $game_id);
         $Query = $this->db->get();
         // echo $this->db->last_query();
         return $Query->result();
     }
 
-    public function CreateMap($animal_roulette_id, $card)
+    public function CreateMap($baccarat_id, $card)
     {
-        $ander_data = ['animal_roulette_id' => $animal_roulette_id, 'card' => $card, 'added_date' => date('Y-m-d H:i:s')];
-        $this->db->insert('tbl_animal_roulette_map', $ander_data);
+        $ander_data = ['baccarat_id' => $baccarat_id, 'card' => $card, 'added_date' => date('Y-m-d H:i:s')];
+        $this->db->insert('tbl_baccarat_map', $ander_data);
         return $this->db->insert_id();
     }
 
     public function PlaceBet($bet_data)
     {
-        $this->db->insert('tbl_animal_roulette_bet', $bet_data);
+        $this->db->insert('tbl_baccarat_bet', $bet_data);
         return $this->db->insert_id();
     }
 
     public function DeleteBet($bet_id, $user_id, $game_id)
     {
-        return $this->db->where('animal_roulette_id', $game_id)->where('user_id', $user_id)->delete('tbl_animal_roulette_bet');
+        return $this->db->where('baccarat_id', $game_id)->where('user_id', $user_id)->delete('tbl_baccarat_bet');
     }
 
     public function MinusWallet($user_id, $amount)
@@ -128,7 +128,7 @@ class AnimalRoulette_model extends MY_Model
 
     public function View($id)
     {
-        $this->db->from('tbl_animal_roulette');
+        $this->db->from('tbl_baccarat');
         $this->db->where('id', $id);
         $Query = $this->db->get();
         // echo $this->db->last_query();
@@ -139,23 +139,23 @@ class AnimalRoulette_model extends MY_Model
     public function Update($data, $game_id)
     {
         $this->db->where('id', $game_id);
-        $this->db->update('tbl_animal_roulette', $data);
+        $this->db->update('tbl_baccarat', $data);
         $GameId =  $this->db->affected_rows();
         // echo $this->db->last_query();
         return $GameId;
     }
 
-    public function ViewBet($user_id='', $animal_roulette_id='', $bet='', $bet_id='', $limit='')
+    public function ViewBet($user_id='', $baccarat_id='', $bet='', $bet_id='', $limit='')
     {
         // echo $bet;
-        $this->db->from('tbl_animal_roulette_bet');
+        $this->db->from('tbl_baccarat_bet');
 
         if (!empty($user_id)) {
             $this->db->where('user_id', $user_id);
         }
 
-        if (!empty($animal_roulette_id)) {
-            $this->db->where('animal_roulette_id', $animal_roulette_id);
+        if (!empty($baccarat_id)) {
+            $this->db->where('baccarat_id', $baccarat_id);
         }
 
         if ($bet!=='') {
@@ -176,11 +176,11 @@ class AnimalRoulette_model extends MY_Model
         return $Query->result();
     }
 
-    public function TotalBetAmount($animal_roulette_id, $bet)
+    public function TotalBetAmount($baccarat_id, $bet)
     {
         $this->db->select('SUM(amount) as amount', false);
-        $this->db->from('tbl_animal_roulette_bet');
-        $this->db->where('animal_roulette_id', $animal_roulette_id);
+        $this->db->from('tbl_baccarat_bet');
+        $this->db->where('baccarat_id', $baccarat_id);
         $this->db->where('bet', $bet);
         $Query = $this->db->get();
         // echo $this->db->last_query();
@@ -195,13 +195,13 @@ class AnimalRoulette_model extends MY_Model
         $this->db->set('user_amount', $user_winning_amt);
         $this->db->set('comission_amount', $admin_winning_amt);
         $this->db->where('id', $bet_id);
-        $this->db->update('tbl_animal_roulette_bet');
+        $this->db->update('tbl_baccarat_bet');
 
         $this->db->set('winning_amount', 'winning_amount+' . $amount, false);
         $this->db->set('user_amount', 'user_amount+' . $user_winning_amt, false);
         $this->db->set('comission_amount', 'comission_amount+' . $admin_winning_amt, false);
         $this->db->where('id', $game_id);
-        $this->db->update('tbl_animal_roulette');
+        $this->db->update('tbl_baccarat');
 
         $this->db->set('wallet', 'wallet+' . $user_winning_amt, false);
         $this->db->set('winning_wallet', 'winning_wallet+' . $user_winning_amt, false);
@@ -217,7 +217,7 @@ class AnimalRoulette_model extends MY_Model
     public function LastWinningBet($room_id, $limit=10)
     {
         // echo $bet;
-        $this->db->from('tbl_animal_roulette');
+        $this->db->from('tbl_baccarat');
         $this->db->where('status', 1);
         if (!empty($room_id)) {
             $this->db->where('room_id', $room_id);
@@ -235,7 +235,7 @@ class AnimalRoulette_model extends MY_Model
     public function Create($room_id)
     {
         $ander_data = ['room_id' => $room_id, 'added_date' => date('Y-m-d H:i:s')];
-        $this->db->insert('tbl_animal_roulette', $ander_data);
+        $this->db->insert('tbl_baccarat', $ander_data);
         return $this->db->insert_id();
     }
 
@@ -249,7 +249,7 @@ class AnimalRoulette_model extends MY_Model
 
     public function getJackpotWinners($limit='')
     {
-        $que = 'SELECT tbl_animal_roulette.id,tbl_animal_roulette.end_datetime as time,SUM(tbl_animal_roulette_bet.winning_amount) as rewards,(SELECT GROUP_CONCAT(`card`) FROM `tbl_animal_roulette_map` WHERE `animal_roulette_id`=tbl_animal_roulette.id GROUP BY `animal_roulette_id`) as type,COUNT(tbl_animal_roulette_bet.id) as winners FROM `tbl_animal_roulette` JOIN tbl_animal_roulette_bet ON tbl_animal_roulette.id=tbl_animal_roulette_bet.animal_roulette_id WHERE tbl_animal_roulette.`winning`=6 AND tbl_animal_roulette.status=1 GROUP BY tbl_animal_roulette.id ORDER BY tbl_animal_roulette.id DESC';
+        $que = 'SELECT tbl_baccarat.id,tbl_baccarat.end_datetime as time,SUM(tbl_baccarat_bet.winning_amount) as rewards,(SELECT GROUP_CONCAT(`card`) FROM `tbl_baccarat_map` WHERE `baccarat_id`=tbl_baccarat.id GROUP BY `baccarat_id`) as type,COUNT(tbl_baccarat_bet.id) as winners FROM `tbl_baccarat` JOIN tbl_baccarat_bet ON tbl_baccarat.id=tbl_baccarat_bet.baccarat_id WHERE tbl_baccarat.`winning`=6 AND tbl_baccarat.status=1 GROUP BY tbl_baccarat.id ORDER BY tbl_baccarat.id DESC';
         if (!empty($limit)) {
             $que .= ' LIMIT '.$limit;
         }
@@ -257,15 +257,15 @@ class AnimalRoulette_model extends MY_Model
         return $Query->result();
     }
 
-    public function getJackpotBigWinners($animal_roulette_id)
+    public function getJackpotBigWinners($baccarat_id)
     {
-        $Query = $this->db->query('SELECT tbl_animal_roulette_bet.amount,tbl_animal_roulette_bet.winning_amount,tbl_users.name,tbl_users.profile_pic FROM `tbl_animal_roulette_bet` JOIN tbl_users ON tbl_animal_roulette_bet.user_id=tbl_users.id WHERE tbl_animal_roulette_bet.`animal_roulette_id`='.$animal_roulette_id.' ORDER BY winning_amount DESC LIMIT 1');
+        $Query = $this->db->query('SELECT tbl_baccarat_bet.amount,tbl_baccarat_bet.winning_amount,tbl_users.name,tbl_users.profile_pic FROM `tbl_baccarat_bet` JOIN tbl_users ON tbl_baccarat_bet.user_id=tbl_users.id WHERE tbl_baccarat_bet.`baccarat_id`='.$baccarat_id.' ORDER BY winning_amount DESC LIMIT 1');
         return $Query->result();
     }
 
     public function AllGames()
     {
-        $this->db->from('tbl_animal_roulette');
+        $this->db->from('tbl_baccarat');
         $this->db->order_by('id', 'DESC');
         $this->db->limit(10);
         $Query = $this->db->get();
@@ -276,7 +276,7 @@ class AnimalRoulette_model extends MY_Model
 
     public function Comission()
     {
-        $this->db->from('tbl_animal_roulette');
+        $this->db->from('tbl_baccarat');
         // $this->db->where('isDeleted', false);
         $this->db->where('winning_amount>', 0);
 
@@ -284,5 +284,75 @@ class AnimalRoulette_model extends MY_Model
         // echo $this->db->last_query();
         // die();
         return $Query->result();
+    }
+
+    public function CardValue($card1, $card2, $card3='000')
+    {
+        $points = 1;
+
+        $card1_num = substr($card1, 2);
+
+        $card2_num = substr($card2, 2);
+
+        $card3_num = substr($card3, 2);
+
+        $total_points = $card1_num+$card2_num+$card3_num;
+        return ($total_points%10);
+    }
+
+    public function isPair($card1, $card2)
+    {
+        $points = 1;
+
+        $card1_num = substr($card1, 2);
+
+        $card2_num = substr($card2, 2);
+
+        return ($card1_num==$card2_num)?true:false;
+    }
+
+    public function getWinner($player, $banker)
+    {
+        $winner = '';
+
+        if ($player == $banker) {
+            $winner = TIE;
+        } else {
+            $winner = ($player>$banker) ? PLAYER : BANKER;
+        }
+
+        return $winner;
+    }
+
+    public function getMultiply($winner)
+    {
+        $multiply = 0
+        switch ($winning) {
+            case PLAYER:
+                $multiply = PLAYER_MULTIPLE;
+                break;
+
+            case BANKER:
+                $multiply = BANKER_MULTIPLE;
+                break;
+
+            case TIE:
+                $multiply = TIE_MULTIPLE;
+                break;
+
+            case PLAYER_PAIR:
+                $multiply = PLAYER_PAIR_MULTIPLE;
+                break;
+
+            case BANKER_PAIR:
+                $multiply = BANKER_PAIR_MULTIPLE;
+                break;
+            
+            default:
+                $multiply = 0;
+                break;
+        }
+
+        return $multiply;
     }
 }

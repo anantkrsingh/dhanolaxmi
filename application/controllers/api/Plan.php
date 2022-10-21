@@ -727,6 +727,7 @@ class Plan extends REST_Controller
     public function Place_Order_upi_Post()
     {
         $user_id = $this->input->post('user_id');
+        $extra = $this->input->post('extra');
 
         if (!$this->Users_model->TokenConfirm($this->data['user_id'], $this->data['token'])) {
             $data['message'] = 'Invalid User';
@@ -761,7 +762,7 @@ class Plan extends REST_Controller
 
         $Amount = $plan->price;             //Product Amount While the Time OF Order
 
-        $Order_ID = $this->Coin_plan_model->GetCoin($user_id, $plan_id, $plan->coin, $Amount);
+        $Order_ID = $this->Coin_plan_model->GetCoin($user_id, $plan_id, $plan->coin, $Amount, $extra);
 
         if (empty($Order_ID)) {
             $data['message'] = 'Error while Creating Ticket';

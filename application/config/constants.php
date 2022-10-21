@@ -198,6 +198,34 @@ define('VIOLET_MULTIPLE', 4.5);
 define('GREEN_RED_HALF_MULTIPLE', 1.5);
 define('GREEN_RED_MULTIPLE', 2);
 
+define('RB_RED', 1);
+define('RB_BLACK', 2);
+define('RB_PAIR', 3);
+define('RB_COLOR', 4);
+define('RB_SEQUENCE', 5);
+define('RB_PURE_SEQUENCE', 6);
+define('RB_SET', 7);
+
+define('RB_RED_MULTIPLE', 2);
+define('RB_BLACK_MULTIPLE', 2);
+define('RB_PAIR_MULTIPLE', 3.5);
+define('RB_COLOR_MULTIPLE', 10);
+define('RB_SEQUENCE_MULTIPLE', 15);
+define('RB_PURE_SEQUENCE_MULTIPLE', 100);
+define('RB_SET_MULTIPLE', 100);
+
+define('PLAYER', 0);
+define('BANKER', 1);
+// define('TIE', 2);
+define('PLAYER_PAIR', 3);
+define('BANKER_PAIR', 4);
+
+define('PLAYER_MULTIPLE', 2);
+define('BANKER_MULTIPLE', 1.95);
+define('TIE_MULTIPLE', 8);
+define('PLAYER_PAIR_MULTIPLE', 11);
+define('BANKER_PAIR_MULTIPLE', 11);
+
 define('APP_URL', '/');
 define('BANNER_URL', 'uploads/banner/');
 define('LOGO', 'uploads/logo/');
@@ -232,6 +260,8 @@ define('TEENPATTI_HISTORY', true);
 define('RUMMY_HISTORY', true);
 define('RUMMY_POOL_HISTORY', true);
 define('RUMMY_DEAL_HISTORY', true);
+define('LUDO_TABLE_MASTER', true);
+define('LUDO_HISTORY', true);
 
 
 // FCM Notification
