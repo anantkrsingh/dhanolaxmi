@@ -17,8 +17,8 @@
                     <div>
                         <?php
                         echo form_submit('submit', 'Submit', ['class' => 'btn btn-primary waves-effect waves-light mr-1']);
-                        echo form_reset(['class' => 'btn btn-secondary waves-effect', 'value' => 'Cancel']);
                         ?>
+                        <a href="<?= base_url('backend/LudoTableMaster') ?>" class="btn btn-secondary waves-effect">Cancel</a>
                     </div>
                 </div>
                 <?php

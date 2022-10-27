@@ -64,3 +64,5 @@ $route['privacy-policy'] = 'home/privacy_policy';
 $route['terms-conditions'] = 'home/terms_conditions';
 $route['security'] = 'home/security';
 $route['contact-us'] = 'home/contact_us';
+$route['backend/RummyPool'] = 'backend/poolTableMaster';
+$route['backend/RummyPool/add'] = 'backend/poolTableMaster/add';

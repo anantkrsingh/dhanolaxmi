@@ -308,7 +308,7 @@ class Baccarat_model extends MY_Model
 
         $card2_num = substr($card2, 2);
 
-        return ($card1_num==$card2_num)?true:false;
+        return ($card1_num==$card2_num) ? true : false;
     }
 
     public function getWinner($player, $banker)
@@ -326,7 +326,7 @@ class Baccarat_model extends MY_Model
 
     public function getMultiply($winner)
     {
-        $multiply = 0
+        $multiply = 0;
         switch ($winning) {
             case PLAYER:
                 $multiply = PLAYER_MULTIPLE;
@@ -347,7 +347,7 @@ class Baccarat_model extends MY_Model
             case BANKER_PAIR:
                 $multiply = BANKER_PAIR_MULTIPLE;
                 break;
-            
+
             default:
                 $multiply = 0;
                 break;

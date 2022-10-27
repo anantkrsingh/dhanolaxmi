@@ -7,12 +7,12 @@ defined('BASEPATH') or exit('No direct script access allowed');
 | Display Debug backtrace
 |--------------------------------------------------------------------------
 |
-| If set to TRUE, a backtrace will be displayed along with php errors. If
+| If set to false, a backtrace will be displayed along with php errors. If
 | error_reporting is disabled, the backtrace will not display, regardless
 | of this setting
 |
 */
-defined('SHOW_DEBUG_BACKTRACE') or define('SHOW_DEBUG_BACKTRACE', true);
+defined('SHOW_DEBUG_BACKTRACE') or define('SHOW_DEBUG_BACKTRACE', false);
 
 /*
 |--------------------------------------------------------------------------
@@ -214,6 +214,20 @@ define('RB_SEQUENCE_MULTIPLE', 15);
 define('RB_PURE_SEQUENCE_MULTIPLE', 100);
 define('RB_SET_MULTIPLE', 100);
 
+define('HEART', 1);
+define('SPADE', 2);
+define('DIAMOND', 3);
+define('CLUB', 4);
+define('FACE', 5);
+define('FLAG', 6);
+
+define('ONE_DICE', 0);
+define('TWO_DICE', 3);
+define('THREE_DICE', 5);
+define('FOUR_DICE', 10);
+define('FIVE_DICE', 20);
+define('SIX_DICE', 100);
+
 define('PLAYER', 0);
 define('BANKER', 1);
 // define('TIE', 2);
@@ -226,15 +240,38 @@ define('TIE_MULTIPLE', 8);
 define('PLAYER_PAIR_MULTIPLE', 11);
 define('BANKER_PAIR_MULTIPLE', 11);
 
+// ROULETTE
+
+define('R_TWELFTH_1ST', 37);
+define('R_TWELFTH_2ND', 38);
+define('R_TWELFTH_3RD', 39);
+define('R_EIGHTEENTH_1ST', 40);
+define('R_EIGHTEENTH_2ND', 41);
+define('R_ODD', 42);
+define('R_EVEN', 43);
+define('R_RED', 44);
+define('R_BLACK', 45);
+define('R_ROW_1', 46);
+define('R_ROW_2', 47);
+define('R_ROW_3', 48);
+
+
+define('R_NUMBER_MULTIPLE', 35);
+define('R_COLOR_MULTIPLE', 2);
+define('R_ODD_EVEN_MULTIPLE', 2);
+define('R_TWELFTH_MULTIPLE', 3);
+define('R_EIGHTEENTH_MULTIPLE', 2);
+define('R_ROW_MULTIPLE', 3);
+
 define('APP_URL', '/');
 define('BANNER_URL', 'uploads/banner/');
 define('LOGO', 'uploads/logo/');
 define('IMAGE_URL', 'uploads/images/');
 
 define('USER_MANAGEMENT', true);
-define('WATCH_TABLE_TEEN_PATTI', true);
+// define('WATCH_TABLE_TEEN_PATTI', false);
 define('POINT_TABLE_MASTER', true);
-define('POOL_TABLE_MASTER', true);
+define('RUMMY_POOL', true);
 define('BANNER', true);
 define('DEAL_TABLE_MASTER', true);
 define('ANDER_BAHAR_TABLE_MASTER', true);
@@ -256,13 +293,12 @@ define('JANGLE_ROULETTE_HISTORY', true);
 define('COLOR_PREDICTION_HISTORY', true);
 define('JACKPOT_HISTORY', true);
 define('ANIMAL_ROULETTE_HISTORY', true);
-define('TEENPATTI_HISTORY', true);
+define('TEENPATTI', true);
 define('RUMMY_HISTORY', true);
-define('RUMMY_POOL_HISTORY', true);
+// define('RUMMY_POOL_HISTORY', true);
 define('RUMMY_DEAL_HISTORY', true);
-define('LUDO_TABLE_MASTER', true);
-define('LUDO_HISTORY', true);
-
-
+define('LUDO', true);
+define('BACCARAT_HISTORY', true);
+define('USER_CATEGORY', true);
 // FCM Notification
 define('SERVER_KEY', 'AAAA2bfIo_E:APA91bGFMoeE0wGoYy6q95ImATZ8KofZjx0yXi6ARfBkFzyHJ23Vi6tbV-gJ0kSbL_dzshsR_oVSomIsYP60RJAxzu3QeprGe9H62vEIpzBmI9IH5-6b5W-AFE2DjxiRjN8-2EoU7o03');

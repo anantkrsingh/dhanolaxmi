@@ -1121,7 +1121,7 @@ class Ludo extends REST_Controller
 
     public function make_winner_post()
     {
-        if (empty($this->data['user_id']) || empty($this->data['winner_user_id'])) {
+        if (empty($this->data['user_id']) || empty($this->data['winner_user_id']) || empty($this->data['table_id'])) {
             $data['message'] = 'Invalid Parameter';
             $data['code'] = HTTP_NOT_ACCEPTABLE;
             $this->response($data, 200);
@@ -1144,14 +1144,14 @@ class Ludo extends REST_Controller
             exit();
         }
 
-        if (!$user[0]->ludo_table_id) {
-            $data['message'] = 'You Are Not On Table';
-            $data['code'] = HTTP_NOT_ACCEPTABLE;
-            $this->response($data, 200);
-            exit();
-        }
+        // if (!$user[0]->ludo_table_id) {
+        //     $data['message'] = 'You Are Not On Table';
+        //     $data['code'] = HTTP_NOT_ACCEPTABLE;
+        //     $this->response($data, 200);
+        //     exit();
+        // }
 
-        $game = $this->Ludo_model->getActiveGameOnTable($user[0]->ludo_table_id);
+        $game = $this->Ludo_model->getActiveGameOnTable($this->data['table_id']);
 
         if (!$game) {
             $data['message'] = 'Game Not Started';

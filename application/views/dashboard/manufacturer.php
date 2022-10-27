@@ -92,7 +92,7 @@
         </select><br>
     </div>
     <?php } ?>
-    <?php if (TEENPATTI_HISTORY==true) { ?>
+    <?php if (TEENPATTI==true) { ?>
     <div class="col-xl-3 col-md-6">
         <label>Teenpatti Bot</label>
         <select class="form-control" onchange="ChangeTeenpattiBotStatus(this.value)">

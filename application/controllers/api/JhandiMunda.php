@@ -5,7 +5,7 @@ use Restserver\Libraries\REST_Controller;
 
 include APPPATH . '/libraries/REST_Controller.php';
 include APPPATH . '/libraries/Format.php';
-class Baccarat extends REST_Controller
+class JhandiMunda extends REST_Controller
 {
     public function __construct()
     {
@@ -29,7 +29,7 @@ class Baccarat extends REST_Controller
         $this->data = $this->input->post();
         // print_r($this->data['user_id']);
         $this->load->model([
-            'Baccarat_model',
+            'JhandiMunda_model',
             'Setting_model',
             'Users_model'
         ]);
@@ -59,7 +59,7 @@ class Baccarat extends REST_Controller
             exit();
         }
 
-        $room_data = $this->Baccarat_model->getRoom();
+        $room_data = $this->JhandiMunda_model->getRoom();
         if ($room_data) {
             $rooms = array();
 
@@ -70,7 +70,7 @@ class Baccarat extends REST_Controller
                 $rooms[$key]['added_date'] = $value->added_date;
                 $rooms[$key]['updated_date'] = $value->updated_date;
                 $rooms[$key]['isDeleted'] = $value->isDeleted;
-                $rooms[$key]['online'] = $this->Baccarat_model->getRoomOnline($value->id);
+                $rooms[$key]['online'] = $this->JhandiMunda_model->getRoomOnline($value->id);
             }
 
             $data['message'] = 'Success';
@@ -88,11 +88,12 @@ class Baccarat extends REST_Controller
 
     public function get_active_game_post()
     {
-        $total_bet_player = $this->input->post('total_bet_player');
-        $total_bet_banker = $this->input->post('total_bet_banker');
-        $total_bet_tie = $this->input->post('total_bet_tie');
-        $total_bet_player_pair = $this->input->post('total_bet_player_pair');
-        $total_bet_banker_pair = $this->input->post('total_bet_banker_pair');
+        $total_bet_heart = $this->input->post('total_bet_heart');
+        $total_bet_spade = $this->input->post('total_bet_spade');
+        $total_bet_diamond = $this->input->post('total_bet_diamond');
+        $total_bet_club = $this->input->post('total_bet_club');
+        $total_bet_face = $this->input->post('total_bet_face');
+        $total_bet_flag = $this->input->post('total_bet_flag');
 
         if (empty($this->data['user_id']) || empty($this->data['token']) || empty($this->data['room_id'])) {
             $data['message'] = 'Invalid Parameter';
@@ -116,7 +117,7 @@ class Baccarat extends REST_Controller
             exit();
         }
 
-        $room = $this->Baccarat_model->getRoom($this->data['room_id'], $this->data['user_id']);
+        $room = $this->JhandiMunda_model->getRoom($this->data['room_id'], $this->data['user_id']);
         if (empty($room)) {
             $data['message'] = 'Invalid Room';
             $data['code'] = HTTP_NOT_ACCEPTABLE;
@@ -124,19 +125,18 @@ class Baccarat extends REST_Controller
             exit();
         }
 
-        $game_data = $this->Baccarat_model->getActiveGameOnTable($this->data['room_id']);
+        $game_data = $this->JhandiMunda_model->getActiveGameOnTable($this->data['room_id']);
         if ($game_data) {
             $game_cards = array();
             if ($game_data[0]->status) {
-                $game_cards = $this->Baccarat_model->GetGameCards($game_data[0]->id);
+                $game_cards = $this->JhandiMunda_model->GetGameCards($game_data[0]->id);
             }
 
             $new_game_data[0]['id'] = $game_data[0]->id;
             $new_game_data[0]['room_id'] = $game_data[0]->room_id;
             // $new_game_data[0]['main_card'] = $game_data[0]->main_card;
             $new_game_data[0]['winning'] = $game_data[0]->winning;
-            $new_game_data[0]['player_pair'] = $game_data[0]->player_pair;
-            $new_game_data[0]['banker_pair'] = $game_data[0]->banker_pair;
+            // $new_game_data[0]['winning_rule'] = $game_data[0]->winning_rule;
             $new_game_data[0]['status'] = $game_data[0]->status;
             $new_game_data[0]['added_date'] = $game_data[0]->added_date;
             $added_datetime_sec = strtotime($game_data[0]->added_date);
@@ -147,32 +147,33 @@ class Baccarat extends REST_Controller
             $data['message'] = 'Success';
             $data['game_data'] = $new_game_data;
             $data['game_cards'] = $game_cards;
-            // $data['online'] = $this->Baccarat_model->getRoomOnline($this->data['room_id']);
-            $data['online_users'] = $this->Baccarat_model->getRoomOnlineUser($this->data['room_id']);
-            $data['online'] = rand(200, 300)+count($data['online_users']);
+            $data['online'] = $this->JhandiMunda_model->getRoomOnline($this->data['room_id']);
+            $data['online_users'] = $this->JhandiMunda_model->getRoomOnlineUser($this->data['room_id']);
 
-            $Playermount = $this->Baccarat_model->TotalBetAmount($game_data[0]->id, PLAYER);
-            $BankerAmount = $this->Baccarat_model->TotalBetAmount($game_data[0]->id, BANKER);
-            $TieAmount = $this->Baccarat_model->TotalBetAmount($game_data[0]->id, TIE);
-            $PlayerPairAmount = $this->Baccarat_model->TotalBetAmount($game_data[0]->id, PLAYER_PAIR);
-            $BankerPairAmount = $this->Baccarat_model->TotalBetAmount($game_data[0]->id, BANKER_PAIR);
+            $HeartAmount = $this->JhandiMunda_model->TotalBetAmount($game_data[0]->id, HEART);
+            $SpadeAmount = $this->JhandiMunda_model->TotalBetAmount($game_data[0]->id, SPADE);
+            $DiamondAmount = $this->JhandiMunda_model->TotalBetAmount($game_data[0]->id, DIAMOND);
+            $ClubAmount = $this->JhandiMunda_model->TotalBetAmount($game_data[0]->id, CLUB);
+            $FaceAmount = $this->JhandiMunda_model->TotalBetAmount($game_data[0]->id, FACE);
+            $FlagAmount = $this->JhandiMunda_model->TotalBetAmount($game_data[0]->id, FLAG);
 
-            $data['player_amount'] = rand($total_bet_player, $total_bet_player+10000)+$Playermount;
-            $data['banker_amount'] = rand($total_bet_banker, $total_bet_banker+10000)+$BankerAmount;
-            $data['tie_amount'] = rand($total_bet_tie, $total_bet_tie+10000)+$TieAmount;
-            $data['player_pair_amount'] = rand($total_bet_player_pair, $total_bet_player_pair+10000)+$PlayerPairAmount;
-            $data['banker_pair_amount'] = rand($total_bet_banker_pair, $total_bet_banker_pair+10000)+$BankerPairAmount;
+            $data['heart_amount'] = rand($total_bet_heart, $total_bet_heart+10000)+$HeartAmount;
+            $data['spade_amount'] = rand($total_bet_spade, $total_bet_spade+10000)+$SpadeAmount;
+            $data['diamond_amount'] = rand($total_bet_diamond, $total_bet_diamond+10000)+$DiamondAmount;
+            $data['club_amount'] = rand($total_bet_club, $total_bet_club+10000)+$ClubAmount;
+            $data['face_amount'] = rand($total_bet_face, $total_bet_face+10000)+$FaceAmount;
+            $data['flag_amount'] = rand($total_bet_flag, $total_bet_flag+10000)+$FlagAmount;
 
-            $data['last_bet'] = $this->Baccarat_model->ViewBet('', $game_data[0]->id, '', '', 1);
+            $data['last_bet'] = $this->JhandiMunda_model->ViewBet('', $game_data[0]->id, '', '', 1);
 
             // $data['jackpot_amount'] = $this->Setting_model->Setting()->jackpot_coin;
 
-            $data['last_winning'] = $this->Baccarat_model->LastWinningBet($this->data['room_id'], 15);
+            $data['last_winning'] = $this->JhandiMunda_model->LastWinningBet($this->data['room_id'], 15);
 
-            // $winners = $this->Baccarat_model->getJackpotWinners(1);
+            // $winners = $this->JhandiMunda_model->getJackpotWinners(1);
             // if ($winners) {
             //     foreach ($winners as $key => $value) {
-            //         $value->user_data = $this->Baccarat_model->getJackpotBigWinners($value->id);
+            //         $value->user_data = $this->JhandiMunda_model->getJackpotBigWinners($value->id);
             //     }
             // }
             // $data['big_winner'] = $winners;
@@ -213,7 +214,7 @@ class Baccarat extends REST_Controller
             exit();
         }
 
-        $room = $this->Baccarat_model->getRoom($this->data['room_id'], $this->data['user_id']);
+        $room = $this->JhandiMunda_model->getRoom($this->data['room_id'], $this->data['user_id']);
         if (empty($room)) {
             $data['message'] = 'Invalid Room';
             $data['code'] = HTTP_NOT_ACCEPTABLE;
@@ -221,7 +222,7 @@ class Baccarat extends REST_Controller
             exit();
         }
 
-        $leave_room = $this->Baccarat_model->leave_room($this->data['user_id']);
+        $leave_room = $this->JhandiMunda_model->leave_room($this->data['user_id']);
         if ($leave_room) {
             $data['message'] = 'Success';
             $data['code'] = HTTP_OK;
@@ -280,7 +281,7 @@ class Baccarat extends REST_Controller
             exit();
         }
 
-        $game = $this->Baccarat_model->View($this->data['game_id']);
+        $game = $this->JhandiMunda_model->View($this->data['game_id']);
         if (!$game) {
             $data['message'] = 'Invalid Game Id';
             $data['code'] = HTTP_NOT_ACCEPTABLE;
@@ -295,7 +296,7 @@ class Baccarat extends REST_Controller
             exit();
         }
 
-        // $bet = $this->Baccarat_model->ViewBet($this->data['user_id'], $this->data['game_id'], $this->data['bet']);
+        // $bet = $this->JhandiMunda_model->ViewBet($this->data['user_id'], $this->data['game_id'], $this->data['bet']);
 
         // if ($bet) {
         //     $data['message'] = 'One Bet Already Placed';
@@ -305,7 +306,7 @@ class Baccarat extends REST_Controller
         // }
 
         $bet_data = [
-            'baccarat_id' => $this->data['game_id'],
+            'jhandi_munda_id' => $this->data['game_id'],
             'user_id' => $this->data['user_id'],
             'bet' => $this->data['bet'],
             'amount' => $this->data['amount'],
@@ -313,10 +314,10 @@ class Baccarat extends REST_Controller
 
         ];
 
-        $bet_id = $this->Baccarat_model->PlaceBet($bet_data);
+        $bet_id = $this->JhandiMunda_model->PlaceBet($bet_data);
 
         if ($bet_id) {
-            $this->Baccarat_model->MinusWallet($this->data['user_id'], $this->data['amount']);
+            $this->JhandiMunda_model->MinusWallet($this->data['user_id'], $this->data['amount']);
             $data['message'] = 'Success';
             $data['bet_id'] = $bet_id;
             $user_wallet = $this->Users_model->UserProfile($this->data['user_id']);
@@ -356,7 +357,7 @@ class Baccarat extends REST_Controller
             exit();
         }
 
-        $game = $this->Baccarat_model->View($this->data['game_id']);
+        $game = $this->JhandiMunda_model->View($this->data['game_id']);
         if (!$game) {
             $data['message'] = 'Invalid Game Id';
             $data['code'] = HTTP_NOT_ACCEPTABLE;
@@ -371,7 +372,7 @@ class Baccarat extends REST_Controller
             exit();
         }
 
-        $bet = $this->Baccarat_model->ViewBet($this->data['user_id'], $this->data['game_id']);
+        $bet = $this->JhandiMunda_model->ViewBet($this->data['user_id'], $this->data['game_id']);
         if ($bet) {
             $data['message'] = 'One Bet Already Placed';
             $data['code'] = HTTP_NOT_ACCEPTABLE;
@@ -379,7 +380,7 @@ class Baccarat extends REST_Controller
             exit();
         }
 
-        $last_bet = $this->Baccarat_model->ViewBet($this->data['user_id']);
+        $last_bet = $this->JhandiMunda_model->ViewBet($this->data['user_id']);
         if ($user[0]->wallet<$last_bet[0]->amount) {
             $data['message'] = 'Insufficient Wallet Amount';
             $data['code'] = HTTP_NOT_ACCEPTABLE;
@@ -396,11 +397,11 @@ class Baccarat extends REST_Controller
 
         // ];
 
-        // $bet_id = $this->Baccarat_model->PlaceBet($bet_data);
+        // $bet_id = $this->JhandiMunda_model->PlaceBet($bet_data);
 
         // if($bet_id)
         // {
-        // $this->Baccarat_model->MinusWallet($this->data['user_id'], $last_bet[0]->amount);
+        // $this->JhandiMunda_model->MinusWallet($this->data['user_id'], $last_bet[0]->amount);
         $data['message'] = 'Success';
         // $data['bet_id'] = $bet_id;
         $data['bet'] = $last_bet[0]->bet;
@@ -444,7 +445,7 @@ class Baccarat extends REST_Controller
             exit();
         }
 
-        $game = $this->Baccarat_model->View($this->data['game_id']);
+        $game = $this->JhandiMunda_model->View($this->data['game_id']);
         if (!$game) {
             $data['message'] = 'Invalid Game Id';
             $data['code'] = HTTP_NOT_ACCEPTABLE;
@@ -459,7 +460,7 @@ class Baccarat extends REST_Controller
             exit();
         }
 
-        $bet = $this->Baccarat_model->ViewBet($this->data['user_id'], $this->data['game_id']);
+        $bet = $this->JhandiMunda_model->ViewBet($this->data['user_id'], $this->data['game_id']);
         if ($bet) {
             $data['message'] = 'One Bet Already Placed';
             $data['code'] = HTTP_NOT_ACCEPTABLE;
@@ -467,7 +468,7 @@ class Baccarat extends REST_Controller
             exit();
         }
 
-        $last_bet = $this->Baccarat_model->ViewBet($this->data['user_id']);
+        $last_bet = $this->JhandiMunda_model->ViewBet($this->data['user_id']);
         $amount = $last_bet[0]->amount*2;
         if ($user[0]->wallet<$amount) {
             $data['message'] = 'Insufficient Wallet Amount';
@@ -477,17 +478,17 @@ class Baccarat extends REST_Controller
         }
 
         $bet_data = [
-            'baccarat_id' => $this->data['game_id'],
+            'jhandi_munda_id' => $this->data['game_id'],
             'user_id' => $this->data['user_id'],
             'bet' => $last_bet[0]->bet,
             'amount' => $amount,
             'added_date' => date('Y-m-d H:i:s')
         ];
 
-        $bet_id = $this->Baccarat_model->PlaceBet($bet_data);
+        $bet_id = $this->JhandiMunda_model->PlaceBet($bet_data);
 
         if ($bet_id) {
-            $this->Baccarat_model->MinusWallet($this->data['user_id'], $amount);
+            $this->JhandiMunda_model->MinusWallet($this->data['user_id'], $amount);
             $data['message'] = 'Success';
             $data['bet_id'] = $bet_id;
             $data['bet'] = $last_bet[0]->bet;
@@ -529,7 +530,7 @@ class Baccarat extends REST_Controller
             exit();
         }
 
-        $game = $this->Baccarat_model->View($this->data['game_id']);
+        $game = $this->JhandiMunda_model->View($this->data['game_id']);
         if (!$game) {
             $data['message'] = 'Invalid Game Id';
             $data['code'] = HTTP_NOT_ACCEPTABLE;
@@ -537,7 +538,7 @@ class Baccarat extends REST_Controller
             exit();
         }
 
-        $bet = $this->Baccarat_model->ViewBet($this->data['user_id'], $this->data['game_id'], '', '');
+        $bet = $this->JhandiMunda_model->ViewBet($this->data['user_id'], $this->data['game_id'], '', '');
         if (!$bet) {
             $data['message'] = 'Invalid Bet';
             $data['code'] = HTTP_NOT_ACCEPTABLE;
@@ -552,8 +553,8 @@ class Baccarat extends REST_Controller
             exit();
         }
 
-        if ($this->Baccarat_model->DeleteBet($bet[0]->id, $this->data['user_id'], $this->data['game_id'])) {
-            $this->Baccarat_model->AddWallet($this->data['user_id'], $bet[0]->amount);
+        if ($this->JhandiMunda_model->DeleteBet($bet[0]->id, $this->data['user_id'], $this->data['game_id'])) {
+            $this->JhandiMunda_model->AddWallet($this->data['user_id'], $bet[0]->amount);
             $data['message'] = 'Bet Cancel Successfully';
             $user_wallet = $this->Users_model->UserProfile($this->data['user_id']);
             $data['wallet'] = $user_wallet[0]->wallet;
@@ -592,10 +593,10 @@ class Baccarat extends REST_Controller
             exit();
         }
 
-        $winners = $this->Baccarat_model->getJackpotWinners();
+        $winners = $this->JhandiMunda_model->getJackpotWinners();
         if ($winners) {
             foreach ($winners as $key => $value) {
-                $value->user_data = $this->Baccarat_model->getJackpotBigWinners($value->id);
+                $value->user_data = $this->JhandiMunda_model->getJackpotBigWinners($value->id);
             }
             $data['winners'] = $winners;
             $data['code'] = HTTP_OK;
@@ -633,7 +634,7 @@ class Baccarat extends REST_Controller
             exit();
         }
 
-        $winners = $this->Baccarat_model->LastWinningBet($this->data['room_id'], 50);
+        $winners = $this->JhandiMunda_model->LastWinningBet($this->data['room_id'], 50);
         if ($winners) {
             $data['winners'] = $winners;
             $data['code'] = HTTP_OK;

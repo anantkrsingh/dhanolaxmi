@@ -21,7 +21,10 @@ class Cron extends CI_Controller
             'Rummy_model',
             'Poker_model',
             'HeadTail_model',
-            'RedBlack_model'
+            'RedBlack_model',
+            'Baccarat_model',
+            'JhandiMunda_model',
+            'Roulette_model'
         ]);
     }
 
@@ -1971,6 +1974,540 @@ class Cron extends CI_Controller
                             $this->Baccarat_model->Create($room->id);
 
                             echo 'Baccarat Created Successfully'.PHP_EOL;
+                        } else {
+                            echo 'No Online User Found'.PHP_EOL;
+                        }
+                    } else {
+                        echo "No Game to End".PHP_EOL;
+                    }
+                }
+            }
+        } else {
+            echo 'No Rooms Available'.PHP_EOL;
+        }
+    }
+
+    public function jhandi_munda()
+    {
+        $room_data = $this->JhandiMunda_model->getRoom();
+
+        if ($room_data) {
+            foreach ($room_data as $key => $room) {
+                $game_data = $this->JhandiMunda_model->getActiveGameOnTable($room->id);
+
+                if (!$game_data) {
+                    $card = '';
+                    $this->JhandiMunda_model->Create($room->id, $card);
+
+                    echo 'First Baccarat Created Successfully'.PHP_EOL;
+                    continue;
+                }
+
+                if ($game_data[0]->status==0) {
+                    if ((strtotime($game_data[0]->added_date)+DRAGON_TIME_FOR_BET)<=time()) {
+                        $this->JhandiMunda_model->CreateMap($game_data[0]->id, rand(1, 6));
+                        $this->JhandiMunda_model->CreateMap($game_data[0]->id, rand(1, 6));
+                        $this->JhandiMunda_model->CreateMap($game_data[0]->id, rand(1, 6));
+                        $this->JhandiMunda_model->CreateMap($game_data[0]->id, rand(1, 6));
+                        $this->JhandiMunda_model->CreateMap($game_data[0]->id, rand(1, 6));
+                        $this->JhandiMunda_model->CreateMap($game_data[0]->id, rand(1, 6));
+
+                        for ($i=1; $i <= 6; $i++) {
+                            $count = $this->JhandiMunda_model->MapCount($game_data[0]->id, $i);
+
+                            if ($count>0) {
+                                $comission = $this->Setting_model->Setting()->admin_commission;
+                                switch ($count) {
+                                    case 1:
+                                        $multiply = ONE_DICE;
+                                        break;
+
+                                    case 2:
+                                        $multiply = TWO_DICE;
+                                        break;
+
+                                    case 3:
+                                        $multiply = THREE_DICE;
+                                        break;
+
+                                    case 4:
+                                        $multiply = FOUR_DICE;
+                                        break;
+
+                                    case 5:
+                                        $multiply = FIVE_DICE;
+                                        break;
+
+                                    case 6:
+                                        $multiply = SIX_DICE;
+                                        break;
+
+                                    default:
+                                        break;
+                                }
+
+                                if ($multiply>0) {
+                                    $bets = $this->JhandiMunda_model->ViewBet("", $game_data[0]->id, $i);
+                                    if ($bets) {
+                                        // print_r($bets);
+
+                                        foreach ($bets as $key => $value) {
+                                            $this->JhandiMunda_model->MakeWinner($value->user_id, $value->id, $value->amount*$multiply, $comission, $game_data[0]->id);
+                                        }
+                                        echo "Winning Amount Given".PHP_EOL;
+                                    } else {
+                                        echo "No Winning Bet Found".PHP_EOL;
+                                    }
+                                }
+                            }
+                        }
+
+                        $update_data['status'] = 1;
+                        // $update_data['winning'] = $winning;
+                        // $update_data['player_pair'] = $playerPair;
+                        // $update_data['banker_pair'] = $bankerPair;
+                        $update_data['updated_date'] = date('Y-m-d H:i:s');
+                        $update_data['end_datetime'] = date('Y-m-d H:i:s', strtotime('+'.DRAGON_TIME_FOR_START_NEW_GAME.' seconds'));
+                        $this->JhandiMunda_model->Update($update_data, $game_data[0]->id);
+                    } else {
+                        echo "No Game to Start".PHP_EOL;
+                    }
+                } else {
+                    if (strtotime($game_data[0]->end_datetime)<=time()) {
+                        $count = $this->Users_model->getOnlineUsers($room->id, 'baccarat_id');
+                        if ($count>0) {
+                            $this->JhandiMunda_model->Create($room->id);
+
+                            echo 'Baccarat Created Successfully'.PHP_EOL;
+                        } else {
+                            echo 'No Online User Found'.PHP_EOL;
+                        }
+                    } else {
+                        echo "No Game to End".PHP_EOL;
+                    }
+                }
+            }
+        } else {
+            echo 'No Rooms Available'.PHP_EOL;
+        }
+    }
+
+    public function roulette()
+    {
+        $room_data = $this->Roulette_model->getRoom();
+
+        if ($room_data) {
+            foreach ($room_data as $key => $room) {
+                $game_data = $this->Roulette_model->getActiveGameOnTable($room->id);
+
+                if (!$game_data) {
+                    $card = '';
+                    $this->Roulette_model->Create($room->id, $card);
+
+                    echo 'First Jackpot Created Successfully'.PHP_EOL;
+                    continue;
+                }
+
+                if ($game_data[0]->status==0) {
+                    if ((strtotime($game_data[0]->added_date)+DRAGON_TIME_FOR_BET)<=time()) {
+                        // $ZeroAmount = $this->ColorPrediction_model->TotalBetAmount($game_data[0]->id, 0);
+                        // $OneAmount = $this->ColorPrediction_model->TotalBetAmount($game_data[0]->id, 1);
+                        // $TwoAmount = $this->ColorPrediction_model->TotalBetAmount($game_data[0]->id, 2);
+                        // $ThreeAmount = $this->ColorPrediction_model->TotalBetAmount($game_data[0]->id, 3);
+                        // $FourAmount = $this->ColorPrediction_model->TotalBetAmount($game_data[0]->id, 4);
+                        // $FiveAmount = $this->ColorPrediction_model->TotalBetAmount($game_data[0]->id, 5);
+                        // $SixAmount = $this->ColorPrediction_model->TotalBetAmount($game_data[0]->id, 6);
+                        // $SevenAmount = $this->ColorPrediction_model->TotalBetAmount($game_data[0]->id, 7);
+                        // $EightAmount = $this->ColorPrediction_model->TotalBetAmount($game_data[0]->id, 8);
+                        // $NineAmount = $this->ColorPrediction_model->TotalBetAmount($game_data[0]->id, 9);
+
+                        // $GreenAmount = $this->ColorPrediction_model->TotalBetAmount($game_data[0]->id, GREEN);
+                        // $VioletAmount = $this->ColorPrediction_model->TotalBetAmount($game_data[0]->id, VIOLET);
+                        // $RedAmount = $this->ColorPrediction_model->TotalBetAmount($game_data[0]->id, RED);
+
+                        // $arr['ZERO'] = ($ZeroAmount*NUMBER_MULTIPLE)+($RedAmount*GREEN_RED_HALF_MULTIPLE)+($VioletAmount*VIOLET_MULTIPLE);
+                        // $arr['ONE'] = ($OneAmount*NUMBER_MULTIPLE)+($GreenAmount*GREEN_RED_MULTIPLE);
+                        // $arr['TWO'] = ($TwoAmount*NUMBER_MULTIPLE)+($RedAmount*GREEN_RED_MULTIPLE);
+                        // $arr['THREE'] = ($ThreeAmount*NUMBER_MULTIPLE)+($GreenAmount*GREEN_RED_MULTIPLE);
+                        // $arr['FOUR'] = ($FourAmount*NUMBER_MULTIPLE)+($RedAmount*GREEN_RED_MULTIPLE);
+                        // $arr['FIVE'] = ($FiveAmount*NUMBER_MULTIPLE)+($GreenAmount*GREEN_RED_HALF_MULTIPLE)+($VioletAmount*VIOLET_MULTIPLE);
+                        // $arr['SIX'] = ($SixAmount*NUMBER_MULTIPLE)+($RedAmount*GREEN_RED_MULTIPLE);
+                        // $arr['SEVEN'] = ($SevenAmount*NUMBER_MULTIPLE)+($GreenAmount*GREEN_RED_MULTIPLE);
+                        // $arr['EIGHT'] = ($EightAmount*NUMBER_MULTIPLE)+($RedAmount*GREEN_RED_MULTIPLE);
+                        // $arr['NINE'] = ($NineAmount*NUMBER_MULTIPLE)+($GreenAmount*GREEN_RED_MULTIPLE);
+
+                        // $min_arr = array_keys($arr, min($arr));
+                        $number = rand(0, 36);
+                        $number_multiply = R_NUMBER_MULTIPLE;
+                        $color = '';
+                        $color_multiply = R_COLOR_MULTIPLE;
+                        $odd_even = '';
+                        $odd_even_multiply = R_ODD_EVEN_MULTIPLE;
+                        $twelfth_column = '';
+                        $twelfth_column_multiply = R_TWELFTH_MULTIPLE;
+                        $eighteenth_column = '';
+                        $eighteenth_column_multiply = R_EIGHTEENTH_MULTIPLE;
+                        $row = '';
+                        $row_multiply = R_ROW_MULTIPLE;
+
+                        switch ($number) {
+                            case 0:
+                                $row = R_ROW_2;
+                                break;
+                            case 1:
+                                $color = R_RED;
+                                $odd_even = R_ODD;
+                                $twelfth_column = R_TWELFTH_1ST;
+                                $eighteenth_column = R_EIGHTEENTH_1ST;
+                                $row = R_ROW_1;
+                                break;
+                            case 2:
+                                $color = R_BLACK;
+                                $odd_even = R_EVEN;
+                                $twelfth_column = R_TWELFTH_1ST;
+                                $eighteenth_column = R_EIGHTEENTH_1ST;
+                                $row = R_ROW_2;
+                                break;
+                            case 3:
+                                $color = R_RED;
+                                $odd_even = R_ODD;
+                                $twelfth_column = R_TWELFTH_1ST;
+                                $eighteenth_column = R_EIGHTEENTH_1ST;
+                                $row = R_ROW_3;
+                                break;
+                            case 4:
+                                $color = R_BLACK;
+                                $odd_even = R_EVEN;
+                                $twelfth_column = R_TWELFTH_1ST;
+                                $eighteenth_column = R_EIGHTEENTH_1ST;
+                                $row = R_ROW_1;
+                                break;
+                            case 5:
+                                $color = R_RED;
+                                $odd_even = R_ODD;
+                                $twelfth_column = R_TWELFTH_1ST;
+                                $eighteenth_column = R_EIGHTEENTH_1ST;
+                                $row = R_ROW_2;
+                                break;
+                            case 6:
+                                $color = R_BLACK;
+                                $odd_even = R_EVEN;
+                                $twelfth_column = R_TWELFTH_1ST;
+                                $eighteenth_column = R_EIGHTEENTH_1ST;
+                                $row = R_ROW_3;
+                                break;
+                            case 7:
+                                $color = R_RED;
+                                $odd_even = R_ODD;
+                                $twelfth_column = R_TWELFTH_1ST;
+                                $eighteenth_column = R_EIGHTEENTH_1ST;
+                                $row = R_ROW_1;
+                                break;
+                            case 8:
+                                $color = R_BLACK;
+                                $odd_even = R_EVEN;
+                                $twelfth_column = R_TWELFTH_1ST;
+                                $eighteenth_column = R_EIGHTEENTH_1ST;
+                                $row = R_ROW_2;
+                                break;
+                            case 9:
+                                $color = R_RED;
+                                $odd_even = R_ODD;
+                                $twelfth_column = R_TWELFTH_1ST;
+                                $eighteenth_column = R_EIGHTEENTH_1ST;
+                                $row = R_ROW_3;
+                                break;
+                            case 10:
+                                $color = R_BLACK;
+                                $odd_even = R_EVEN;
+                                $twelfth_column = R_TWELFTH_1ST;
+                                $eighteenth_column = R_EIGHTEENTH_1ST;
+                                $row = R_ROW_1;
+                                break;
+                            case 11:
+                                $color = R_BLACK;
+                                $odd_even = R_ODD;
+                                $twelfth_column = R_TWELFTH_1ST;
+                                $eighteenth_column = R_EIGHTEENTH_1ST;
+                                $row = R_ROW_2;
+                                break;
+                            case 12:
+                                $color = R_RED;
+                                $odd_even = R_EVEN;
+                                $twelfth_column = R_TWELFTH_1ST;
+                                $eighteenth_column = R_EIGHTEENTH_1ST;
+                                $row = R_ROW_3;
+                                break;
+                            case 13:
+                                $color = R_BLACK;
+                                $odd_even = R_ODD;
+                                $twelfth_column = R_TWELFTH_2ND;
+                                $eighteenth_column = R_EIGHTEENTH_1ST;
+                                $row = R_ROW_1;
+                                break;
+                            case 14:
+                                $color = R_RED;
+                                $odd_even = R_EVEN;
+                                $twelfth_column = R_TWELFTH_2ND;
+                                $eighteenth_column = R_EIGHTEENTH_1ST;
+                                $row = R_ROW_2;
+                                break;
+                            case 15:
+                                $color = R_BLACK;
+                                $odd_even = R_ODD;
+                                $twelfth_column = R_TWELFTH_2ND;
+                                $eighteenth_column = R_EIGHTEENTH_1ST;
+                                $row = R_ROW_3;
+                                break;
+                            case 16:
+                                $color = R_RED;
+                                $odd_even = R_EVEN;
+                                $twelfth_column = R_TWELFTH_2ND;
+                                $eighteenth_column = R_EIGHTEENTH_1ST;
+                                $row = R_ROW_1;
+                                break;
+                            case 17:
+                                $color = R_BLACK;
+                                $odd_even = R_ODD;
+                                $twelfth_column = R_TWELFTH_2ND;
+                                $eighteenth_column = R_EIGHTEENTH_1ST;
+                                $row = R_ROW_2;
+                                break;
+                            case 18:
+                                $color = R_RED;
+                                $odd_even = R_EVEN;
+                                $twelfth_column = R_TWELFTH_2ND;
+                                $eighteenth_column = R_EIGHTEENTH_1ST;
+                                $row = R_ROW_3;
+                                break;
+                            case 19:
+                                $color = R_RED;
+                                $odd_even = R_ODD;
+                                $twelfth_column = R_TWELFTH_2ND;
+                                $eighteenth_column = R_EIGHTEENTH_2ND;
+                                $row = R_ROW_1;
+                                break;
+                            case 20:
+                                $color = R_BLACK;
+                                $odd_even = R_EVEN;
+                                $twelfth_column = R_TWELFTH_2ND;
+                                $eighteenth_column = R_EIGHTEENTH_2ND;
+                                $row = R_ROW_2;
+                                break;
+                            case 21:
+                                $color = R_RED;
+                                $odd_even = R_ODD;
+                                $twelfth_column = R_TWELFTH_2ND;
+                                $eighteenth_column = R_EIGHTEENTH_2ND;
+                                $row = R_ROW_3;
+                                break;
+                            case 22:
+                                $color = R_BLACK;
+                                $odd_even = R_EVEN;
+                                $twelfth_column = R_TWELFTH_2ND;
+                                $eighteenth_column = R_EIGHTEENTH_2ND;
+                                $row = R_ROW_1;
+                                break;
+                            case 23:
+                                $color = R_RED;
+                                $odd_even = R_ODD;
+                                $twelfth_column = R_TWELFTH_2ND;
+                                $eighteenth_column = R_EIGHTEENTH_2ND;
+                                $row = R_ROW_2;
+                                break;
+                            case 24:
+                                $color = R_BLACK;
+                                $odd_even = R_EVEN;
+                                $twelfth_column = R_TWELFTH_2ND;
+                                $eighteenth_column = R_EIGHTEENTH_2ND;
+                                $row = R_ROW_3;
+                                break;
+                            case 25:
+                                $color = R_RED;
+                                $odd_even = R_ODD;
+                                $twelfth_column = R_TWELFTH_3RD;
+                                $eighteenth_column = R_EIGHTEENTH_2ND;
+                                $row = R_ROW_1;
+                                break;
+                            case 26:
+                                $color = R_BLACK;
+                                $odd_even = R_EVEN;
+                                $twelfth_column = R_TWELFTH_3RD;
+                                $eighteenth_column = R_EIGHTEENTH_2ND;
+                                $row = R_ROW_2;
+                                break;
+                            case 27:
+                                $color = R_RED;
+                                $odd_even = R_ODD;
+                                $twelfth_column = R_TWELFTH_3RD;
+                                $eighteenth_column = R_EIGHTEENTH_2ND;
+                                $row = R_ROW_3;
+                                break;
+                            case 28:
+                                $color = R_BLACK;
+                                $odd_even = R_EVEN;
+                                $twelfth_column = R_TWELFTH_3RD;
+                                $eighteenth_column = R_EIGHTEENTH_2ND;
+                                $row = R_ROW_1;
+                                break;
+                            case 29:
+                                $color = R_BLACK;
+                                $odd_even = R_ODD;
+                                $twelfth_column = R_TWELFTH_3RD;
+                                $eighteenth_column = R_EIGHTEENTH_2ND;
+                                $row = R_ROW_2;
+                                break;
+                            case 30:
+                                $color = R_RED;
+                                $odd_even = R_EVEN;
+                                $twelfth_column = R_TWELFTH_3RD;
+                                $eighteenth_column = R_EIGHTEENTH_2ND;
+                                $row = R_ROW_3;
+                                break;
+                            case 31:
+                                $color = R_BLACK;
+                                $odd_even = R_ODD;
+                                $twelfth_column = R_TWELFTH_3RD;
+                                $eighteenth_column = R_EIGHTEENTH_2ND;
+                                $row = R_ROW_1;
+                                break;
+                            case 32:
+                                $color = R_RED;
+                                $odd_even = R_EVEN;
+                                $twelfth_column = R_TWELFTH_3RD;
+                                $eighteenth_column = R_EIGHTEENTH_2ND;
+                                $row = R_ROW_2;
+                                break;
+                            case 33:
+                                $color = R_BLACK;
+                                $odd_even = R_ODD;
+                                $twelfth_column = R_TWELFTH_3RD;
+                                $eighteenth_column = R_EIGHTEENTH_2ND;
+                                $row = R_ROW_3;
+                                break;
+                            case 34:
+                                $color = R_RED;
+                                $odd_even = R_EVEN;
+                                $twelfth_column = R_TWELFTH_3RD;
+                                $eighteenth_column = R_EIGHTEENTH_2ND;
+                                $row = R_ROW_1;
+                                break;
+                            case 35:
+                                $color = R_BLACK;
+                                $odd_even = R_ODD;
+                                $twelfth_column = R_TWELFTH_3RD;
+                                $eighteenth_column = R_EIGHTEENTH_2ND;
+                                $row = R_ROW_2;
+                                break;
+                            case 36:
+                                $color = R_RED;
+                                $odd_even = R_EVEN;
+                                $twelfth_column = R_TWELFTH_3RD;
+                                $eighteenth_column = R_EIGHTEENTH_2ND;
+                                $row = R_ROW_3;
+                                break;
+                            default:
+                                $color = '';
+                                $odd_even = '';
+                                $twelfth_column = '';
+                                $eighteenth_column = '';
+                                $row = '';
+                                break;
+                        }
+
+                        $this->Roulette_model->CreateMap($game_data[0]->id, $number);
+
+                        $comission = $this->Setting_model->Setting()->admin_commission;
+                        // Give winning Amount to Number user
+                        $bets = $this->Roulette_model->ViewBet("", $game_data[0]->id, $number);
+                        if ($bets) {
+                            foreach ($bets as $key => $value) {
+                                $this->Roulette_model->MakeWinner($value->user_id, $value->id, $value->amount*$number_multiply, $comission, $game_data[0]->id);
+                            }
+                            echo "Winning Amount Given".PHP_EOL;
+                        } else {
+                            echo "No Winning Bet Found".PHP_EOL;
+                        }
+
+                        // Give winning Amount to Color user
+                        if ($color!='') {
+                            $color_bets = $this->Roulette_model->ViewBet("", $game_data[0]->id, $color);
+                            if ($color_bets) {
+                                foreach ($color_bets as $key => $value) {
+                                    $this->Roulette_model->MakeWinner($value->user_id, $value->id, $value->amount*$color_multiply, $comission, $game_data[0]->id);
+                                }
+                                echo "Winning Amount Given".PHP_EOL;
+                            } else {
+                                echo "No Winning Bet Found".PHP_EOL;
+                            }
+                        }
+
+                        // Give winning Amount to OddEven user
+                        if ($odd_even!='') {
+                            $odd_even_bets = $this->Roulette_model->ViewBet("", $game_data[0]->id, $odd_even);
+                            if ($odd_even_bets) {
+                                foreach ($odd_even_bets as $key => $value) {
+                                    $this->Roulette_model->MakeWinner($value->user_id, $value->id, $value->amount*$odd_even_multiply, $comission, $game_data[0]->id);
+                                }
+                                echo "Winning Amount Given".PHP_EOL;
+                            } else {
+                                echo "No Winning Bet Found".PHP_EOL;
+                            }
+                        }
+
+                        // Give winning Amount to Twelfth user
+                        if ($twelfth_column!='') {
+                            $twelfth_column_bets = $this->Roulette_model->ViewBet("", $game_data[0]->id, $twelfth_column);
+                            if ($twelfth_column_bets) {
+                                foreach ($twelfth_column_bets as $key => $value) {
+                                    $this->Roulette_model->MakeWinner($value->user_id, $value->id, $value->amount*$twelfth_column_multiply, $comission, $game_data[0]->id);
+                                }
+                                echo "Winning Amount Given".PHP_EOL;
+                            } else {
+                                echo "No Winning Bet Found".PHP_EOL;
+                            }
+                        }
+
+                        // Give winning Amount to Eighteenth user
+                        if ($eighteenth_column!='') {
+                            $eighteenth_column_bets = $this->Roulette_model->ViewBet("", $game_data[0]->id, $eighteenth_column);
+                            if ($eighteenth_column_bets) {
+                                foreach ($eighteenth_column_bets as $key => $value) {
+                                    $this->Roulette_model->MakeWinner($value->user_id, $value->id, $value->amount*$eighteenth_column_multiply, $comission, $game_data[0]->id);
+                                }
+                                echo "Winning Amount Given".PHP_EOL;
+                            } else {
+                                echo "No Winning Bet Found".PHP_EOL;
+                            }
+                        }
+
+                        // Give winning Amount to Row user
+                        if ($row!='') {
+                            $row_bets = $this->Roulette_model->ViewBet("", $game_data[0]->id, $row);
+                            if ($row_bets) {
+                                foreach ($row_bets as $key => $value) {
+                                    $this->Roulette_model->MakeWinner($value->user_id, $value->id, $value->amount*$row_multiply, $comission, $game_data[0]->id);
+                                }
+                                echo "Winning Amount Given".PHP_EOL;
+                            } else {
+                                echo "No Winning Bet Found".PHP_EOL;
+                            }
+                        }
+                        $update_data['status'] = 1;
+                        $update_data['winning'] = $number;
+                        $update_data['updated_date'] = date('Y-m-d H:i:s');
+                        $update_data['end_datetime'] = date('Y-m-d H:i:s', strtotime('+'.DRAGON_TIME_FOR_START_NEW_GAME.' seconds'));
+                        $this->Roulette_model->Update($update_data, $game_data[0]->id);
+                    } else {
+                        echo "No Game to Start".PHP_EOL;
+                    }
+                } else {
+                    if (strtotime($game_data[0]->end_datetime)<=time()) {
+                        $count = $this->Users_model->getOnlineUsers($room->id, 'roulette_id');
+                        if ($count>0) {
+                            $this->Roulette_model->Create($room->id);
+
+                            echo 'Color Prediction Created Successfully'.PHP_EOL;
                         } else {
                             echo 'No Online User Found'.PHP_EOL;
                         }
