@@ -364,10 +364,11 @@ class Users_model extends MY_Model
         return true;
     }
 
-    public function UpdateSpin($user_id, $spin_count)
+    public function UpdateSpin($user_id, $spin_count,$user_category_id)
     {
         $this->db->set('spin_remaining', 'spin_remaining+' . $spin_count, false);
         $this->db->set('updated_date', date('Y-m-d H:i:s'));
+        $this->db->set('user_category_id', $user_category_id);
         $this->db->where('id', $user_id);
         $this->db->update('tbl_users');
 

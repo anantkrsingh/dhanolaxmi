@@ -250,14 +250,28 @@ class Game_model extends MY_Model
         return $Query->result();
     }
 
-    public function GetCards($limit)
+    public function GetCards($limit,$robot_card_selected)
     {
         $this->db->from('tbl_cards');
         $this->db->order_by('id', 'RANDOM');
+        if(!empty($robot_card_selected)){
+            $this->db->where_not_in('cards',$robot_card_selected);
+        }
         $this->db->limit($limit);
         $Query = $this->db->get();
         return $Query->result();
     }
+
+    public function GetRobotCards($limit)
+    {
+        $this->db->from('tbl_robot_cards');
+        $this->db->order_by('id', 'RANDOM');
+        $this->db->limit($limit);
+        $this->db->where('isDeleted',0);
+        $Query = $this->db->get();
+        return $Query->result();
+    }
+
 
     public function ChatList($game_id)
     {

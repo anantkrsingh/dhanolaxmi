@@ -1,4 +1,5 @@
 <?php
+
 use phpDocumentor\Reflection\Types\Object_;
 use Restserver\Libraries\REST_Controller;
 
@@ -87,6 +88,12 @@ class Jackpot extends REST_Controller
 
     public function get_active_game_post()
     {
+        $total_bet_high_card = $this->input->post('total_bet_high_card');
+        $total_bet_pair = $this->input->post('total_bet_pair');
+        $total_bet_color = $this->input->post('total_bet_color');
+        $total_bet_sequence = $this->input->post('total_bet_sequence');
+        $total_bet_pure_sequence = $this->input->post('total_bet_pure_sequence');
+
         if (empty($this->data['user_id']) || empty($this->data['token']) || empty($this->data['room_id'])) {
             $data['message'] = 'Invalid Parameter';
             $data['code'] = HTTP_NOT_ACCEPTABLE;
@@ -147,12 +154,12 @@ class Jackpot extends REST_Controller
             $PureSequenceAmount = $this->Jackpot_model->TotalBetAmount($game_data[0]->id, PURE_SEQUENCE);
             $SetAmount = $this->Jackpot_model->TotalBetAmount($game_data[0]->id, SET);
 
-            $data['high_card_amount'] = ($HighCardAmount)?$HighCardAmount:0;
-            $data['pair_amount'] = ($PairAmount)?$PairAmount:0;
-            $data['color_amount'] = ($ColorAmount)?$ColorAmount:0;
-            $data['sequence_amount'] = ($SequenceAmount)?$SequenceAmount:0;
-            $data['pure_sequence_amount'] = ($PureSequenceAmount)?$PureSequenceAmount:0;
-            $data['set_amount'] = ($SetAmount)?$SetAmount:0;
+            $data['high_card_amount'] = rand($total_bet_high_card, $total_bet_high_card+10000)+$HighCardAmount;
+            $data['pair_amount'] = rand($total_bet_pair, $total_bet_pair+10000)+$PairAmount;
+            $data['color_amount'] = rand($total_bet_color, $total_bet_color+10000)+$ColorAmount;
+            $data['sequence_amount'] = rand($total_bet_sequence, $total_bet_sequence+10000)+$SequenceAmount;
+            $data['pure_sequence_amount'] = rand($total_bet_pure_sequence, $total_bet_pure_sequence+10000)+$PureSequenceAmount;
+            $data['set_amount'] = ($SetAmount) ? $SetAmount : 0;
 
             $data['last_bet'] = $this->Jackpot_model->ViewBet('', $game_data[0]->id, '', '', 1);
 
@@ -167,7 +174,7 @@ class Jackpot extends REST_Controller
                 }
             }
             $data['big_winner'] = $winners;
-            
+
             $data['profile'] = $user;
             $data['code'] = HTTP_OK;
             $this->response($data, HTTP_OK);
@@ -301,7 +308,7 @@ class Jackpot extends REST_Controller
             'bet' => $this->data['bet'],
             'amount' => $this->data['amount'],
             'added_date' => date('Y-m-d H:i:s')
-            
+
         ];
 
         $bet_id = $this->Jackpot_model->PlaceBet($bet_data);
@@ -388,7 +395,7 @@ class Jackpot extends REST_Controller
         //     'bet' => $last_bet[0]->bet,
         //     'amount' => $last_bet[0]->amount,
         //     'added_date' => date('Y-m-d H:i:s')
-            
+
         // ];
 
         // $bet_id = $this->Jackpot_model->PlaceBet($bet_data);
@@ -603,7 +610,7 @@ class Jackpot extends REST_Controller
             exit();
         }
     }
-    
+
     public function last_winners_post()
     {
         if (empty($this->data['user_id']) || empty($this->data['token'])) {

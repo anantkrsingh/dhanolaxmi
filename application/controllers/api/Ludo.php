@@ -1240,13 +1240,15 @@ class Ludo extends REST_Controller
         //     }
 
         // $this->Ludo_model->Show($game->id, $amount, $this->data['user_id']);
-        $comission = $this->Setting_model->Setting()->admin_commission;
-        $this->Ludo_model->MakeWinner($game->id, $game->amount, $winner_user_id, $comission);
-        $data['message'] = 'Success';
-        $data['winner'] = $winner_user_id;
-        $data['code'] = HTTP_OK;
-        $this->response($data, HTTP_OK);
-        exit();
+        if ($game->winner_id==0) {
+            $comission = $this->Setting_model->Setting()->admin_commission;
+            $this->Ludo_model->MakeWinner($game->id, $game->amount, $winner_user_id, $comission);
+            $data['message'] = 'Success';
+            $data['winner'] = $winner_user_id;
+            $data['code'] = HTTP_OK;
+            $this->response($data, HTTP_OK);
+            exit();
+        }
         // }
 
         $data['message'] = 'Invalid Show';

@@ -31,7 +31,7 @@ $final_url = str_replace(strtolower(base_url()), '', strtolower($actual_link));
                 <?php } ?>
 
                 <?php if (TEENPATTI==true) { ?>
-                <li class="<?= (array_filter([strpos($final_url, "tablemaster"),strpos($final_url, "backend/game"),strpos($final_url, "backend/table"),strpos($final_url, "tablemaster/add"),strpos($final_url, "tablemaster/edit")], 'is_numeric')) ? 'mm-active' : '' ?>">
+                <li class="<?= (array_filter([strpos($final_url, "tablemaster"),strpos($final_url, "backend/game"),strpos($final_url, "backend/table"),strpos($final_url, "tablemaster/add"),strpos($final_url, "tablemaster/edit"),strpos($final_url, "backend/robotcards")], 'is_numeric')) ? 'mm-active' : '' ?>">
                                 <a href="javascript: void(0);" class="has-arrow waves-effect" >
                                     <i class="ti-menu"></i>
                                     <span>Teen Patti Mgmt.</span>
@@ -43,6 +43,8 @@ $final_url = str_replace(strtolower(base_url()), '', strtolower($actual_link));
                         <span>Teenpatti History</span></a></li>
                         <li class="<?= (array_filter([strpos($final_url, "backend/table")], 'is_numeric')) ? 'mm-active' : '' ?>"><a href="<?= base_url('backend/table') ?>" class="waves-effect"></i>
                         <span>Watch Table Teenpatti</span></a></li>
+                        <li class="<?= (array_filter([strpos($final_url, "backend/robotcards")], 'is_numeric')) ? 'mm-active' : '' ?>"><a href="<?= base_url('backend/RobotCards') ?>" class="waves-effect"></i>
+                        <span>Robot Cards</span></a></li>
                                 </ul>
                             </li>
                           

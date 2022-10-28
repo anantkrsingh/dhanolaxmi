@@ -98,4 +98,27 @@ class Coin_plan_model extends MY_Model
 
         return $this->db->affected_rows();
     }
+
+    public function GetTotalAmountByUser($userid)
+    {
+        $this->db->select('SUM(price) as total');
+        $this->db->from('tbl_purchase');
+        $this->db->where('isDeleted',0);
+        $this->db->where('payment', 1);
+        $this->db->where('user_id',$userid);
+        $Query = $this->db->get();
+        return $Query->row()->total;
+    }
+
+    public function GetUserCategoryByAmount($amount)
+    {
+        $this->db->select('*');
+        $this->db->from('tbl_user_category');
+        $this->db->where('isDeleted',0);
+        $this->db->where('amount<',$amount);
+        $this->db->order_by('amount','desc');
+        $Query = $this->db->get();
+        return $Query->row();
+    }
+
 }

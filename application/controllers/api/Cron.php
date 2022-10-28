@@ -472,7 +472,7 @@ class Cron extends CI_Controller
                 if ($game_data[0]->status==0) {
                     if ((strtotime($game_data[0]->added_date)+DRAGON_TIME_FOR_BET)<=time()) {
                         $min = 1;
-                        $max = 50;
+                        $max = 30;
 
                         $AnderBetAmount = $this->AnderBahar_model->TotalBetAmount($game_data[0]->id, ANDER);
                         $BaharBetAmount = $this->AnderBahar_model->TotalBetAmount($game_data[0]->id, BAHAR);
