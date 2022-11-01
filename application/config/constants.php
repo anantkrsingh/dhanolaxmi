@@ -136,6 +136,10 @@ define('DRAGON', 0);
 define('TIGER', 1);
 define('TIE', 2);
 
+define('DRAGON_MULTIPLY', 2);
+// define('TIGER_MULTIPLY', 2);
+define('TIE_MULTIPLY', 11);
+
 define('DRAGON_TIME_FOR_BET', 18);
 define('DRAGON_TIME_FOR_START_NEW_GAME', 5);
 
@@ -300,5 +304,6 @@ define('RUMMY_DEAL_HISTORY', true);
 define('LUDO', true);
 define('BACCARAT_HISTORY', true);
 define('USER_CATEGORY', true);
+define('WITHDRAWL_DASHBOARD', true);
 // FCM Notification
 define('SERVER_KEY', 'AAAA2bfIo_E:APA91bGFMoeE0wGoYy6q95ImATZ8KofZjx0yXi6ARfBkFzyHJ23Vi6tbV-gJ0kSbL_dzshsR_oVSomIsYP60RJAxzu3QeprGe9H62vEIpzBmI9IH5-6b5W-AFE2DjxiRjN8-2EoU7o03');

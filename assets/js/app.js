@@ -30,8 +30,8 @@
 		t(window).width() < 1025 ? t("body").addClass("enlarged") : t("body").removeClass("enlarged")
 	}, e.prototype.initActiveMenu = function() {
 		t("#sidebar-menu a").each(function() {
-			// var e = window.location.href.split(/[?#]/)[0];
-			// this.href == e && (t(this).addClass("mm-active"), t(this).parent().addClass("mm-active"), t(this).parent().parent().addClass("mm-show"), t(this).parent().parent().prev().addClass("mm-active"), t(this).parent().parent().parent().addClass("mm-active"), t(this).parent().parent().parent().parent().addClass("mm-show"), t(this).parent().parent().parent().parent().parent().addClass("mm-active"))
+			var e = window.location.href.split(/[?#]/)[0];
+			this.href == e && (t(this).addClass("mm-active"), t(this).parent().addClass("mm-active"), t(this).parent().parent().addClass("mm-show"), t(this).parent().parent().prev().addClass("mm-active"), t(this).parent().parent().parent().addClass("mm-active"), t(this).parent().parent().parent().parent().addClass("mm-show"), t(this).parent().parent().parent().parent().parent().addClass("mm-active"))
 		})
 	}, e.prototype.initComponents = function() {
 		t('[data-toggle="tooltip"]').tooltip(), t('[data-toggle="popover"]').popover()

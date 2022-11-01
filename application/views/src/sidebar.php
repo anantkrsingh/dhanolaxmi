@@ -19,6 +19,11 @@ $final_url = str_replace(strtolower(base_url()), '', strtolower($actual_link));
                         <span>User Management</span></a></li>
                 <?php } ?>
 
+                <?php if (WITHDRAWL_DASHBOARD==true) { ?>
+                <li class="<?= (array_filter([strpos($final_url, "withdrawldashboard")], 'is_numeric')) ? 'mm-active' : '' ?>"><a href="<?= base_url('backend/WithdrawlDashboard') ?>" class="waves-effect"><i class="ti-home"></i>
+                        <span>Withdrawl Dashboard</span></a></li>
+                <?php } ?>
+
                 <?php if (USER_CATEGORY==true) { ?>
                 <li><a href="<?= base_url('backend/UserCategory') ?>" class="waves-effect"><i class="ion ion-md-contact"></i>
                         <span>User Category</span></a></li>

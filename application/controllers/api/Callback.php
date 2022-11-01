@@ -70,7 +70,6 @@ class Callback extends REST_Controller
 
     public function verify_post()
     {
-      
         $post_data_expected = json_encode($_POST);
         $data = [
             'response' => $post_data_expected
@@ -88,7 +87,7 @@ class Callback extends REST_Controller
         }
         //checks param1 in local
         $order_details = $this->Coin_plan_model->GetUserByOrderId($post->param1);
-      
+
         if (empty($order_details)) {
             $data['message'] = 'Invalid Order Id';
             $data['code'] = HTTP_NOT_ACCEPTABLE;
@@ -112,21 +111,19 @@ class Callback extends REST_Controller
         //cross check if your local payment already done
         if ($post->status==1 && $order_details[0]->payment==0) {
             //update local payment status
-            $this->Coin_plan_model->UpdateOrderPaymentStatus($post->param1);
-            $this->Users_model->UpdateWalletOrder($order_details[0]->coin, $post->user_id);
-         
             $total_amount=$this->Coin_plan_model->GetTotalAmountByUser($post->user_id);
-            $category=$this->Coin_plan_model->GetUserCategoryByAmount($total_amount);
-          
-            if(!empty($category)){
-            $category_id= $category->id;
-            }else{
-                $category_id=0;
-            }
-            $this->Users_model->UpdateSpin($post->user_id, ceil($post->amount/100),$category_id);
+            $category=$this->Coin_plan_model->GetUserCategoryByAmount($total_amount+$order_details[0]->coin);
+
+            $category_id = (empty($category)) ? 0 : $category->id;
+            $category_amount = (empty($category)) ? 0 : $order_details[0]->coin*($category->percentage/100);
+
+            $this->Coin_plan_model->UpdateOrderPaymentStatus($post->param1);
+            $this->Users_model->UpdateWalletOrder($order_details[0]->coin+$category_amount, $post->user_id);
+
+            $this->Users_model->UpdateSpin($post->user_id, ceil($post->amount/100), $category_id);
 
             if ($order_details[0]->extra>0) {
-                $this->Users_model->UpdateWalletOrder(($order_details[0]->coin*($order_details[0]->extra/100)), $post->user_id);
+                $this->Users_model->UpdateWalletOrder($order_details[0]->coin*($order_details[0]->extra/100), $post->user_id);
             }
 
             $data['message'] = 'Success';

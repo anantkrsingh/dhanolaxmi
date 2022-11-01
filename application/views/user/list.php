@@ -15,6 +15,9 @@
                             <th>UPI</th>
                             <th>Mobile/Email</th>
                             <th>User Type</th>
+                            <?php if(USER_CATEGORY){ ?>
+                            <th>User Category</th>
+                            <?php } ?>
                             <th>Wallet</th>
                             <th>On Table</th>
                             <th>Status</th>
@@ -36,6 +39,9 @@
                             <td><?= $User->upi ?></td>
                             <td><?= ($User->mobile=='')?$User->email:$User->mobile ?></td>
                             <td><?= $User->user_type==1?'BOT':'REAL' ?></td>
+                            <?php if(USER_CATEGORY){ ?>
+                            <td><?= $User->user_category ?></td>
+                            <?php } ?>
                             <td><?= $User->wallet ?></td>
                             <td><?= ($User->table_id > 0) ? 'Yes' : 'No'; ?></td>
                             <td>

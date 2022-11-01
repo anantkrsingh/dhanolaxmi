@@ -4,8 +4,9 @@ class Users_model extends MY_Model
 {
     public function AllUserList()
     {
-        $this->db->select('tbl_users.*');
+        $this->db->select('tbl_users.*,tbl_user_category.name as user_category');
         $this->db->from('tbl_users');
+        $this->db->join('tbl_user_category', 'tbl_users.user_category_id=tbl_user_category.id', 'LEFT');
         $this->db->where('tbl_users.isDeleted', false);
         $this->db->order_by('tbl_users.id', 'asc');
         // $this->db->limit(10);
@@ -215,7 +216,9 @@ class Users_model extends MY_Model
     public function AddBot($data)
     {
         $this->db->insert('tbl_users', $data);
-        return $this->db->insert_id();
+        $user_id = $this->db->insert_id();
+        $this->WalletLog($data['wallet'], 1, $user_id);
+        return $user_id;
     }
 
     public function getAdhar($user)
@@ -339,13 +342,20 @@ class Users_model extends MY_Model
         $this->db->where('id', $referer_id);
         $this->db->update('tbl_users');
 
+        $data = [
+            'user_id' => $referer_id,
+            'coin' => $amount,
+            'added_date' => date('Y-m-d H:i:s')
+        ];
+        $this->db->insert('tbl_referral_bonus_log', $data);
+
         return true;
     }
 
     public function UpdateWalletOrder($amount, $user_id)
     {
         $this->db->set('wallet', 'wallet+' . $amount, false);
-        $this->db->set('winning_wallet', 'winning_wallet+' . $amount, false);
+        // $this->db->set('winning_wallet', 'winning_wallet+' . $amount, false);
         $this->db->set('updated_date', date('Y-m-d H:i:s'));
         $this->db->where('id', $user_id);
         $this->db->update('tbl_users');
@@ -364,7 +374,7 @@ class Users_model extends MY_Model
         return true;
     }
 
-    public function UpdateSpin($user_id, $spin_count,$user_category_id)
+    public function UpdateSpin($user_id, $spin_count, $user_category_id)
     {
         $this->db->set('spin_remaining', 'spin_remaining+' . $spin_count, false);
         $this->db->set('updated_date', date('Y-m-d H:i:s'));
