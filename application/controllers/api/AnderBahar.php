@@ -148,7 +148,9 @@ class AnderBahar extends REST_Controller
             $data['online'] = rand(300, 350)+count($data['online_users']);
             $data['last_bet'] = $this->AnderBahar_model->ViewBet('', $game_data[0]->id, '', '', 1);
             $data['my_ander_bet'] = $this->AnderBahar_model->TotalBetAmount($game_data[0]->id, 0, $this->data['user_id']);
+
             $data['my_bahar_bet'] = $this->AnderBahar_model->TotalBetAmount($game_data[0]->id, 1, $this->data['user_id']);
+            // echo $this->db->last_query();
             $ander_bet = $this->AnderBahar_model->TotalBetAmount($game_data[0]->id, 0);
             $bahar_bet = $this->AnderBahar_model->TotalBetAmount($game_data[0]->id, 1);
             $data['ander_bet'] = rand($total_bet_ander, $total_bet_ander+10000)+$ander_bet;

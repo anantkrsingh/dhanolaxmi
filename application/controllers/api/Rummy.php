@@ -494,6 +494,7 @@ class Rummy extends REST_Controller
 
     public function leave_table_post()
     {
+        $timeout = '';
         if (empty($this->data['user_id'])) {
             $data['message'] = 'Invalid Parameter';
             $data['code'] = HTTP_NOT_ACCEPTABLE;
@@ -898,6 +899,7 @@ class Rummy extends REST_Controller
                 'game_id' => $game->id,
                 'user_id' => $user_id,
                 'card' => $drop_card[0]->card,
+                'is_drop_card' => 1,
                 'added_date' => date('Y-m-d H:i:s'),
                 'updated_date' => date('Y-m-d H:i:s'),
                 'isDeleted' => 0
@@ -1578,6 +1580,7 @@ class Rummy extends REST_Controller
         // }
         $data['chaal'] = $chaal;
         $data['game_amount'] = $game->amount;
+        $data['last_card'] = $this->Rummy_model->LastGameCard($game->id);
         $chaalCount = $this->Rummy_model->ChaalCount($game->id, $chaal);
         $percent = $chaalCount>0 ? CHAAL_PERCENT : NO_CHAAL_PERCENT;
         $data['cut_point'] = round(($percent / 100) * MAX_POINTS, 2);

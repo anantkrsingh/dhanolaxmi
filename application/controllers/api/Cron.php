@@ -474,6 +474,9 @@ class Cron extends CI_Controller
                         $min = 1;
                         $max = 30;
 
+                        $TotalWinningAmount = 0;
+                        $TotalBetAmount = $this->AnderBahar_model->TotalBetAmount($game_data[0]->id);
+
                         $AnderBetAmount = $this->AnderBahar_model->TotalBetAmount($game_data[0]->id, ANDER);
                         $BaharBetAmount = $this->AnderBahar_model->TotalBetAmount($game_data[0]->id, BAHAR);
 
@@ -486,7 +489,7 @@ class Cron extends CI_Controller
                         $exit = false;
                         do {
                             $number = rand($min, $max);
-                            if ($winning==1) {
+                            if ($winning==BAHAR) {
                                 $exit = ($number % 2 != 0);
                             } else {
                                 $exit = ($number % 2 == 0);
@@ -503,13 +506,15 @@ class Cron extends CI_Controller
                         $this->AnderBahar_model->CreateMap($game_data[0]->id, $alt_card);
 
                         // Give winning Amount to user
-                        $multiply = ($winning==ANDER) ? 1.85 : 1.95; //ander=1.97,bahar=1.98
+                        $multiply = ($winning==ANDER) ? 1.85 : 1.95; //ander=1.85,bahar=1.95
                         $bets = $this->AnderBahar_model->ViewBet("", $game_data[0]->id, $winning);
                         if ($bets) {
                             $comission = $this->Setting_model->Setting()->admin_commission;
                             // print_r($bets);
                             foreach ($bets as $key => $value) {
-                                $this->AnderBahar_model->MakeWinner($value->user_id, $value->id, $value->amount*$multiply, $comission, $game_data[0]->id);
+                                $amount = $value->amount*$multiply;
+                                $TotalWinningAmount += $amount;
+                                $this->AnderBahar_model->MakeWinner($value->user_id, $value->id, $amount, $comission, $game_data[0]->id);
                             }
                             echo "Winning Amount Given".PHP_EOL;
                         } else {
@@ -517,6 +522,8 @@ class Cron extends CI_Controller
                         }
                         $update_data['status'] = 1;
                         $update_data['winning'] = $winning;
+                        $update_data['total_amount'] = $TotalBetAmount;
+                        $update_data['admin_profit'] = $TotalBetAmount - $TotalWinningAmount;
                         $update_data['updated_date'] = date('Y-m-d H:i:s');
                         // $update_data['end_datetime'] = date('Y-m-d H:i:s', strtotime('+ '.(count($middle_cards)+5).'seconds'));
                         $update_data['end_datetime'] = date('Y-m-d H:i:s', strtotime('+'.(round(count($middle_cards)/5)+2).' seconds'));
@@ -563,6 +570,9 @@ class Cron extends CI_Controller
 
                 if ($game_data[0]->status==0) {
                     if ((strtotime($game_data[0]->added_date)+DRAGON_TIME_FOR_BET)<=time()) {
+                        $TotalWinningAmount = 0;
+                        $TotalBetAmount = $this->DragonTiger_model->TotalBetAmount($game_data[0]->id);
+
                         $DragonBetAmount = $this->DragonTiger_model->TotalBetAmount($game_data[0]->id, DRAGON)*2;
                         $TigerBetAmount = $this->DragonTiger_model->TotalBetAmount($game_data[0]->id, TIGER)*2;
                         $TieBetAmount = $this->DragonTiger_model->TotalBetAmount($game_data[0]->id, TIE)*11;
@@ -583,20 +593,23 @@ class Cron extends CI_Controller
                             $this->DragonTiger_model->CreateMap($game_data[0]->id, $card_dragon);
                             $this->DragonTiger_model->CreateMap($game_data[0]->id, $card_tiger);
                         } else {
-                            $limit = 2;
-                            $cards = $this->DragonTiger_model->GetCards($limit);
-                            $card1_point = $this->card_points($cards[0]->cards);
-                            $card2_point = $this->card_points($cards[1]->cards);
+                            do {
+                                $limit = 2;
+                                $cards = $this->DragonTiger_model->GetCards($limit);
+                                $card1_point = $this->card_points($cards[0]->cards);
+                                $card2_point = $this->card_points($cards[1]->cards);
 
-                            $card_big = '';
-                            $card_small = '';
-                            if ($card1_point>$card2_point) {
-                                $card_big = $cards[0]->cards;
-                                $card_small = $cards[1]->cards;
-                            } else {
-                                $card_big = $cards[1]->cards;
-                                $card_small = $cards[0]->cards;
-                            }
+                                $card_big = '';
+                                $card_small = '';
+
+                                if ($card1_point>$card2_point) {
+                                    $card_big = $cards[0]->cards;
+                                    $card_small = $cards[1]->cards;
+                                } else {
+                                    $card_big = $cards[1]->cards;
+                                    $card_small = $cards[0]->cards;
+                                }
+                            } while ($card1_point==$card2_point);
 
                             $card_dragon = ($winning==DRAGON) ? $card_big : $card_small;
                             $card_tiger = ($winning==TIGER) ? $card_big : $card_small;
@@ -612,9 +625,13 @@ class Cron extends CI_Controller
                             $comission = $this->Setting_model->Setting()->admin_commission;
                             foreach ($bets as $key => $value) {
                                 if ($winning==TIE) {
-                                    $this->DragonTiger_model->MakeWinner($value->user_id, $value->id, $value->amount*TIE_MULTIPLY, $comission, $game_data[0]->id);
+                                    $amount = $value->amount*TIE_MULTIPLY;
+                                    $TotalWinningAmount += $amount;
+                                    $this->DragonTiger_model->MakeWinner($value->user_id, $value->id, $amount, $comission, $game_data[0]->id);
                                 } else {
-                                    $this->DragonTiger_model->MakeWinner($value->user_id, $value->id, $value->amount*DRAGON_MULTIPLY, $comission, $game_data[0]->id);
+                                    $amount = $value->amount*DRAGON_MULTIPLY;
+                                    $TotalWinningAmount += $amount;
+                                    $this->DragonTiger_model->MakeWinner($value->user_id, $value->id, $amount, $comission, $game_data[0]->id);
                                 }
                             }
                             echo "Winning Amount Given".PHP_EOL;
@@ -623,6 +640,8 @@ class Cron extends CI_Controller
                         }
                         $update_data['status'] = 1;
                         $update_data['winning'] = $winning;
+                        $update_data['total_amount'] = $TotalBetAmount;
+                        $update_data['admin_profit'] = $TotalBetAmount - $TotalWinningAmount;
                         $update_data['updated_date'] = date('Y-m-d H:i:s');
                         $update_data['end_datetime'] = date('Y-m-d H:i:s', strtotime('+'.DRAGON_TIME_FOR_START_NEW_GAME.' seconds'));
                         $this->DragonTiger_model->Update($update_data, $game_data[0]->id);
@@ -1377,7 +1396,16 @@ class Cron extends CI_Controller
                             // print_r($bets);
                             $comission = $this->Setting_model->Setting()->admin_commission;
                             foreach ($bets as $key => $value) {
-                                $this->SevenUp_model->MakeWinner($value->user_id, $value->id, $value->amount*2, $comission, $game_data[0]->id);
+                                // $this->SevenUp_model->MakeWinner($value->user_id, $value->id, $value->amount*2, $comission, $game_data[0]->id);
+                                if ($winning==TIE) {
+                                    $amount = $value->amount*UP_DOWN_TIE_MULTIPLY;
+                                    $TotalWinningAmount += $amount;
+                                    $this->SevenUp_model->MakeWinner($value->user_id, $value->id, $amount, $comission, $game_data[0]->id);
+                                } else {
+                                    $amount = $value->amount*UP_DOWN_MULTIPLY;
+                                    $TotalWinningAmount += $amount;
+                                    $this->SevenUp_model->MakeWinner($value->user_id, $value->id, $amount, $comission, $game_data[0]->id);
+                                }
                             }
                             echo "Winning Amount Given".PHP_EOL;
                         } else {
@@ -1715,7 +1743,7 @@ class Cron extends CI_Controller
 
                         switch ($min) {
                             case 'ZERO':
-                                $color = GREEN;
+                                $color = RED;
                                 $color_multiply = GREEN_RED_HALF_MULTIPLE;
                                 $color_1 = VIOLET;
                                 $color_1_multiply = VIOLET_MULTIPLE;
@@ -1747,7 +1775,7 @@ class Cron extends CI_Controller
                                 $number_multiply = NUMBER_MULTIPLE;
                                 break;
                             case 'FIVE':
-                                $color = RED;
+                                $color = GREEN;
                                 $color_multiply = GREEN_RED_HALF_MULTIPLE;
                                 $color_1 = VIOLET;
                                 $color_1_multiply = VIOLET_MULTIPLE;
@@ -1755,25 +1783,25 @@ class Cron extends CI_Controller
                                 $number_multiply = NUMBER_MULTIPLE;
                                 break;
                             case 'SIX':
-                                $color = GREEN;
+                                $color = RED;
                                 $color_multiply = GREEN_RED_MULTIPLE;
                                 $number = 6;
                                 $number_multiply = NUMBER_MULTIPLE;
                                 break;
                             case 'SEVEN':
-                                $color = RED;
+                                $color = GREEN;
                                 $color_multiply = GREEN_RED_MULTIPLE;
                                 $number = 7;
                                 $number_multiply = NUMBER_MULTIPLE;
                                 break;
                             case 'EIGHT':
-                                $color = GREEN;
+                                $color = RED;
                                 $color_multiply = GREEN_RED_MULTIPLE;
                                 $number = 8;
                                 $number_multiply = NUMBER_MULTIPLE;
                                 break;
                             case 'NINE':
-                                $color = RED;
+                                $color = GREEN;
                                 $color_multiply = GREEN_RED_MULTIPLE;
                                 $number = 9;
                                 $number_multiply = NUMBER_MULTIPLE;

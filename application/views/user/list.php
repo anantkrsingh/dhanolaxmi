@@ -26,51 +26,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <?php
-                        $i = 0;
-                        foreach ($AllUser as $key => $User) {
-                            $i++;
-                        ?>
-                        <tr>
-                            <td><?= $i ?></td>
-                            <td><?= $User->name ?></td>
-                            <td><?= $User->bank_detail ?></td>
-                            <td><?= $User->adhar_card ?></td>
-                            <td><?= $User->upi ?></td>
-                            <td><?= ($User->mobile=='')?$User->email:$User->mobile ?></td>
-                            <td><?= $User->user_type==1?'BOT':'REAL' ?></td>
-                            <?php if(USER_CATEGORY){ ?>
-                            <td><?= $User->user_category ?></td>
-                            <?php } ?>
-                            <td><?= $User->wallet ?></td>
-                            <td><?= ($User->table_id > 0) ? 'Yes' : 'No'; ?></td>
-                            <td>
-                                <select class="form-control" onchange="ChangeStatus(<?= $User->id ?>,this.value)">
-                                    <option value="0" <?= (($User->status == 0) ? 'selected' : '') ?>>Active</option>
-                                    <option value="1" <?= (($User->status == 1) ? 'selected' : '') ?>>Block</option>
-                                </select>
-                            </td>
-                            <td><?= date("d-m-Y", strtotime($User->added_date)) ?></td>
-                            <td>
-                                <a href="<?= base_url('backend/user/view/' . $User->id) ?>" class="btn btn-info"
-                                    data-toggle="tooltip" data-placement="top" title="View Wins"><span
-                                        class="fa fa-eye"></span></a>
-                                | <a href="<?= base_url('backend/user/edit/' . $User->id) ?>" class="btn btn-info"
-                                    data-toggle="tooltip" data-placement="top" title="Edit"><span
-                                        class="fa fa-credit-card" ></span></a>
-                                | <a href="<?= base_url('backend/user/edit_user/' . $User->id) ?>" class="btn btn-info"
-                                    data-toggle="tooltip" data-placement="top" title="Edit"><span
-                                        class="fa fa-edit" ></span></a>
-                                
-                                <!-- | <a href="<?= base_url('backend/user/delete/' . $User->id) ?>" class="btn btn-danger"
-                                    data-toggle="tooltip" data-placement="top" title="Delete"
-                                    onclick="return confirm('Are You Sure Want To Delete <?= $User->name ?>?')"><span
-                                        class="fa fa-times"></span></a> -->
-                            </td>
-                        </tr>
-                        <?php }
-                        ?>
-
+                     
 
                     </tbody>
                 </table>
@@ -98,11 +54,71 @@ function ChangeStatus(id, status) {
 }
 
 $(document).ready(function() {
-    $('.table').dataTable({
+    $.fn.dataTable.ext.errMode = 'throw';
+    $(".table").DataTable({
+        // stateSave: true,
+        searchDelay: 1000,
+        processing: true,
+        serverSide: true,
+        scrollX: true,
+        serverMethod: 'post',
+        ajax: {
+            url: "<?= base_url('backend/user/GetUsers') ?>"
+        },
+        columns: [{
+                data: 'id'
+            },
+            {
+                data: 'name'
+            },
+            {
+                data: 'bank_detail'
+            },
+            {
+                data: 'adhar_card'
+            },
+            {
+                data: 'upi'
+            },
+            {
+                data: 'mobile'
+            },
+            {
+                data: 'user_type'
+            },
+            <?php if(USER_CATEGORY){ ?>
+            {
+                data: 'user_category'
+            },
+            <?php } ?>
+            {
+                data: 'wallet'
+            },
+            {
+                data: 'on_table'
+            },
+            {
+                data: 'status'
+            },
+            {
+                data: 'added_date'
+            },
+            {
+                data: 'action'
+            },
+        ],
+
+        lengthMenu: [
+            [10, 50, 100, 200, -1],
+            [10, 50, 100, 200, "All"]
+        ],
+        pageLength: 10,
         dom: 'Bfrtip',
         "buttons": [
             'excel'
         ]
+
     });
-})
+});
+
 </script>

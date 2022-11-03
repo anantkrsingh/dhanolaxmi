@@ -1054,4 +1054,17 @@ class User extends REST_Controller
         $this->response($data, 200);
         exit();
     }
+
+    public function user_category_post()
+    {
+        $this->load->model('UserCategory_model');
+
+        $user_category = $this->UserCategory_model->AllTableMasterList();
+
+        $data['message'] = 'Success';
+        $data['user_category'] = $user_category;
+        $data['code'] = HTTP_OK;
+        $this->response($data, HTTP_OK);
+        exit();
+    }
 }

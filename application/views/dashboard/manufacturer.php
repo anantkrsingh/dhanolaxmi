@@ -83,7 +83,7 @@
         </a>
     </div>
     <?php } ?>
-    <?php if (RUMMY_HISTORY==true) { ?>
+    <?php if (RUMMY==true) { ?>
     <div class="col-xl-3 col-md-6">
         <label>Rummy Bot</label>
         <select class="form-control" onchange="ChangeRummyBotStatus(this.value)">

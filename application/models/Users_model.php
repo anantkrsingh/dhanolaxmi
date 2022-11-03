@@ -470,10 +470,11 @@ class Users_model extends MY_Model
 
     public function UserProfile($id)
     {
-        $this->db->select('tbl_users.*');
+        $this->db->select('tbl_users.*,tbl_user_category.name as user_category');
         $this->db->from('tbl_users');
-        $this->db->where('isDeleted', false);
+        $this->db->join('tbl_user_category', 'tbl_users.user_category_id=tbl_user_category.id', 'LEFT');
         $this->db->where('tbl_users.id', $id);
+        $this->db->where('tbl_users.isDeleted', false);
 
         $Query = $this->db->get();
         // echo $this->db->last_query();
@@ -803,4 +804,116 @@ class Users_model extends MY_Model
         $Query = $this->db->get('tbl_users');
         return $Query->num_rows();
     }
+
+    public function GetUsers($postData=null)
+    {
+        // print_r($_GET);die;
+        $response = array();
+
+        ## Read value
+        $draw = $postData['draw'];
+        $start = $postData['start'];
+        $rowperpage = $postData['length']; // Rows display per page
+        $columnIndex = $postData['order'][0]['column']; // Column index
+        $columnName = $postData['columns'][$columnIndex]['data']; // Column name
+        $columnSortOrder = $postData['order'][0]['dir']; // asc or desc
+        $searchValue = $postData['search']['value']; // Search value
+      
+        ## Total number of records without filtering
+         $this->db->select('tbl_users.*,tbl_user_category.name as user_category');
+        $this->db->from('tbl_users');
+        $this->db->join('tbl_user_category', 'tbl_users.user_category_id=tbl_user_category.id', 'LEFT');
+        $this->db->where('tbl_users.isDeleted', false);
+        $this->db->order_by('tbl_users.id', 'asc');
+        $totalRecords = $this->db->get()->num_rows();
+
+        $this->db->select('tbl_users.*,tbl_user_category.name as user_category');
+        $this->db->from('tbl_users');
+        $this->db->join('tbl_user_category', 'tbl_users.user_category_id=tbl_user_category.id', 'LEFT');
+        $this->db->where('tbl_users.isDeleted', false);
+        $this->db->order_by('tbl_users.id', 'asc');
+        // $this->db->where($defaultWhere);
+        if ($searchValue) {
+            $this->db->group_start();
+            $this->db->like('tbl_users.name', $searchValue, 'after');
+            $this->db->like('tbl_users.name', $searchValue, 'after');
+            $this->db->or_like('tbl_users.mobile', $searchValue, 'after');
+            $this->db->or_like('tbl_users.bank_detail', $searchValue, 'after');
+            $this->db->or_like('tbl_users.adhar_card', $searchValue, 'after');
+            $this->db->or_like('tbl_users.upi', $searchValue, 'after');
+            $this->db->or_like('tbl_users.email', $searchValue, 'after');
+            $this->db->or_like('tbl_user_category.name', $searchValue, 'after');
+            $this->db->or_like('tbl_users.wallet', $searchValue, 'after');
+            $this->db->or_like('tbl_users.added_date', $searchValue, 'after');
+            $this->db->group_end();
+        }
+       
+        $totalRecordwithFilter = $this->db->get()->num_rows();
+        $this->db->select('tbl_users.*,tbl_user_category.name as user_category');
+        $this->db->from('tbl_users');
+        $this->db->join('tbl_user_category', 'tbl_users.user_category_id=tbl_user_category.id', 'LEFT');
+        $this->db->where('tbl_users.isDeleted', false);
+        $this->db->order_by($columnName, $columnSortOrder);
+        if ($searchValue) {
+            $this->db->group_start();
+            $this->db->like('tbl_users.name', $searchValue, 'after');
+            $this->db->or_like('tbl_users.mobile', $searchValue, 'after');
+            $this->db->or_like('tbl_users.bank_detail', $searchValue, 'after');
+            $this->db->or_like('tbl_users.adhar_card', $searchValue, 'after');
+            $this->db->or_like('tbl_users.upi', $searchValue, 'after');
+            $this->db->or_like('tbl_users.email', $searchValue, 'after');
+            $this->db->or_like('tbl_user_category.name', $searchValue, 'after');
+            $this->db->or_like('tbl_users.wallet', $searchValue, 'after');
+            $this->db->or_like('tbl_users.added_date', $searchValue, 'after');
+            $this->db->group_end();
+        }
+        $this->db->limit($rowperpage, $start);
+        $records = $this->db->get()->result();
+        $data = array();
+
+        $i = 1;
+        // echo '<pre>';print_r($records);die;
+        foreach ($records as $record) {
+            $status = '<select class="form-control" onchange="ChangeStatus('.$record->id.',this.value)">
+            <option value="0"'.(($record->status == 0) ? 'selected' : '').'>Active</option>
+            <option value="1" '.(($record->status == 1) ? 'selected' : '').'>Block</option>
+        </select>';
+            $action = '<a href="'.base_url('backend/user/view/' . $record->id).'" class="btn btn-info"
+            data-toggle="tooltip" data-placement="top" title="View Wins"><span
+                class="fa fa-eye"></span></a>
+        | <a href="'.base_url('backend/user/edit/' . $record->id).'" class="btn btn-info"
+            data-toggle="tooltip" data-placement="top" title="Edit"><span
+                class="fa fa-credit-card" ></span></a>
+        | <a href="'.base_url('backend/user/edit_user/' . $record->id).'" class="btn btn-info"
+            data-toggle="tooltip" data-placement="top" title="Edit"><span
+                class="fa fa-edit" ></span></a>';
+            $data[] = array(
+              "id"=>$i,
+              "name"=>$record->name,
+              "bank_detail"=>$record->bank_detail,
+              "adhar_card"=>$record->adhar_card,
+              "upi"=>$record->upi,
+              "mobile"=>($record->mobile=='')?$record->email:$record->mobile,
+              "user_type"=>$record->user_type==1?'BOT':'REAL',
+              "user_category"=>$record->user_category,
+              "wallet"=>$record->wallet,
+              "on_table"=>($record->table_id > 0) ? 'Yes' : 'No',
+              "status"=>$status,
+              "added_date"=>date("d-m-Y", strtotime($record->added_date)),
+              "action"=>$action,
+           );
+            $i++;
+        }
+
+        ## Response
+        $response = array(
+           "draw" => intval($draw),
+           "iTotalRecords" => $totalRecords,
+           "iTotalDisplayRecords" => $totalRecordwithFilter,
+           "aaData" => $data,
+        );
+
+        return $response;
+    }
+
 }

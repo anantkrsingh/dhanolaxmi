@@ -1,5 +1,5 @@
     <div class="container-main">
-        <div class="banner" style="background: url(<?= BANNER_URL.$banner->banner ?>) no-repeat center;">
+        <div class="banner banner-bg">
             <div class="text">
                 <h1>JOIN <?= PROJECT_NAME ?> RUMMY <br>& GET DAILY CASH BONUS</h1>
                 <p><?= PROJECT_NAME ?></p>

@@ -202,7 +202,7 @@ class AnderBahar_model extends MY_Model
         return $Query->result();
     }
 
-    public function TotalBetAmount($ander_baher_id, $bet, $user_id='')
+    public function TotalBetAmount($ander_baher_id, $bet='', $user_id='')
     {
         $this->db->select('SUM(amount) as amount', false);
         $this->db->from('tbl_ander_baher_bet');
@@ -210,7 +210,9 @@ class AnderBahar_model extends MY_Model
         if ($user_id!='') {
             $this->db->where('user_id', $user_id);
         }
-        $this->db->where('bet', $bet);
+        if ($bet!=='') {
+            $this->db->where('bet', $bet);
+        }
         $Query = $this->db->get();
         // echo $this->db->last_query();
         if ($Query->row()) {

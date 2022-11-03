@@ -194,7 +194,7 @@ class DragonTiger_model extends MY_Model
         return $Query->result();
     }
 
-    public function TotalBetAmount($dragon_tiger_id, $bet, $user_id='')
+    public function TotalBetAmount($dragon_tiger_id, $bet='', $user_id='')
     {
         $this->db->select('SUM(amount) as amount', false);
         $this->db->from('tbl_dragon_tiger_bet');
@@ -202,7 +202,9 @@ class DragonTiger_model extends MY_Model
         if ($user_id!='') {
             $this->db->where('user_id', $user_id);
         }
-        $this->db->where('bet', $bet);
+        if ($bet!=='') {
+            $this->db->where('bet', $bet);
+        }
         $Query = $this->db->get();
         // echo $this->db->last_query();
         if ($Query->row()) {

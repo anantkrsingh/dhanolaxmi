@@ -15,6 +15,13 @@
     <link rel="stylesheet" href="<?= base_url('assets/website/css/style.css') ?>">
     <script src="<?= base_url('assets/website/js/jquery-3.4.1.min.js') ?>" type="text/javascript">
     </script>
+    <style>
+    .banner-bg{
+        background-image:url(<?= BANNER_URL.$banner->banner ?>);
+        background-repeat:no-repeat;
+        background-size:cover;
+    }
+    </style>
 </head>
 
 <body>

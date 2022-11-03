@@ -11,7 +11,7 @@ class User extends MY_Controller
     {
         $data = [
             'title' => 'User Management',
-            'AllUser' => $this->Users_model->AllUserList()
+            // 'AllUser' => $this->Users_model->AllUserList()
         ];
         $data['SideBarbutton'] = ['backend/user/add', 'Add Boat'];
         template('user/list', $data);
@@ -57,6 +57,19 @@ class User extends MY_Controller
                 push_notification_android($value->fcm, $data);
             }
         }
+    }
+
+    public function GetUsers()
+    {
+        // error_reporting(-1);
+        // ini_set('display_errors', 1);
+        // POST data
+        $postData = $this->input->post();
+
+        // Get data
+        $data = $this->Users_model->GetUsers($postData);
+
+        echo json_encode($data);
     }
 
     public function delete($id)

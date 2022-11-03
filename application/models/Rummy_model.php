@@ -1152,4 +1152,15 @@ class Rummy_model extends MY_Model
         // die();
         return $Query->result();
     }
+
+    public function LastGameCard($game_id)
+    {
+        $this->db->from('tbl_rummy_card');
+        $this->db->where('packed', false);
+        $this->db->where('game_id', $game_id);
+        $this->db->limit(1);
+        $this->db->order_by('id', 'DESC');
+        $Query = $this->db->get();
+        return $Query->row();
+    }
 }

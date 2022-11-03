@@ -12,6 +12,14 @@ class Setting_model extends MY_Model
         return $Query->row();
     }
 
+    public function GetPermission($select='*')
+    {
+        $this->db->select($select);
+        $this->db->from('tbl_games_on_off');
+        $Query = $this->db->get();
+        return $Query->row();
+    }
+
     public function update($mobile, $referral_amount, $level_1, $level_2, $level_3, $referral_id, $referral_link, $contact_us, $terms, $privacy_policy, $help_support, $default_otp, $game_for_private, $app_version, $joining_amount, $admin_commission, $whats_no, $bonus, $bonus_amount, $payment_gateway, $symbol, $razor_api_key, $razor_secret_key, $cashfree_client_id, $cashfree_client_secret, $cashfree_stage, $paytm_mercent_id, $paytm_mercent_key, $share_text, $bank_detail_field, $adhar_card_field, $upi_field, $about_us, $refund_policy, $app_message, $app_url, $logo, $payumoney_key, $payumoney_salt, $upi_merchant_id, $upi_secret_key, $upi_id)
     {
         $data = ['updated_date' => date('Y-m-d H:i:s')];
@@ -207,5 +215,15 @@ class Setting_model extends MY_Model
             ->order_by('tbl_game.id', 'DESC')
             ->get();
         return $Query->result();
+    }
+
+    public function UpdateGamesStatus($column,$type)
+    {
+        $this->db->set($column, $type);
+        if ($this->db->update('tbl_games_on_off')) {
+            return $this->db->last_query();
+        } else {
+            return false;
+        }
     }
 }

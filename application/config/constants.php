@@ -132,13 +132,16 @@ define('BAHAR', 1);
 define('DOWN', 0);
 define('UP', 1);
 
+define('UP_DOWN_MULTIPLY', 2);
+define('UP_DOWN_TIE_MULTIPLY', 5);
+
 define('DRAGON', 0);
 define('TIGER', 1);
 define('TIE', 2);
 
 define('DRAGON_MULTIPLY', 2);
 // define('TIGER_MULTIPLY', 2);
-define('TIE_MULTIPLY', 11);
+define('TIE_MULTIPLY', 9);
 
 define('DRAGON_TIME_FOR_BET', 18);
 define('DRAGON_TIME_FOR_START_NEW_GAME', 5);
@@ -274,7 +277,7 @@ define('IMAGE_URL', 'uploads/images/');
 
 define('USER_MANAGEMENT', true);
 // define('WATCH_TABLE_TEEN_PATTI', false);
-define('POINT_TABLE_MASTER', true);
+define('POINT_RUMMY', true);
 define('RUMMY_POOL', true);
 define('BANNER', true);
 define('DEAL_TABLE_MASTER', true);
@@ -289,21 +292,23 @@ define('SETTING', true);
 define('REEDEM_MANAGEMENT', true);
 define('WITHDRAWAL_LOG', true);
 define('COMISSION', true);
-define('ANDER_BAHAR_HISTORY', true);
-define('DRAGON_TIGER_HISTORY', true);
-define('SEVEN_UP_DOWN_HISTORY', true);
-define('CAR_ROULETTE_HISTORY', true);
+define('ANDER_BAHAR', true);
+define('DRAGON_TIGER', true);
+define('SEVEN_UP_DOWN', true);
+define('CAR_ROULETTE', true);
 define('JANGLE_ROULETTE_HISTORY', true);
-define('COLOR_PREDICTION_HISTORY', true);
+define('COLOR_PREDICTION', true);
 define('JACKPOT_HISTORY', true);
-define('ANIMAL_ROULETTE_HISTORY', true);
+define('ANIMAL_ROULETTE', true);
 define('TEENPATTI', true);
-define('RUMMY_HISTORY', true);
-// define('RUMMY_POOL_HISTORY', true);
-define('RUMMY_DEAL_HISTORY', true);
+define('RUMMY', true);
+define('RUMMY_DEAL', true);
 define('LUDO', true);
-define('BACCARAT_HISTORY', true);
-define('USER_CATEGORY', true);
+define('BACCARAT', true);
+define('USER_CATEGORY', false);
 define('WITHDRAWL_DASHBOARD', true);
+define('POKER', true);
+define('TOURNAMENT', true);
+define('RED_VS_BLACK', true);
 // FCM Notification
 define('SERVER_KEY', 'AAAA2bfIo_E:APA91bGFMoeE0wGoYy6q95ImATZ8KofZjx0yXi6ARfBkFzyHJ23Vi6tbV-gJ0kSbL_dzshsR_oVSomIsYP60RJAxzu3QeprGe9H62vEIpzBmI9IH5-6b5W-AFE2DjxiRjN8-2EoU7o03');

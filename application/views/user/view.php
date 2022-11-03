@@ -11,34 +11,34 @@
                     <li><a data-toggle="tab" href="#purchase_reffer">Purchase Reffer</a></li>
                     <li><a data-toggle="tab" href="#welcome_reffer">Welcome Reffer</a></li>
                     <li><a data-toggle="tab" href="#wallet_log">Wallet Log</a></li>
-                    <?php if (RUMMY_HISTORY==true) { ?>
+                    <?php if (RUMMY==true) { ?>
                     <li><a data-toggle="tab" href="#rummy_log">Point Rummy Log</a></li>
                     <?php } ?>
                     <?php if (RUMMY_POOL==true) { ?>
                     <li><a data-toggle="tab" href="#pool_log">Pool Rummy Log</a></li>
                     <?php } ?>
-                    <?php if (RUMMY_DEAL_HISTORY==true) { ?>
+                    <?php if (RUMMY_DEAL==true) { ?>
                     <li><a data-toggle="tab" href="#deal_log">Deal Rummy Log</a></li>
                     <?php } ?>
                     <?php if (TEENPATTI==true) { ?>
                     <li><a data-toggle="tab" href="#3patti_log">Teen Patti Log</a></li>
                     <?php } ?>
-                    <?php if (DRAGON_TIGER_HISTORY==true) { ?>
+                    <?php if (DRAGON_TIGER==true) { ?>
                     <li><a data-toggle="tab" href="#dragon_log">Dragon Tiger Log</a></li>
                     <?php } ?>
-                    <?php if (ANDER_BAHAR_HISTORY==true) { ?>
+                    <?php if (ANDER_BAHAR==true) { ?>
                     <li><a data-toggle="tab" href="#ander_log">Ander Bahar Log</a></li>
                     <?php } ?>
-                    <?php if (SEVEN_UP_DOWN_HISTORY==true) { ?>
+                    <?php if (SEVEN_UP_DOWN==true) { ?>
                     <li><a data-toggle="tab" href="#seven_up">Seven Up Log</a></li>
                     <?php } ?>
-                    <?php if (COLOR_PREDICTION_HISTORY==true) { ?>
+                    <?php if (COLOR_PREDICTION==true) { ?>
                     <li><a data-toggle="tab" href="#color_prediction">Color Prediction Log</a></li>
                     <?php } ?>
-                    <?php if (CAR_ROULETTE_HISTORY==true) { ?>
+                    <?php if (CAR_ROULETTE==true) { ?>
                     <li><a data-toggle="tab" href="#car_roulette">Car Roulette Log</a></li>
                     <?php } ?>
-                    <?php if (ANIMAL_ROULETTE_HISTORY==true) { ?>
+                    <?php if (ANIMAL_ROULETTE==true) { ?>
                     <li><a data-toggle="tab" href="#animal_roulette">Animal Roulette Log</a></li>
                     <?php } ?>
                     <?php if (JACKPOT_HISTORY==true) { ?>
@@ -238,7 +238,7 @@
                             </tbody>
                         </table>
                     </div>
-                    <?php if (RUMMY_HISTORY==true) { ?>
+                    <?php if (RUMMY==true) { ?>
                     <div id="rummy_log" class="tab-pane fade">
                         <table class="table table-bordered dt-responsive nowrap"
                             style="border-collapse: collapse; border-spacing: 0; width: 100%;">
@@ -306,7 +306,7 @@
                         </table>
                     </div>
                     <?php } ?>
-                    <?php if (RUMMY_DEAL_HISTORY==true) { ?>
+                    <?php if (RUMMY_DEAL==true) { ?>
                     <div id="deal_log" class="tab-pane fade">
                         <table class="table table-bordered dt-responsive nowrap"
                             style="border-collapse: collapse; border-spacing: 0; width: 100%;">
@@ -374,7 +374,7 @@
                         </table>
                     </div>
                     <?php } ?>
-                    <?php if (DRAGON_TIGER_HISTORY==true) { ?>
+                    <?php if (DRAGON_TIGER==true) { ?>
                     <div id="dragon_log" class="tab-pane fade">
                         <table class="table table-bordered dt-responsive nowrap"
                             style="border-collapse: collapse; border-spacing: 0; width: 100%;">
@@ -416,7 +416,7 @@
                         </table>
                     </div>
                     <?php } ?>
-                    <?php if (ANDER_BAHAR_HISTORY==true) { ?>
+                    <?php if (ANDER_BAHAR==true) { ?>
                     <div id="ander_log" class="tab-pane fade">
                         <table class="table table-bordered dt-responsive nowrap"
                             style="border-collapse: collapse; border-spacing: 0; width: 100%;">
@@ -458,7 +458,7 @@
                         </table>
                     </div>
                     <?php } ?>
-                    <?php if (SEVEN_UP_DOWN_HISTORY==true) { ?>
+                    <?php if (SEVEN_UP_DOWN==true) { ?>
                     <div id="seven_up" class="tab-pane fade">
                         <table class="table table-bordered dt-responsive nowrap"
                             style="border-collapse: collapse; border-spacing: 0; width: 100%;">
@@ -496,7 +496,7 @@
                         </table>
                     </div>
                     <?php } ?>
-                    <?php if (COLOR_PREDICTION_HISTORY==true) { ?>
+                    <?php if (COLOR_PREDICTION==true) { ?>
                     <div id="color_prediction" class="tab-pane fade">
                         <table class="table table-bordered dt-responsive nowrap"
                             style="border-collapse: collapse; border-spacing: 0; width: 100%;">
@@ -534,7 +534,7 @@
                         </table>
                     </div>
                     <?php } ?>
-                    <?php if (CAR_ROULETTE_HISTORY==true) { ?>
+                    <?php if (CAR_ROULETTE==true) { ?>
                     <div id="car_roulette" class="tab-pane fade">
                         <table class="table table-bordered dt-responsive nowrap"
                             style="border-collapse: collapse; border-spacing: 0; width: 100%;">
@@ -572,7 +572,7 @@
                         </table>
                     </div>
                     <?php } ?>
-                    <?php if (ANIMAL_ROULETTE_HISTORY==true) { ?>
+                    <?php if (ANIMAL_ROULETTE==true) { ?>
                     <div id="animal_roulette" class="tab-pane fade">
                         <table class="table table-bordered dt-responsive nowrap"
                             style="border-collapse: collapse; border-spacing: 0; width: 100%;">

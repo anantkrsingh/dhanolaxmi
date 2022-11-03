@@ -698,13 +698,12 @@ class Game extends REST_Controller
         $GameId = $this->Game_model->Create($game_data);
         $robot_card_selected=[];
         foreach ($table_data as $key => $value) {
-            
-            if($value->user_type==1){
+            if ($value->user_type==1) {
                 $Cards = $this->Game_model->GetRobotCards(1);
-                if(!empty($Cards)){
-                    array_push($robot_card_selected,$Cards[0]->card1);
-                    array_push($robot_card_selected,$Cards[0]->card2);
-                    array_push($robot_card_selected,$Cards[0]->card3);
+                if (!empty($Cards)) {
+                    array_push($robot_card_selected, $Cards[0]->card1);
+                    array_push($robot_card_selected, $Cards[0]->card2);
+                    array_push($robot_card_selected, $Cards[0]->card3);
                     $table_user_data = [
                         'game_id' => $GameId,
                         'user_id' => $value->user_id,
@@ -714,8 +713,8 @@ class Game extends REST_Controller
                         'added_date' => date('Y-m-d H:i:s'),
                         'updated_date' => date('Y-m-d H:i:s')
                     ];
-                }else{
-                    $Cards = $this->Game_model->GetCards(count($table_data)*3,$robot_card_selected);
+                } else {
+                    $Cards = $this->Game_model->GetCards(count($table_data)*3, $robot_card_selected);
                     $table_user_data = [
                         'game_id' => $GameId,
                         'user_id' => $value->user_id,
@@ -726,9 +725,8 @@ class Game extends REST_Controller
                         'updated_date' => date('Y-m-d H:i:s')
                     ];
                 }
-                
-            }else{
-                $Cards = $this->Game_model->GetCards(count($table_data)*3,$robot_card_selected);
+            } else {
+                $Cards = $this->Game_model->GetCards(count($table_data)*3, $robot_card_selected);
                 $table_user_data = [
                     'game_id' => $GameId,
                     'user_id' => $value->user_id,
@@ -739,7 +737,7 @@ class Game extends REST_Controller
                     'updated_date' => date('Y-m-d H:i:s')
                 ];
             }
-          
+
 
             $this->Game_model->GiveGameCards($table_user_data);
 
