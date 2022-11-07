@@ -1154,6 +1154,7 @@ class RummyDeal extends REST_Controller
                 'game_id' => $game->id,
                 'user_id' => $user_id,
                 'card' => $drop_card[0]->card,
+                'is_drop_card' => 1,
                 'added_date' => date('Y-m-d H:i:s'),
                 'updated_date' => date('Y-m-d H:i:s'),
                 'isDeleted' => 0
@@ -1919,6 +1920,7 @@ class RummyDeal extends REST_Controller
         // }
         $data['chaal'] = $chaal;
         $data['game_amount'] = $game->amount;
+        $data['last_card'] = $this->RummyDeal_model->LastGameCard($game->id);
         $data['total_table_amount'] = $this->RummyDeal_model->TotalAmountOnTable($table_id);
         $table_master = $this->RummyDeal_model->getTableMaster($table->boot_value);
         $data['max_round'] = $table_master[0]->game_count;

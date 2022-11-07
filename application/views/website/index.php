@@ -1,7 +1,7 @@
     <div class="container-main">
         <div class="banner banner-bg">
             <div class="text">
-                <h1>JOIN <?= PROJECT_NAME ?> RUMMY <br>& GET DAILY CASH BONUS</h1>
+                <h1>JOIN <?= PROJECT_NAME ?> <br>& GET DAILY CASH BONUS</h1>
                 <p><?= PROJECT_NAME ?></p>
                 <a href="<?= base_url('game.apk') ?>" download class="download_btn">Download APK</a>
             </div>
@@ -10,7 +10,7 @@
             <div class="container">
                 <div class="left">
                     <div class="text">
-                        <h2><?= PROJECT_NAME ?> RUMMY <br /> to win real money in cash rupees</h2>
+                        <h2><?= PROJECT_NAME ?> <br /> to win real money in cash rupees</h2>
                         <p>Follow <b><?= PROJECT_NAME ?></b> on social media</p>
                         <div class="share_small">
                             <button class="social_share" data-type="fb"><i class="fa share-fb"></i></button>
@@ -22,8 +22,10 @@
                 <div class="right">
                     <div class="text">
                         <p>
-                            <?= PROJECT_NAME ?> is online Rummy portal completely owned and operated by Infonix Data Pvt
-                            Ltd. We providing best-in-class gaming experience to all its users. Our aim is to give every
+                            <?= PROJECT_NAME ?> is online Rummy portal completely owned and operated by ASAG Androapps
+                            Technology Pvt Ltd. We providing best-in-class gaming experience to all its users. Our aim
+                            is to
+                            give every
                             player a premium and hassle-free rummy-playing experience on our android and iOS app. Our
                             games are designed in a manner that anybody can play without facing any difficulties.
                         </p>

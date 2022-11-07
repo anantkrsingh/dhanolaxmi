@@ -211,8 +211,8 @@ class Setting extends MY_Controller {
                 $Change = $this->Setting_model->UpdateGamesStatus( $column, $type );
             }
             break;
-            case 'tournament':
-            if ( TOURNAMENT == true ) {
+            case 'head_tails':
+            if ( HEAD_TAILS == true ) {
                 $Change = $this->Setting_model->UpdateGamesStatus( $column, $type );
             }
             break;
@@ -226,6 +226,16 @@ class Setting extends MY_Controller {
                 $Change = $this->Setting_model->UpdateGamesStatus( $column, $type );
             }
             break;
+            case 'bacarate':
+                if ( BACCARAT == true ) {
+                    $Change = $this->Setting_model->UpdateGamesStatus( $column, $type );
+                }
+                break;
+                case 'jhandi_munda':
+                    if ( JHANDI_MUNDA == true ) {
+                        $Change = $this->Setting_model->UpdateGamesStatus( $column, $type );
+                    }
+                    break;
             default:
             $Change = false;
             break;

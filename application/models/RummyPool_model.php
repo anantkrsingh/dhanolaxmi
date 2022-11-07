@@ -177,7 +177,7 @@ class RummyPool_model extends MY_Model
         return $Query->result();
     }
 
-    public function GameLog($game_id, $limit = '', $action = '', $user_id = '')
+    public function GameLog($game_id, $limit = '', $action = '', $user_id = '', $timeout = '')
     {
         $this->db->from('tbl_rummy_pool_log');
         $this->db->where('game_id', $game_id);
@@ -187,6 +187,9 @@ class RummyPool_model extends MY_Model
         }
         if (!empty($user_id)) {
             $this->db->where('user_id', $user_id);
+        }
+        if (!empty($timeout)) {
+            $this->db->where('timeout', $timeout);
         }
         if (!empty($limit)) {
             $this->db->limit($limit);
@@ -536,7 +539,7 @@ class RummyPool_model extends MY_Model
         return $TableId;
     }
 
-    public function DropGameCards($where, $json='')
+    public function DropGameCards($where, $json='', $timeout=0)
     {
         $data = ['isDeleted' => 1, 'updated_date' => date('Y-m-d H:i:s')];
         $this->db->update('tbl_rummy_pool_card', $data, $where);
@@ -549,6 +552,7 @@ class RummyPool_model extends MY_Model
             'user_id' => $where['user_id'],
             'game_id' => $where['game_id'],
             'json' => $json,
+            'timeout' => $timeout,
             'action' => 2,
             'added_date' => date('Y-m-d H:i:s')
         ];
@@ -1470,5 +1474,16 @@ class RummyPool_model extends MY_Model
         // echo $this->db->last_query();
         // die();
         return $Query->result();
+    }
+
+    public function LastGameCard($game_id)
+    {
+        $this->db->from('tbl_rummy_pool_card');
+        $this->db->where('packed', false);
+        $this->db->where('game_id', $game_id);
+        $this->db->limit(1);
+        $this->db->order_by('id', 'DESC');
+        $Query = $this->db->get();
+        return $Query->row();
     }
 }

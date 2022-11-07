@@ -326,10 +326,11 @@ class Game extends REST_Controller
 
         $table_amount = $table->boot_value;
         $table_data = [
-            'boot_value' => $table_amount,
-            'maximum_blind' => 4,
-            'chaal_limit' => $table_amount*128,
-            'pot_limit' => $table_amount*1024,
+            'boot_value' => $table->boot_value,
+            'maximum_blind' =>$table->maximum_blind,
+            'chaal_limit' => $table->chaal_limit,
+            'pot_limit' => $table->pot_limit,
+            'private' => $table->private,
             'added_date' => date('Y-m-d H:i:s'),
             'updated_date' => date('Y-m-d H:i:s')
         ];
@@ -419,12 +420,12 @@ class Game extends REST_Controller
             exit();
         }
 
-        // if ($user[0]->wallet<10000) {
-        //     $data['message'] = 'Required Minimum 10,000 Coins to Play';
-        //     $data['code'] = HTTP_NOT_ACCEPTABLE;
-        //     $this->response($data, 200);
-        //     exit();
-        // }
+        if ($user[0]->wallet<$this->data['boot_value']) {
+            $data['message'] = 'Required Minimum '.$this->data['boot_value'].' Coins to Play';
+            $data['code'] = HTTP_NOT_ACCEPTABLE;
+            $this->response($data, 200);
+            exit();
+        }
 
         if ($user[0]->table_id) {
             $data['message'] = 'You are Already On Table';
@@ -438,7 +439,7 @@ class Game extends REST_Controller
             'maximum_blind' => 4,
             'chaal_limit' => $this->data['boot_value']*128,
             'pot_limit' => $this->data['boot_value']*1024,
-            'private' => 2,
+            'private' => 1,
             'added_date' => date('Y-m-d H:i:s'),
             'updated_date' => date('Y-m-d H:i:s')
         ];
@@ -489,12 +490,12 @@ class Game extends REST_Controller
             exit();
         }
 
-        // if ($user[0]->wallet<10000) {
-        //     $data['message'] = 'Required Minimum 10,000 Coins to Play';
-        //     $data['code'] = HTTP_NOT_ACCEPTABLE;
-        //     $this->response($data, 200);
-        //     exit();
-        // }
+        if ($user[0]->wallet<$this->data['boot_value']) {
+            $data['message'] = 'Required Minimum '.$this->data['boot_value'].' Coins to Play';
+            $data['code'] = HTTP_NOT_ACCEPTABLE;
+            $this->response($data, 200);
+            exit();
+        }
 
         if ($user[0]->table_id) {
             $data['message'] = 'You are Already On Table';
@@ -527,7 +528,7 @@ class Game extends REST_Controller
             ];
 
             $TableId = $this->Game_model->CreateTable($table_data);
-            $this->sendNotification($TableId);
+            // $this->sendNotification($TableId);
         }
 
         $table_user_data = [
@@ -655,14 +656,6 @@ class Game extends REST_Controller
 
         $table_data = $this->Game_model->TableUser($user[0]->table_id);
 
-        if (count($table_data)<2) {
-            $data['message'] = 'Unable to Create Game, Only One User On Table';
-            $data['code'] = HTTP_NOT_ACCEPTABLE;
-            $this->response($data, 200);
-            exit();
-        }
-
-
         $game = $this->Game_model->getActiveGameOnTable($user[0]->table_id);
 
         if ($game) {
@@ -671,6 +664,9 @@ class Game extends REST_Controller
             $this->response($data, 200);
             exit();
         }
+
+        $table = $this->Game_model->isTableAvail($user[0]->table_id);
+        $amount = $table->boot_value;
 
         if (count($table_data)>2) {
             foreach ($table_data as $key => $value) {
@@ -686,8 +682,26 @@ class Game extends REST_Controller
             }
         }
 
-        $table = $this->Game_model->isTableAvail($user[0]->table_id);
-        $amount = $table->boot_value;
+        foreach ($table_data as $key => $value) {
+            if ($amount>$value->wallet) {
+                $table_user_data = [
+                    'table_id' => $user[0]->table_id,
+                    'user_id' => $value->user_id
+                ];
+
+                $this->Game_model->RemoveTableUser($table_user_data);
+                $table_data = $this->Game_model->TableUser($user[0]->table_id);
+            }
+        }
+
+        if (count($table_data)<2) {
+            $data['message'] = 'Unable to Create Game, Only One User On Table';
+            $data['code'] = HTTP_NOT_ACCEPTABLE;
+            $this->response($data, 200);
+            exit();
+        }
+
+
         $game_data = [
             'table_id' => $user[0]->table_id,
             'amount' => count($table_data)*$amount,
@@ -1610,7 +1624,7 @@ class Game extends REST_Controller
 
         if (!empty($table_id)) {
             $table_data = $this->Game_model->TableUser($table_id);
-            if (count($table_data)==1) {
+            if (count($table_data)==1 && $table->private==0) {
                 $robot_teenpatti = $this->Setting_model->Setting()->robot_teenpatti;
                 if ($robot_teenpatti==0) {
                     $bot = $this->Users_model->GetFreeBot();

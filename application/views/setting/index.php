@@ -253,14 +253,14 @@
             </div>
     </div>
     <?php } ?>
-    <?php if (TOURNAMENT==true) { ?>
+    <?php if (HEAD_TAILS==true) { ?>
     <div class="col-xl-2 col-md-1">
             <div class="card ">
                 <div class="card-body">
                     <div class="mb-">
-                    <h5 class="font-14 text-uppercase mt-0">Tournament</h5>
-                    <input class="form-check form-switch" type="checkbox" id="tournament" name="tournament" <?= $Permission->tournament?'checked':''?> value="<?= $Permission->tournament?0:1 ?>" switch="none">
-                    <label class="form-label" for="tournament" data-on-label="On" data-off-label="Off"></label>
+                    <h5 class="font-14 text-uppercase mt-0">Head & Tails</h5>
+                    <input class="form-check form-switch" type="checkbox" id="head_tails" name="head_tails" <?= $Permission->head_tails?'checked':''?> value="<?= $Permission->head_tails?0:1 ?>" switch="none">
+                    <label class="form-label" for="head_tails" data-on-label="On" data-off-label="Off"></label>
                     </div>
                 </div>
             </div>
@@ -291,8 +291,39 @@
                 </div>
             </div>
     </div>
-</div>
+    <?php } ?>
+    <?php if (BACCARAT==true) { ?>
+    <div class="col-xl-2 col-md-1">
+            <div class="card ">
+                <div class="card-body">
+                    <div class="mb-">
+                    <h5 class="font-14 text-uppercase mt-0">Bacarate</h5>
+                    <input class="form-check form-switch" type="checkbox" id="bacarate" name="bacarate" <?= $Permission->bacarate?'checked':''?> value="<?= $Permission->bacarate?0:1 ?>" switch="none">
+                    <label class="form-label" for="bacarate" data-on-label="On" data-off-label="Off"></label>
+                    </div>
+                </div>
+            </div>
+    </div>
+
 <?php } ?>
+<?php if (JHANDI_MUNDA==true) { ?>
+    <div class="col-xl-2 col-md-1">
+            <div class="card ">
+                <div class="card-body">
+                    <div class="mb-">
+                    <h5 class="font-14 text-uppercase mt-0">Jhandi Munda</h5>
+                    <input class="form-check form-switch" type="checkbox" id="jhandi_munda" name="jhandi_munda" <?= $Permission->jhandi_munda?'checked':''?> value="<?= $Permission->jhandi_munda?0:1 ?>" switch="none">
+                    <label class="form-label" for="jhandi_munda" data-on-label="On" data-off-label="Off"></label>
+                    </div>
+                </div>
+            </div>
+    </div>
+
+<?php } ?>
+
+</div>
+
+
 <script>
 
 $(document).on('change', '.form-switch', function(e) {

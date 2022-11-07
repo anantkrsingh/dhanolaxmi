@@ -294,6 +294,8 @@ class User extends REST_Controller
             $this->Users_model->UpdateAppVersion($this->data['id'], $app_version);
         }
         $UserData = $this->Users_model->UserProfile($this->data['id']);
+        $UserKyc = $this->Users_model->UserKyc($this->data['id']);
+        $UserBankDetails = $this->Users_model->UserBankDetails($this->data['id']);
         $setting = $this->Setting_model->Setting('`min_redeem`, `referral_amount`, `contact_us`, `terms`, `privacy_policy`, `help_support`, `game_for_private`, `app_version`, `joining_amount`, `whats_no`, `bonus`, `payment_gateway`, `symbol`, `razor_api_key`, `cashfree_client_id`,`cashfree_stage`, `paytm_mercent_id`, `payumoney_key`, `share_text`, `bank_detail_field`, `adhar_card_field`, `upi_field`, `referral_link`, `referral_id`,`app_message`,`upi_merchant_id`,`upi_secret_key`,`admin_commission`,`upi_id`,`extra_spinner`');
 
         $avatar[] = 'f_1.png';
@@ -311,6 +313,8 @@ class User extends REST_Controller
 
         $data['message'] = 'Success';
         $data['user_data'] = $UserData;
+        $data['user_kyc'] = $UserKyc;
+        $data['user_bank_details'] = $UserBankDetails;
         $data['avatar'] = $avatar;
         $data['setting'] = $setting;
         $data['code'] = HTTP_OK;
@@ -888,6 +892,133 @@ class User extends REST_Controller
         }
 
         $this->Users_model->UpdateUserPic($user_id, $name, $profile_pic, $bank_detail, $adhar_card, $upi);
+        $data['message'] = 'Success';
+        $data['code'] = HTTP_OK;
+        $this->response($data, HTTP_OK);
+        exit();
+    }
+
+    public function update_bank_details_post()
+    {
+        $user_id = $this->input->post('user_id');
+        $bank_name = $this->input->post('bank_name');
+        $ifsc_code = $this->input->post('ifsc_code');
+        $acc_holder_name = $this->input->post('acc_holder_name');
+        $acc_no = $this->input->post('acc_no');
+        $passbook_img = $this->input->post('passbook_img');
+
+        if (empty($user_id)) {
+            $data['message'] = 'Invalid Params';
+            $data['code'] = HTTP_BLANK;
+            $this->response($data, 200);
+            exit();
+        }
+
+        if (!$this->Users_model->TokenConfirm($this->data['user_id'], $this->data['token'])) {
+            $data['message'] = 'Invalid User';
+            $data['code'] = HTTP_INVALID;
+            $this->response($data, HTTP_OK);
+            exit();
+        }
+
+        $user = $this->Users_model->UserProfile($user_id);
+        if (empty($user)) {
+            $data['message'] = 'Invalid User';
+            $data['code'] = HTTP_NOT_ACCEPTABLE;
+            $this->response($data, 200);
+            exit();
+        }
+
+        if (!empty($passbook_img)) {
+            $img = $passbook_img;
+            $img = str_replace(' ', '+', $img);
+            $img_data = base64_decode($img);
+            $passbook = uniqid().'.jpg';
+            $file = './data/post/'.$passbook;
+            file_put_contents($file, $img_data);
+            $update_data['passbook_img'] = $passbook;
+        }
+
+        $update_data['bank_name'] = $bank_name;
+        $update_data['ifsc_code'] = $ifsc_code;
+        $update_data['acc_holder_name'] = $acc_holder_name;
+        $update_data['acc_no'] = $acc_no;
+
+        $user_bank_details = $this->Users_model->UserBankDetails($user_id);
+        if ($user_bank_details) {
+            $this->Users_model->UpdateUserBankDetails($user_id, $update_data);
+        } else {
+            $update_data['user_id'] = $user_id;
+            $this->Users_model->InsertUserBankDetails($update_data);
+        }
+
+        $data['message'] = 'Success';
+        $data['code'] = HTTP_OK;
+        $this->response($data, HTTP_OK);
+        exit();
+    }
+
+    public function update_kyc_post()
+    {
+        $user_id = $this->input->post('user_id');
+        $pan_no = $this->input->post('pan_no');
+        $pan_img = $this->input->post('pan_img');
+        $aadhar_no = $this->input->post('aadhar_no');
+        $aadhar_img = $this->input->post('aadhar_img');
+
+        if (empty($user_id)) {
+            $data['message'] = 'Invalid Params';
+            $data['code'] = HTTP_BLANK;
+            $this->response($data, 200);
+            exit();
+        }
+
+        if (!$this->Users_model->TokenConfirm($this->data['user_id'], $this->data['token'])) {
+            $data['message'] = 'Invalid User';
+            $data['code'] = HTTP_INVALID;
+            $this->response($data, HTTP_OK);
+            exit();
+        }
+
+        $user = $this->Users_model->UserProfile($user_id);
+        if (empty($user)) {
+            $data['message'] = 'Invalid User';
+            $data['code'] = HTTP_NOT_ACCEPTABLE;
+            $this->response($data, 200);
+            exit();
+        }
+
+        if (!empty($pan_img)) {
+            $img = $pan_img;
+            $img = str_replace(' ', '+', $img);
+            $img_data = base64_decode($img);
+            $pan = uniqid().'pan.jpg';
+            $file = './data/post/'.$pan;
+            file_put_contents($file, $img_data);
+            $update_data['pan_img'] = $pan;
+        }
+
+        if (!empty($aadhar_img)) {
+            $img = $aadhar_img;
+            $img = str_replace(' ', '+', $img);
+            $img_data = base64_decode($img);
+            $aadhar = uniqid().'.jpg';
+            $file = './data/post/'.$aadhar;
+            file_put_contents($file, $img_data);
+            $update_data['aadhar_img'] = $aadhar;
+        }
+
+        $update_data['pan_no'] = $pan_no;
+        $update_data['aadhar_no'] = $aadhar_no;
+
+        $user_kyc = $this->Users_model->UserKyc($user_id);
+        if ($user_kyc) {
+            $this->Users_model->UpdateUserKyc($user_id, $update_data);
+        } else {
+            $update_data['user_id'] = $user_id;
+            $this->Users_model->InsertUserKyc($update_data);
+        }
+
         $data['message'] = 'Success';
         $data['code'] = HTTP_OK;
         $this->response($data, HTTP_OK);

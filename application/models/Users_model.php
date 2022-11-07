@@ -255,6 +255,32 @@ class Users_model extends MY_Model
         return $this->db->affected_rows();
     }
 
+    public function UpdateUserBankDetails($UserId, $data)
+    {
+        $this->db->where('user_id', $UserId);
+        $this->db->update('tbl_users_bank_details', $data);
+        return $this->db->affected_rows();
+    }
+
+    public function InsertUserBankDetails($data)
+    {
+        $this->db->insert('tbl_users_bank_details', $data);
+        return $this->db->insert_id;
+    }
+
+    public function UpdateUserKyc($UserId, $data)
+    {
+        $this->db->where('user_id', $UserId);
+        $this->db->update('tbl_users_kyc', $data);
+        return $this->db->affected_rows();
+    }
+
+    public function InsertUserKyc($data)
+    {
+        $this->db->insert('tbl_users_kyc', $data);
+        return $this->db->insert_id;
+    }
+
     public function ChangeStatus($id, $status)
     {
         $data = [
@@ -482,6 +508,30 @@ class Users_model extends MY_Model
         return $Query->result();
     }
 
+    public function UserKyc($id)
+    {
+        $this->db->from('tbl_users_kyc');
+        $this->db->where('user_id', $id);
+        $this->db->where('isDeleted', false);
+
+        $Query = $this->db->get();
+        // echo $this->db->last_query();
+        // die();
+        return $Query->result();
+    }
+
+    public function UserBankDetails($id)
+    {
+        $this->db->from('tbl_users_bank_details');
+        $this->db->where('user_id', $id);
+        $this->db->where('isDeleted', false);
+
+        $Query = $this->db->get();
+        // echo $this->db->last_query();
+        // die();
+        return $Query->result();
+    }
+
     public function AddPurchaseReferLog($data)
     {
         $this->db->insert('tbl_purcharse_ref', $data);
@@ -693,7 +743,7 @@ class Users_model extends MY_Model
 
     public function TeenPattiLog($user_id)
     {
-        $Query = $this->db->query('SELECT `game_id`,SUM(`amount`) as invest,(SELECT IFNULL(user_winning_amt,0) FROM `tbl_game` WHERE winner_id='.$user_id.' AND id=`game_id`) as winning_amount,added_date FROM `tbl_game_log` WHERE `user_id`='.$user_id.' GROUP BY `game_id`');
+        $Query = $this->db->query('SELECT `game_id`,SUM(`amount`) as invest,IFNULL((SELECT user_winning_amt FROM `tbl_game` WHERE winner_id='.$user_id.' AND id=`game_id`),0) as winning_amount,added_date FROM `tbl_game_log` WHERE `user_id`='.$user_id.' GROUP BY `game_id`');
         // $this->db->get();
         return $Query->result();
     }
@@ -818,9 +868,9 @@ class Users_model extends MY_Model
         $columnName = $postData['columns'][$columnIndex]['data']; // Column name
         $columnSortOrder = $postData['order'][0]['dir']; // asc or desc
         $searchValue = $postData['search']['value']; // Search value
-      
+
         ## Total number of records without filtering
-         $this->db->select('tbl_users.*,tbl_user_category.name as user_category');
+        $this->db->select('tbl_users.*,tbl_user_category.name as user_category');
         $this->db->from('tbl_users');
         $this->db->join('tbl_user_category', 'tbl_users.user_category_id=tbl_user_category.id', 'LEFT');
         $this->db->where('tbl_users.isDeleted', false);
@@ -847,7 +897,7 @@ class Users_model extends MY_Model
             $this->db->or_like('tbl_users.added_date', $searchValue, 'after');
             $this->db->group_end();
         }
-       
+
         $totalRecordwithFilter = $this->db->get()->num_rows();
         $this->db->select('tbl_users.*,tbl_user_category.name as user_category');
         $this->db->from('tbl_users');
@@ -893,8 +943,8 @@ class Users_model extends MY_Model
               "bank_detail"=>$record->bank_detail,
               "adhar_card"=>$record->adhar_card,
               "upi"=>$record->upi,
-              "mobile"=>($record->mobile=='')?$record->email:$record->mobile,
-              "user_type"=>$record->user_type==1?'BOT':'REAL',
+              "mobile"=>($record->mobile=='') ? $record->email : $record->mobile,
+              "user_type"=>$record->user_type==1 ? 'BOT' : 'REAL',
               "user_category"=>$record->user_category,
               "wallet"=>$record->wallet,
               "on_table"=>($record->table_id > 0) ? 'Yes' : 'No',
@@ -915,5 +965,4 @@ class Users_model extends MY_Model
 
         return $response;
     }
-
 }

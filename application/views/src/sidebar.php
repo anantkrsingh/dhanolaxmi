@@ -15,8 +15,26 @@ $final_url = str_replace(strtolower(base_url()), '', strtolower($actual_link));
                         <span>Dashboard</span></a></li>
                 <li class="menu-title">Content</li>
                 <?php if (USER_MANAGEMENT==true) { ?>
-                <li><a href="<?= base_url('backend/user') ?>" class="waves-effect"><i class="ion ion-md-contact"></i>
-                        <span>User Management</span></a></li>
+                    <li class="<?= (array_filter([strpos($final_url, "backend/user"),strpos($final_url, "backend/usercategory"),strpos($final_url, "backend/table"),strpos($final_url, "tablemaster/add"),strpos($final_url, "tablemaster/edit"),strpos($final_url, "backend/robotcards"),strpos($final_url, "backend/table")], 'is_numeric')) ? 'mm-active' : '' ?>">
+                                <a href="javascript: void(0);" class="has-arrow waves-effect" >
+                                <i class="ion ion-md-contact"></i>
+                                    <span>Users Management</span>
+                                </a>
+                                <ul class="sub-menu mm-collapse">
+                                <li class="<?= (array_filter([strpos($final_url, "backend/user")], 'is_numeric')) ? 'mm-active' : '' ?>"><a href="<?= base_url('backend/user') ?>" class="waves-effect">
+                        <span>Users</span></a></li>
+                                <li class="<?= (array_filter([strpos($final_url, "backend/usercategory")], 'is_numeric')) ? 'mm-active' : '' ?>"><a href="<?= base_url('backend/UserCategory') ?>" class="waves-effect">
+                        <span>User Category</span></a></li>
+                                   
+             
+                        <li class="<?= (array_filter([strpos($final_url, "backend/kyc")], 'is_numeric')) ? 'mm-active' : '' ?>"><a href="<?= base_url('backend/Kyc') ?>" class="waves-effect"></i>
+                        <span>Kyc</span></a></li>
+                        <li class="<?= (array_filter([strpos($final_url, "backend/BankDetails")], 'is_numeric')) ? 'mm-active' : '' ?>"><a href="<?= base_url('backend/BankDetails') ?>" class="waves-effect"> <span>Bank Details</span></a></li>
+                                </ul>
+                            </li>
+                          
+                <!-- <li><a href="<?= base_url('backend/user') ?>" class="waves-effect"><i class="ion ion-md-contact"></i>
+                        <span>User Management</span></a></li> -->
                 <?php } ?>
 
                 <?php if (WITHDRAWL_DASHBOARD==true) { ?>
@@ -24,10 +42,9 @@ $final_url = str_replace(strtolower(base_url()), '', strtolower($actual_link));
                         <span>Withdrawl Dashboard</span></a></li>
                 <?php } ?>
 
-                <?php if (USER_CATEGORY==true) { ?>
-                <li><a href="<?= base_url('backend/UserCategory') ?>" class="waves-effect"><i class="ion ion-md-contact"></i>
-                        <span>User Category</span></a></li>
-                <?php } ?>
+                <!-- <?php if (USER_CATEGORY==true) { ?>
+              
+                <?php } ?> -->
 
               
                 <?php if (BANNER==true) { ?>

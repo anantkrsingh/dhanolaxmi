@@ -133,12 +133,12 @@ class Cron extends CI_Controller
                         }
                     }
                 }
-                $given_time = ($user_type==0) ? 65 : 10;
+                $given_time = ($user_type==0) ? 50 : 10;
 
                 if ($time>$given_time) {
                     if ($user_type==1) {
                         $bot_chaal = $this->Rummy_model->ChaalCount($game->id, $value->user_id);
-                        if ($bot_chaal>3) {
+                        if ($bot_chaal>5) {
                             $combination_json[] = '[{"card_group":"6","cards":["BLK","RSK","RP4_"]},{"card_group":"5","cards":["BP10_","BP9","BP8"]},{"card_group":"4","cards":["RS3_","RS2_","JKR2","RP4"]},{"card_group":"6","cards":["JKR1","RP8_","RS8"]}]';
                             $combination_json[] = '[{"card_group":"6","cards":["RS9_","BL9_","BP9"]},{"card_group":"4","cards":["RPA_","RP4_","RP3","RP2"]},{"card_group":"4","cards":["BLA","BLK_","BLQ_"]},{"card_group":"5","cards":["RPQ","RPJ","RP10_"]}]';
                             $combination_json[] = '[{"card_group":"6","cards":["RS6_","RP6_","BP6"]},{"card_group":"5","cards":["RPA_","RP4_","RP3","RP2"]},{"card_group":"4","cards":["BP4_","BP3_","JKR2"]},{"card_group":"5","cards":["BL8_","BL7_","BL6_"]}]';
@@ -202,30 +202,95 @@ class Cron extends CI_Controller
                         continue;
                     }
 
-                    $table = $this->Rummy_model->isTableAvail($val->rummy_table_id);
-                    $boot_value = $table->boot_value;
-                    $ChaalCount = $this->Rummy_model->ChaalCount($game->id, $chaal);
+                    $timeout_log = $this->Rummy_model->GameLog($game->id, '', 2, $chaal, 1);
+                    // echo count($timeout_log);
+                    if (count($timeout_log)<2) {
+                        $cards = $this->Rummy_model->getMyCards($game->id, $chaal);
 
-                    $percent = ($ChaalCount>0) ? CHAAL_PERCENT : NO_CHAAL_PERCENT;
-                    $amount = round(($percent / 100) * $boot_value, 2);
+                        if (count($cards)<=13) {
+                            $random_card = $this->Rummy_model->GetRamdomGameCard($game->id);
 
-                    $this->Rummy_model->PackGame($chaal, $game->id, 0, '', $amount, $percent);
-                    $this->Rummy_model->MinusWallet($chaal, $amount);
-                    $game_users = $this->Rummy_model->GameUser($game->id);
+                            if ($random_card) {
+                                $table_user_data = [
+                                    'game_id' => $game->id,
+                                    'user_id' => $chaal,
+                                    'card' => $random_card[0]->cards,
+                                    'added_date' => date('Y-m-d H:i:s'),
+                                    'updated_date' => date('Y-m-d H:i:s'),
+                                    'isDeleted' => 0
+                                ];
 
-                    if (count($game_users)==1) {
-                        $game = $this->Rummy_model->getActiveGameOnTable($val->rummy_table_id);
-                        $comission = $this->Setting_model->Setting()->admin_commission;
-                        $this->Rummy_model->MakeWinner($game->id, $game->amount, $game_users[0]->user_id, $comission);
-                        // $this->Rummy_model->MakeWinner($game->id,$amount,$game_users[0]->user_id);
+                                $this->Rummy_model->GiveGameCards($table_user_data);
+                            }
+                        }
+                        $user_card = $this->Rummy_model->GameUserCard($game->id, $chaal);
+                        if (!empty($user_card)) {
+                            $json_arr = $this->Rummy_model->GameLog($game->id, 1, 2, $chaal);
+                            $json = (empty($json_arr)) ? '' : $json_arr[0]->json;
+
+                            // Joker Card Code
+                            // $joker_num = substr(trim($game->joker,'_'), 2);
+                            // $card_num = substr(trim($user_card->card,'_'), 2);
+                            $card = "";
+
+                            // if($joker_num==$card_num)
+                            if ($user_card->card=='JKR1' || $user_card->card=='JKR2') {
+                                $arr = json_decode($json);
+
+                                $final_arr = array();
+
+                                $card_json = array();
+                                foreach ($arr as $key => $value) {
+                                    if (empty($card) && $value->card_group==0) {
+                                        $card = $value->cards[0];
+                                        //var_dump($value->cards);
+                                        $card_json['card_group'] = "0";
+                                        $card_json['cards'][0] = $user_card->card;
+                                        $final_arr[] = $card_json;
+                                        continue;
+                                    }
+
+                                    $final_arr[] = $value;
+                                }
+                                $json =  json_encode($final_arr);
+                            }
+
+                            $card = (!empty($card)) ? $card : $user_card->card;
+
+                            $table_user_data = [
+                                'game_id' => $game->id,
+                                'user_id' => $chaal,
+                                'card' => $card
+                            ];
+
+                            $this->Rummy_model->DropGameCards($table_user_data, $json, 1);
+                        }
+                    } else {
+                        $table = $this->Rummy_model->isTableAvail($val->rummy_table_id);
+                        $boot_value = $table->boot_value;
+                        $ChaalCount = $this->Rummy_model->ChaalCount($game->id, $chaal);
+
+                        $percent = ($ChaalCount>0) ? CHAAL_PERCENT : NO_CHAAL_PERCENT;
+                        $amount = round(($percent / 100) * $boot_value, 2);
+
+                        $this->Rummy_model->PackGame($chaal, $game->id, 1, '', $amount, $percent);
+                        $this->Rummy_model->MinusWallet($chaal, $amount);
+                        $game_users = $this->Rummy_model->GameUser($game->id);
+
+                        if (count($game_users)==1) {
+                            $game = $this->Rummy_model->getActiveGameOnTable($val->rummy_table_id);
+                            $comission = $this->Setting_model->Setting()->admin_commission;
+                            $this->Rummy_model->MakeWinner($game->id, $game->amount, $game_users[0]->user_id, $comission);
+                            // $this->Rummy_model->MakeWinner($game->id,$amount,$game_users[0]->user_id);
+                        }
+
+                        $table_user_data = [
+                                'table_id' => $val->rummy_table_id,
+                                'user_id' =>$chaal
+                        ];
+
+                        $this->Rummy_model->RemoveTableUser($table_user_data);
                     }
-
-                    $table_user_data = [
-                            'table_id' => $val->rummy_table_id,
-                            'user_id' =>$chaal
-                    ];
-
-                    $this->Rummy_model->RemoveTableUser($table_user_data);
 
                     // // if ($declare_count>0) {
                     // $cards = $this->Rummy_model->getMyCards($game->id, $chaal);
@@ -359,26 +424,116 @@ class Cron extends CI_Controller
                 $given_time = ($user_type==0) ? 32 : 1;
 
                 if ($time>$given_time) {
-                    $table_user_data = [
-                        'table_id' => $val->rummy_pool_table_id,
-                        'user_id' => $chaal
-                    ];
+                    $timeout_log = $this->RummyPool_model->GameLog($game->id, '', 2, $chaal, 1);
+                    // echo count($timeout_log);
+                    if (count($timeout_log)<2) {
+                        $cards = $this->RummyPool_model->getMyCards($game->id, $chaal);
 
-                    $this->RummyPool_model->RemoveTableUser($table_user_data);
-                    $this->RummyPool_model->PackGame($chaal, $game->id);
-                    $game_users = $this->RummyPool_model->GameUser($game->id);
+                        if (count($cards)<=13) {
+                            $random_card = $this->RummyPool_model->GetRamdomGameCard($game->id);
 
-                    if (count($game_users)==1) {
-                        $comission = $this->Setting_model->Setting()->admin_commission;
+                            if ($random_card) {
+                                $table_user_data = [
+                                    'game_id' => $game->id,
+                                    'user_id' => $chaal,
+                                    'card' => $random_card[0]->cards,
+                                    'added_date' => date('Y-m-d H:i:s'),
+                                    'updated_date' => date('Y-m-d H:i:s'),
+                                    'isDeleted' => 0
+                                ];
 
-                        $TotalAmount = $this->RummyPool_model->TotalAmountOnTable($val->rummy_pool_table_id);
+                                $this->RummyPool_model->GiveGameCards($table_user_data);
+                            }
+                        }
+                        $user_card = $this->RummyPool_model->GameUserCard($game->id, $chaal);
+                        if (!empty($user_card)) {
+                            $json_arr = $this->RummyPool_model->GameLog($game->id, 1, 2, $chaal);
+                            $json = (empty($json_arr)) ? '' : $json_arr[0]->json;
 
-                        $admin_winning_amt = round($TotalAmount * round($comission/100, 2));
-                        $user_winning_amt = round($TotalAmount - $admin_winning_amt, 2);
+                            // Joker Card Code
+                            // $joker_num = substr(trim($game->joker,'_'), 2);
+                            // $card_num = substr(trim($user_card->card,'_'), 2);
+                            $card = "";
 
-                        $this->RummyPool_model->MakeWinner($game->id, 0, $game_users[0]->user_id, $admin_winning_amt);
-                        $this->RummyPool_model->updateTotalWinningAmtTable($TotalAmount, $user_winning_amt, $admin_winning_amt, $val->rummy_pool_table_id, $game_users[0]->user_id);
-                        $this->RummyPool_model->AddToWallet($user_winning_amt, $game_users[0]->user_id);
+                            // if($joker_num==$card_num)
+                            if ($user_card->card=='JKR1' || $user_card->card=='JKR2') {
+                                $arr = json_decode($json);
+
+                                $final_arr = array();
+
+                                $card_json = array();
+                                foreach ($arr as $key => $value) {
+                                    if (empty($card) && $value->card_group==0) {
+                                        $card = $value->cards[0];
+                                        //var_dump($value->cards);
+                                        $card_json['card_group'] = "0";
+                                        $card_json['cards'][0] = $user_card->card;
+                                        $final_arr[] = $card_json;
+                                        continue;
+                                    }
+
+                                    $final_arr[] = $value;
+                                }
+                                $json =  json_encode($final_arr);
+                            }
+
+                            $card = (!empty($card)) ? $card : $user_card->card;
+
+                            $table_user_data = [
+                                'game_id' => $game->id,
+                                'user_id' => $chaal,
+                                'card' => $card
+                            ];
+
+                            $this->RummyPool_model->DropGameCards($table_user_data, $json, 1);
+                        }
+                    } else {
+                        $percent = CHAAL_PERCENT;
+                        $this->RummyPool_model->PackGame($chaal, $game->id, 1, '', '', $percent);
+                        $game_users = $this->RummyPool_model->GameUser($game->id);
+
+                        if (count($game_users)==1) {
+                            $amount = 0;
+                            // $this->RummyPool_model->MinusWallet($this->data['user_id'], $amount);
+                            $this->RummyPool_model->MakeWinner($game->id, $amount, $game_users[0]->user_id);
+                            $winner_data = ['points'=>0, 'table_id'=>$val->rummy_pool_table_id,'user_id'=>$game_users[0]->user_id,'game_id'=>$game->id,'json'=>''];
+                            // print_r($winner_data);
+                            $this->RummyPool_model->Declare($winner_data);
+
+                            $All_table_users = $this->RummyPool_model->TableUser($val->rummy_pool_table_id);
+                            if (count($All_table_users)>=2) {
+                                $exceed_count = 1;
+                                $user_ids = array();
+                                foreach ($All_table_users as $key => $value) {
+                                    if ($value->total_points>MAX_POINT) {
+                                        $exceed_count++;
+                                        $user_ids[] = $value->user_id;
+                                    } else {
+                                        $winner_user_id = $value->user_id;
+                                    }
+                                }
+
+                                if (count($All_table_users)==$exceed_count) {
+                                    // Remove From Table Code
+                                    foreach ($user_ids as $va) {
+                                        $table_user_data = [
+                                            'table_id' => $val->rummy_pool_table_id,
+                                            'user_id' =>$va
+                                        ];
+
+                                        $this->RummyPool_model->RemoveTableUser($table_user_data);
+                                    }
+                                    // // Make Winner Code
+                                    $comission = $this->Setting_model->Setting()->admin_commission;
+                                    $TotalAmount = $this->RummyPool_model->TotalAmountOnTable($user[0]->rummy_pool_table_id);
+                                    $admin_winning_amt = round($TotalAmount * round($comission/100, 2));
+                                    $user_winning_amt = round($TotalAmount - $admin_winning_amt, 2);
+
+                                    $this->RummyPool_model->updateTotalWinningAmtTable($TotalAmount, $user_winning_amt, $admin_winning_amt, $val->rummy_pool_table_id, $winner_user_id);
+                                    $this->RummyPool_model->AddToWallet($user_winning_amt, $winner_user_id);
+                                }
+                            }
+                        }
                     }
                 }
             }
