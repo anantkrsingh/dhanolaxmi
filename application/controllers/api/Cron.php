@@ -635,10 +635,15 @@ class Cron extends CI_Controller
                         $AnderBetAmount = $this->AnderBahar_model->TotalBetAmount($game_data[0]->id, ANDER);
                         $BaharBetAmount = $this->AnderBahar_model->TotalBetAmount($game_data[0]->id, BAHAR);
 
-                        if ($AnderBetAmount>0 || $BaharBetAmount>0) {
-                            $winning = ($AnderBetAmount>$BaharBetAmount) ? BAHAR : ANDER; //0=ander,1=bahar
-                        } else {
+                        $setting = $this->Setting_model->Setting();
+                        if ($setting->ander_bahar_random==1) {
                             $winning = RAND(ANDER, BAHAR); //0=ander,1=bahar
+                        } else {
+                            if ($AnderBetAmount>0 || $BaharBetAmount>0) {
+                                $winning = ($AnderBetAmount>$BaharBetAmount) ? BAHAR : ANDER; //0=ander,1=bahar
+                            } else {
+                                $winning = RAND(ANDER, BAHAR); //0=ander,1=bahar
+                            }
                         }
 
                         $exit = false;
@@ -732,12 +737,17 @@ class Cron extends CI_Controller
                         $TigerBetAmount = $this->DragonTiger_model->TotalBetAmount($game_data[0]->id, TIGER)*2;
                         $TieBetAmount = $this->DragonTiger_model->TotalBetAmount($game_data[0]->id, TIE)*11;
 
-                        if ($DragonBetAmount==0 && $TigerBetAmount==0 && $TieBetAmount==0) {
+                        $setting = $this->Setting_model->Setting();
+                        if ($setting->dragon_tiger_random==1) {
                             $winning = RAND(0, 2);
-                        } elseif ($DragonBetAmount>$TieBetAmount && $TigerBetAmount>$TieBetAmount) {
-                            $winning = TIE;
                         } else {
-                            $winning = ($DragonBetAmount>$TigerBetAmount) ? TIGER : DRAGON; //0=Dragon,1=Tiger
+                            if ($DragonBetAmount==0 && $TigerBetAmount==0 && $TieBetAmount==0) {
+                                $winning = RAND(0, 2);
+                            } elseif ($DragonBetAmount>$TieBetAmount && $TigerBetAmount>$TieBetAmount) {
+                                $winning = TIE;
+                            } else {
+                                $winning = ($DragonBetAmount>$TigerBetAmount) ? TIGER : DRAGON; //0=Dragon,1=Tiger
+                            }
                         }
 
                         if ($winning==TIE) {
@@ -840,13 +850,18 @@ class Cron extends CI_Controller
 
                 if ($game_data[0]->status==0) {
                     if ((strtotime($game_data[0]->added_date)+DRAGON_TIME_FOR_BET)<=time()) {
-                        $DragonBetAmount = $this->HeadTail_model->TotalBetAmount($game_data[0]->id, DRAGON)*2;
-                        $TigerBetAmount = $this->HeadTail_model->TotalBetAmount($game_data[0]->id, TIGER)*2;
+                        $DragonBetAmount = $this->HeadTail_model->TotalBetAmount($game_data[0]->id, HEAD)*2;
+                        $TigerBetAmount = $this->HeadTail_model->TotalBetAmount($game_data[0]->id, TAIL)*2;
 
-                        if ($DragonBetAmount>0 || $TigerBetAmount>0) {
-                            $winning = ($DragonBetAmount>$TigerBetAmount) ? TIGER : DRAGON; //0=ander,1=bahar
+                        $setting = $this->Setting_model->Setting();
+                        if ($setting->head_tail_random==1) {
+                            $winning = RAND(HEAD, TAIL); //0=head,1=tail
                         } else {
-                            $winning = RAND(0, 1); //0=ander,1=bahar
+                            if ($DragonBetAmount>0 || $TigerBetAmount>0) {
+                                $winning = ($DragonBetAmount>$TigerBetAmount) ? TAIL : HEAD; //0=ander,1=bahar
+                            } else {
+                                $winning = RAND(HEAD, TAIL); //0=head,1=tail
+                            }
                         }
 
                         // $TieBetAmount = $this->HeadTail_model->TotalBetAmount($game_data[0]->id, TIE)*11;
@@ -880,8 +895,8 @@ class Cron extends CI_Controller
                             $card_small = $cards[0]->cards;
                         }
 
-                        $card_dragon = ($winning==DRAGON) ? $card_big : $card_small;
-                        $card_tiger = ($winning==TIGER) ? $card_big : $card_small;
+                        $card_dragon = ($winning==HEAD) ? $card_big : $card_small;
+                        $card_tiger = ($winning==TAIL) ? $card_big : $card_small;
 
                         $this->HeadTail_model->CreateMap($game_data[0]->id, $card_dragon);
                         $this->HeadTail_model->CreateMap($game_data[0]->id, $card_tiger);
@@ -983,7 +998,12 @@ class Cron extends CI_Controller
 
                             //1=High Card, 2=Pair, 3=Color, 4=Sequence, 5=Pure Sequence, 6=Set
                             // $total = $HighCardAmount+$PairAmount+$ColorAmount+$SequenceAmount+$PureSequenceAmount+$SetAmount;
-                            if ($SequenceAmount>0 || $PureSequenceAmount>0) {
+                            $setting = $this->Setting_model->Setting();
+                            if ($setting->jackpot_random==1) {
+                                $arr = ['HIGH_CARD','PAIR','COLOR','SEQUENCE','PURE_SEQUENCE'];
+                                $min = $arr[array_rand($arr)];
+                            } else {
+                                // if ($SequenceAmount>0 || $PureSequenceAmount>0) {
                                 $arr['HIGH_CARD'] = $HighCardAmount*HIGH_CARD_MULTIPLY;
                                 $arr['PAIR'] = $PairAmount*PAIR_MULTIPLY;
                                 $arr['COLOR'] = $ColorAmount*COLOR_MULTIPLY;
@@ -1013,9 +1033,10 @@ class Cron extends CI_Controller
                                 if (!empty($rand_array)) {
                                     $min = $rand_array[array_rand($rand_array)];
                                 }
-                            } else {
-                                $arr = ['HIGH_CARD','PAIR','COLOR','SEQUENCE','PURE_SEQUENCE'];
-                                $min = $arr[array_rand($arr)];
+                                // } else {
+    //     $arr = ['HIGH_CARD','PAIR','COLOR','SEQUENCE','PURE_SEQUENCE'];
+    //     $min = $arr[array_rand($arr)];
+                                // }
                             }
                         }
 
@@ -1452,23 +1473,23 @@ class Cron extends CI_Controller
 
                         if ($winning_rule>0) {
                             switch ($winning_rule) {
-                                case (RB_PAIR+1):
+                                case (RB_PAIR-1):
                                     $multiply_rule = RB_PAIR_MULTIPLE;
                                     break;
 
-                                case (RB_COLOR+1):
+                                case (RB_COLOR-1):
                                     $multiply_rule = RB_COLOR_MULTIPLE;
                                     break;
 
-                                case (RB_SEQUENCE+1):
+                                case (RB_SEQUENCE-1):
                                     $multiply_rule = RB_SEQUENCE_MULTIPLE;
                                     break;
 
-                                case (RB_PURE_SEQUENCE+1):
+                                case (RB_PURE_SEQUENCE-1):
                                     $multiply_rule = RB_PURE_SEQUENCE_MULTIPLE;
                                     break;
 
-                                case (RB_SET+1):
+                                case (RB_SET-1):
                                     $multiply_rule = RB_SET_MULTIPLE;
                                     break;
 
@@ -1476,7 +1497,7 @@ class Cron extends CI_Controller
                                     $multiply_rule = 0;
                                     break;
                             }
-                            $bets = $this->RedBlack_model->ViewBet("", $game_data[0]->id, $winning_rule);
+                            $bets = $this->RedBlack_model->ViewBet("", $game_data[0]->id, $winning_rule+1);
                             if ($bets && $multiply_rule>0) {
                                 // print_r($bets);
                                 $comission = $this->Setting_model->Setting()->admin_commission;
@@ -1532,13 +1553,17 @@ class Cron extends CI_Controller
                         $DownBetAmount = $this->SevenUp_model->TotalBetAmount($game_data[0]->id, DOWN);
                         $TieBetAmount = $this->SevenUp_model->TotalBetAmount($game_data[0]->id, TIE);
                         // $winning = ($UpBetAmount>$DownBetAmount) ? DOWN : UP; //0=Down,1=Up
-
-                        if ($DownBetAmount==0 || $UpBetAmount==0 || $TieBetAmount==0) {
+                        $setting = $this->Setting_model->Setting();
+                        if ($setting->up_down_random==1) {
                             $winning = RAND(0, 2);
-                        } elseif ($DownBetAmount>$TieBetAmount && $UpBetAmount>$TieBetAmount) {
-                            $winning = TIE;
                         } else {
-                            $winning = ($UpBetAmount>$DownBetAmount) ? DOWN : UP; //0=Dragon,1=Tiger
+                            if ($DownBetAmount==0 || $UpBetAmount==0 || $TieBetAmount==0) {
+                                $winning = RAND(0, 2);
+                            } elseif ($DownBetAmount>$TieBetAmount && $UpBetAmount>$TieBetAmount) {
+                                $winning = TIE;
+                            } else {
+                                $winning = ($UpBetAmount>$DownBetAmount) ? DOWN : UP; //0=Dragon,1=Tiger
+                            }
                         }
 
                         $winning_number = ($winning==DOWN) ? rand(2, 6) : (($winning==UP) ? rand(8, 12) : 7);
@@ -1623,18 +1648,23 @@ class Cron extends CI_Controller
                         $LamborghiniAmount = $this->CarRoulette_model->TotalBetAmount($game_data[0]->id, LAMBORGHINI);
                         $FerrariAmount = $this->CarRoulette_model->TotalBetAmount($game_data[0]->id, FERRARI);
 
-                        $arr['TOYOTA'] = $ToyotaAmount*TOYOTA_MULTIPLY;
-                        $arr['MAHINDRA'] = $MahindraAmount*MAHINDRA_MULTIPLY;
-                        $arr['AUDI'] = $AudiAmount*AUDI_MULTIPLY;
-                        $arr['BMW'] = $BmwAmount*BMW_MULTIPLY;
-                        $arr['MERCEDES'] = $MercedesAmount*MERCEDES_MULTIPLY;
-                        $arr['PORSCHE'] = $PorscheAmount*PORSCHE_MULTIPLY;
-                        $arr['LAMBORGHINI'] = $LamborghiniAmount*LAMBORGHINI_MULTIPLY;
-                        $arr['FERRARI'] = $FerrariAmount*FERRARI_MULTIPLY;
-                        $min_arr = array_keys($arr, min($arr));
-                        $min = $min_arr[0];
-                        // }
-
+                        $setting = $this->Setting_model->Setting();
+                        if ($setting->car_roulette_random==1) {
+                            $arr = ['TOYOTA','MAHINDRA','AUDI','BMW','MERCEDES','PORSCHE','LAMBORGHINI','FERRARI'];
+                            $min = $arr[array_rand($arr)];
+                        } else {
+                            $arr['TOYOTA'] = $ToyotaAmount*TOYOTA_MULTIPLY;
+                            $arr['MAHINDRA'] = $MahindraAmount*MAHINDRA_MULTIPLY;
+                            $arr['AUDI'] = $AudiAmount*AUDI_MULTIPLY;
+                            $arr['BMW'] = $BmwAmount*BMW_MULTIPLY;
+                            $arr['MERCEDES'] = $MercedesAmount*MERCEDES_MULTIPLY;
+                            $arr['PORSCHE'] = $PorscheAmount*PORSCHE_MULTIPLY;
+                            $arr['LAMBORGHINI'] = $LamborghiniAmount*LAMBORGHINI_MULTIPLY;
+                            $arr['FERRARI'] = $FerrariAmount*FERRARI_MULTIPLY;
+                            $min_arr = array_keys($arr, min($arr));
+                            $min = $min_arr[0];
+                            // }
+                        }
                         $multiply = 0;
 
                         switch ($min) {
@@ -1747,16 +1777,22 @@ class Cron extends CI_Controller
                         $WhaleAmount = $this->AnimalRoulette_model->TotalBetAmount($game_data[0]->id, WHALE);
                         $LionAmount = $this->AnimalRoulette_model->TotalBetAmount($game_data[0]->id, LION);
 
-                        $arr['TIGER'] = $TigerAmount*TIGER_MULTIPLY;
-                        $arr['SNAKE'] = $SnakeAmount*SNAKE_MULTIPLY;
-                        $arr['SHARK'] = $SharkAmount*SHARK_MULTIPLY;
-                        $arr['FOX'] = $FoxAmount*FOX_MULTIPLY;
-                        $arr['CHEETAH'] = $CheetahAmount*CHEETAH_MULTIPLY;
-                        $arr['BEAR'] = $BearAmount*BEAR_MULTIPLY;
-                        $arr['WHALE'] = $WhaleAmount*WHALE_MULTIPLY;
-                        $arr['LION'] = $LionAmount*LION_MULTIPLY;
-                        $min_arr = array_keys($arr, min($arr));
-                        $min = $min_arr[0];
+                        $setting = $this->Setting_model->Setting();
+                        if ($setting->animal_roulette_random==1) {
+                            $arr = ['TIGER','SNAKE','SHARK','FOX','CHEETAH','BEAR','WHALE','LION'];
+                            $min = $arr[array_rand($arr)];
+                        } else {
+                            $arr['TIGER'] = $TigerAmount*TIGER_MULTIPLY;
+                            $arr['SNAKE'] = $SnakeAmount*SNAKE_MULTIPLY;
+                            $arr['SHARK'] = $SharkAmount*SHARK_MULTIPLY;
+                            $arr['FOX'] = $FoxAmount*FOX_MULTIPLY;
+                            $arr['CHEETAH'] = $CheetahAmount*CHEETAH_MULTIPLY;
+                            $arr['BEAR'] = $BearAmount*BEAR_MULTIPLY;
+                            $arr['WHALE'] = $WhaleAmount*WHALE_MULTIPLY;
+                            $arr['LION'] = $LionAmount*LION_MULTIPLY;
+                            $min_arr = array_keys($arr, min($arr));
+                            $min = $min_arr[0];
+                        }
                         // }
 
                         $multiply = 0;
@@ -1875,16 +1911,22 @@ class Cron extends CI_Controller
                         $VioletAmount = $this->ColorPrediction_model->TotalBetAmount($game_data[0]->id, VIOLET);
                         $RedAmount = $this->ColorPrediction_model->TotalBetAmount($game_data[0]->id, RED);
 
-                        $arr['ZERO'] = ($ZeroAmount*NUMBER_MULTIPLE)+($RedAmount*GREEN_RED_HALF_MULTIPLE)+($VioletAmount*VIOLET_MULTIPLE);
-                        $arr['ONE'] = ($OneAmount*NUMBER_MULTIPLE)+($GreenAmount*GREEN_RED_MULTIPLE);
-                        $arr['TWO'] = ($TwoAmount*NUMBER_MULTIPLE)+($RedAmount*GREEN_RED_MULTIPLE);
-                        $arr['THREE'] = ($ThreeAmount*NUMBER_MULTIPLE)+($GreenAmount*GREEN_RED_MULTIPLE);
-                        $arr['FOUR'] = ($FourAmount*NUMBER_MULTIPLE)+($RedAmount*GREEN_RED_MULTIPLE);
-                        $arr['FIVE'] = ($FiveAmount*NUMBER_MULTIPLE)+($GreenAmount*GREEN_RED_HALF_MULTIPLE)+($VioletAmount*VIOLET_MULTIPLE);
-                        $arr['SIX'] = ($SixAmount*NUMBER_MULTIPLE)+($RedAmount*GREEN_RED_MULTIPLE);
-                        $arr['SEVEN'] = ($SevenAmount*NUMBER_MULTIPLE)+($GreenAmount*GREEN_RED_MULTIPLE);
-                        $arr['EIGHT'] = ($EightAmount*NUMBER_MULTIPLE)+($RedAmount*GREEN_RED_MULTIPLE);
-                        $arr['NINE'] = ($NineAmount*NUMBER_MULTIPLE)+($GreenAmount*GREEN_RED_MULTIPLE);
+                        $setting = $this->Setting_model->Setting();
+                        if ($setting->animal_roulette_random==1) {
+                            $arr = ['ZERO','ONE','TWO','THREE','FOUR','FIVE','SIX','SEVEN','EIGHT','NINE'];
+                            $min = $arr[array_rand($arr)];
+                        } else {
+                            $arr['ZERO'] = ($ZeroAmount*NUMBER_MULTIPLE)+($RedAmount*GREEN_RED_HALF_MULTIPLE)+($VioletAmount*VIOLET_MULTIPLE);
+                            $arr['ONE'] = ($OneAmount*NUMBER_MULTIPLE)+($GreenAmount*GREEN_RED_MULTIPLE);
+                            $arr['TWO'] = ($TwoAmount*NUMBER_MULTIPLE)+($RedAmount*GREEN_RED_MULTIPLE);
+                            $arr['THREE'] = ($ThreeAmount*NUMBER_MULTIPLE)+($GreenAmount*GREEN_RED_MULTIPLE);
+                            $arr['FOUR'] = ($FourAmount*NUMBER_MULTIPLE)+($RedAmount*GREEN_RED_MULTIPLE);
+                            $arr['FIVE'] = ($FiveAmount*NUMBER_MULTIPLE)+($GreenAmount*GREEN_RED_HALF_MULTIPLE)+($VioletAmount*VIOLET_MULTIPLE);
+                            $arr['SIX'] = ($SixAmount*NUMBER_MULTIPLE)+($RedAmount*GREEN_RED_MULTIPLE);
+                            $arr['SEVEN'] = ($SevenAmount*NUMBER_MULTIPLE)+($GreenAmount*GREEN_RED_MULTIPLE);
+                            $arr['EIGHT'] = ($EightAmount*NUMBER_MULTIPLE)+($RedAmount*GREEN_RED_MULTIPLE);
+                            $arr['NINE'] = ($NineAmount*NUMBER_MULTIPLE)+($GreenAmount*GREEN_RED_MULTIPLE);
+                        }
 
                         $min_arr = array_keys($arr, min($arr));
                         $min = $min_arr[0];

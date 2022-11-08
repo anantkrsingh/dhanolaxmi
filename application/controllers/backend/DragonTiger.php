@@ -10,13 +10,15 @@ class DragonTiger extends MY_Controller
     public function index()
     {
         $AllGames = $this->DragonTiger_model->AllGames();
+        $RandomFlag = $this->DragonTiger_model->getRandomFlag('dragon_tiger_random');
         foreach ($AllGames as $key => $value) {
             $AllGames[$key]->details=$this->DragonTiger_model->ViewBet('',$value->id);
         }
         // echo '<pre>';print_r($AllGames);die;
         $data = [
-            'title' => 'Game History',
-            'AllGames' => $AllGames
+            'title' => 'Dragon Tiger History',
+            'AllGames' => $AllGames,
+            'RandomFlag'=>$RandomFlag->dragon_tiger_random
         ];
         template('dragon_tiger/index', $data);
     }
@@ -36,6 +38,16 @@ class DragonTiger extends MY_Controller
             'AllUsers' => $AllUsers
         ];
         template('dragon_tiger/show_details', $data);
+    }
+    public function ChangeStatus() {
+        
+        $Change = $this->DragonTiger_model->ChangeStatus();
+        if ( $Change ) {
+            echo 'true';
+        } else {
+            echo 'false';
+        }
+       
     }
 
 }

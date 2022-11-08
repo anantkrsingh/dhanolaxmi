@@ -10,13 +10,15 @@ class AnderBahar extends MY_Controller
     public function index()
     {
         $AllGames = $this->AnderBahar_model->AllGames();
+        $RandomFlag = $this->AnderBahar_model->getRandomFlag('ander_bahar_random');
         foreach ($AllGames as $key => $value) {
             $AllGames[$key]->details=$this->AnderBahar_model->ViewBet('',$value->id);
         }
         // echo '<pre>';print_r($AllGames);die;
         $data = [
-            'title' => 'Game History',
-            'AllGames' => $AllGames
+            'title' => 'Andar Bahar History',
+            'AllGames' => $AllGames,
+            'RandomFlag'=>$RandomFlag->ander_bahar_random
         ];
         template('ander_baher/index', $data);
     }
@@ -37,6 +39,17 @@ class AnderBahar extends MY_Controller
             'AllUsers' => $AllUsers
         ];
         template('ander_baher/show_details', $data);
+    }
+
+    public function ChangeStatus() {
+        
+        $Change = $this->AnderBahar_model->ChangeStatus();
+        if ( $Change ) {
+            echo 'true';
+        } else {
+            echo 'false';
+        }
+       
     }
 
 }

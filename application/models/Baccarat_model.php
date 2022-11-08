@@ -327,7 +327,7 @@ class Baccarat_model extends MY_Model
     public function getMultiply($winner)
     {
         $multiply = 0;
-        switch ($winning) {
+        switch ($winner) {
             case PLAYER:
                 $multiply = PLAYER_MULTIPLE;
                 break;

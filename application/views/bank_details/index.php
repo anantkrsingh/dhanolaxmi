@@ -34,11 +34,11 @@
                             <td><?= $bank->acc_no ?></td>
                             <td><img src="<?= base_url('data/post/' . strtolower($bank->passbook_img)); ?>" height="160px" width="300px"></td>
                             <td><?= date("d-m-Y h:i A", strtotime($bank->added_date)) ?></td>
-                             <td>
+                             <!-- <td>
                                 | <a href="<?= base_url('backend/BankDeatails/delete/' . $bank->id) ?>"
                                     class="btn btn-danger" data-toggle="tooltip" data-placement="top"
                                     title="Delete"><span class="fa fa-times"></span></a>
-                            </td>
+                            </td> -->
                          
                         </tr>
                         <?php }

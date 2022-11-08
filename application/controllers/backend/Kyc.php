@@ -11,7 +11,9 @@ class Kyc extends MY_Controller
     {
         $data = [
             'title' => 'Kyc Management',
-            'AllKyc' => $this->Kyc_model->AllKyc()
+            'AllKyc' => $this->Kyc_model->AllKyc(0),
+            'AllApproved' => $this->Kyc_model->AllKyc(1),
+            'AllRejected' => $this->Kyc_model->AllKyc(2)
         ];
         $data['SideBarbutton'] ='';
         template('kyc/kyc', $data);
@@ -75,7 +77,7 @@ class Kyc extends MY_Controller
     public function ReasonUpdate()
     {
         $data = [
-            'reason' => $this->input->post('reson'),
+            'reason' => $this->input->post('reason'),
             'status' => 2,
             'updated_date' => date('Y-m-d H:i:s')
         ];

@@ -30,11 +30,12 @@ class Home extends CI_Controller
         ];
         website('website/download', $data);
     }
-    
+
     public function faq()
     {
         $data = [
             'title' => 'FAQ',
+            'Setting' => $this->Setting_model->Setting(),
         ];
         website('website/faq', $data);
     }
@@ -63,7 +64,7 @@ class Home extends CI_Controller
             'title' => 'Privacy Policy',
             'Setting' => $this->Setting_model->Setting(),
         ];
-        
+
         website('website/privacy', $data);
     }
 
@@ -80,6 +81,7 @@ class Home extends CI_Controller
     {
         $data = [
             'title' => 'Security',
+            'Setting' => $this->Setting_model->Setting(),
         ];
         website('website/security', $data);
     }

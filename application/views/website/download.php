@@ -1,5 +1,5 @@
 <div class="container-main">
-    <div class="banner banner_small" style="background: url(<?= BANNER_URL.$banner->banner ?>) no-repeat center;">
+    <div class="banner banner_small" style="background: url(<?= BANNER_URL.$banner->banner ?>) no-repeat center;color:white">
         <div class="text">
             <h1>
                 <?= PROJECT_NAME ?>

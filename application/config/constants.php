@@ -139,6 +139,9 @@ define('DRAGON', 0);
 define('TIGER', 1);
 define('TIE', 2);
 
+define('HEAD', 0);
+define('TAIL', 1);
+
 define('DRAGON_MULTIPLY', 2);
 // define('TIGER_MULTIPLY', 2);
 define('TIE_MULTIPLY', 9);

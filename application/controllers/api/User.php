@@ -175,6 +175,7 @@ class User extends REST_Controller
             $this->response($data, HTTP_OK);
             exit();
         } else {
+            $setting = $this->Users_model->Setting();
             $referral_user = array();
             if (!empty($this->data['referral_code'])) {
                 $referral_user = $this->Users_model->IsValidReferral($this->data['referral_code']);
@@ -201,7 +202,6 @@ class User extends REST_Controller
             $user_id = $this->Users_model->RegisterUserEmail($this->data['email'], $this->data['name'], $this->data['source'], $profile_pic, $gender, $token);
             $this->Users_model->UpdateReferralCode($user_id, $setting->referral_id);
             if (!empty($referral_user)) {
-                $setting = $this->Users_model->Setting();
                 $this->Users_model->UpdateWallet($referral_user[0]->id, $setting->referral_amount, $user_id);
             }
             $data['message'] = 'Success';
@@ -1013,6 +1013,7 @@ class User extends REST_Controller
 
         $user_kyc = $this->Users_model->UserKyc($user_id);
         if ($user_kyc) {
+            $update_data['status'] = 0;
             $this->Users_model->UpdateUserKyc($user_id, $update_data);
         } else {
             $update_data['user_id'] = $user_id;

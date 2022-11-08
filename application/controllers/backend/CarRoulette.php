@@ -10,13 +10,15 @@ class CarRoulette extends MY_Controller
     public function index()
     {
         $AllGames = $this->CarRoulette_model->AllGames();
+        $RandomFlag = $this->CarRoulette_model->getRandomFlag('car_roulette_random');
         foreach ($AllGames as $key => $value) {
             $AllGames[$key]->details=$this->CarRoulette_model->ViewBet('',$value->id);
         }
         // echo '<pre>';print_r($AllGames);die;
         $data = [
-            'title' => 'Game History',
-            'AllGames' => $AllGames
+            'title' => 'Car Roulette History',
+            'AllGames' => $AllGames,
+            'RandomFlag'=>$RandomFlag->car_roulette_random
         ];
         template('car_roulette/index', $data);
     }
@@ -37,6 +39,17 @@ class CarRoulette extends MY_Controller
             'AllUsers' => $AllUsers
         ];
         template('car_roulette/show_details', $data);
+    }
+
+    public function ChangeStatus() {
+        
+        $Change = $this->CarRoulette_model->ChangeStatus();
+        if ( $Change ) {
+            echo 'true';
+        } else {
+            echo 'false';
+        }
+       
     }
 
 }

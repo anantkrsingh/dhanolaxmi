@@ -265,7 +265,7 @@ class Users_model extends MY_Model
     public function InsertUserBankDetails($data)
     {
         $this->db->insert('tbl_users_bank_details', $data);
-        return $this->db->insert_id;
+        return $this->db->insert_id();
     }
 
     public function UpdateUserKyc($UserId, $data)
@@ -278,7 +278,7 @@ class Users_model extends MY_Model
     public function InsertUserKyc($data)
     {
         $this->db->insert('tbl_users_kyc', $data);
-        return $this->db->insert_id;
+        return $this->db->insert_id();
     }
 
     public function ChangeStatus($id, $status)

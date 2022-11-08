@@ -278,4 +278,21 @@ class DragonTiger_model extends MY_Model
         // die();
         return $Query->result();
     }
+
+    public function getRandomFlag($column)
+    {
+        $this->db->select($column);
+        $this->db->from('tbl_admin');
+        $this->db->order_by('id', 'DESC');
+        $Query = $this->db->get();
+        return $Query->row();
+    }
+    public function ChangeStatus()
+    {
+        $return = false;
+        $this->db->set('dragon_tiger_random', $this->input->post('type')); //value that used to update column
+        // $this->db->where('id', $id); //which row want to upgrade
+        $return = $this->db->update('tbl_admin');  //table name
+        return $return;
+    }
 }

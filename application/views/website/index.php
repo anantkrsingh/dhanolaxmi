@@ -1,5 +1,5 @@
     <div class="container-main">
-        <div class="banner banner-bg">
+        <div class="banner banner-bg" style="color:white">
             <div class="text">
                 <h1>JOIN <?= PROJECT_NAME ?> <br>& GET DAILY CASH BONUS</h1>
                 <p><?= PROJECT_NAME ?></p>

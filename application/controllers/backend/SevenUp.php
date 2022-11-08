@@ -10,13 +10,15 @@ class SevenUp extends MY_Controller
     public function index()
     {
         $AllGames = $this->SevenUp_model->AllGames();
+        $RandomFlag = $this->SevenUp_model->getRandomFlag('up_down_random');
         foreach ($AllGames as $key => $value) {
             $AllGames[$key]->details=$this->SevenUp_model->ViewBet('',$value->id);
         }
         // echo '<pre>';print_r($AllGames);die;
         $data = [
-            'title' => 'Game History',
-            'AllGames' => $AllGames
+            'title' => 'Seven Up History',
+            'AllGames' => $AllGames,
+            'RandomFlag'=>$RandomFlag->up_down_random
         ];
         template('seven_up/index', $data);
     }
@@ -38,5 +40,14 @@ class SevenUp extends MY_Controller
         ];
         template('seven_up/show_details', $data);
     }
-
+    public function ChangeStatus() {
+        
+        $Change = $this->SevenUp_model->ChangeStatus();
+        if ( $Change ) {
+            echo 'true';
+        } else {
+            echo 'false';
+        }
+       
+    }
 }

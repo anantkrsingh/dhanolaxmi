@@ -2,12 +2,13 @@
 class Kyc_model extends MY_Model
 {
 
-    public function AllKyc()
+    public function AllKyc($status)
     {
         $this->db->select('tbl_users_kyc.*,tbl_users.name as user_name');
         $this->db->from('tbl_users_kyc');
         $this->db->join('tbl_users', 'tbl_users.id=tbl_users_kyc.user_id');
         $this->db->where('tbl_users_kyc.isDeleted', false);
+        $this->db->where('tbl_users_kyc.status', $status);
         $this->db->order_by('tbl_users_kyc.id', 'DESC');
         $Query = $this->db->get();
         return $Query->result();
