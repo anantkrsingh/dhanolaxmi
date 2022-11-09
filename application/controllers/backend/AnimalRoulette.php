@@ -11,13 +11,15 @@ class AnimalRoulette extends MY_Controller
     public function index()
     {
         $AllGames = $this->AnimalRoulette_model->AllGames();
-        foreach ($AllGames as $key => $value) {
-            $AllGames[$key]->details=$this->AnimalRoulette_model->ViewBet('', $value->id);
-        }
+        $RandomFlag = $this->AnimalRoulette_model->getRandomFlag('animal_roulette_random');
+        // foreach ($AllGames as $key => $value) {
+        //     $AllGames[$key]->details=$this->AnimalRoulette_model->ViewBet('', $value->id);
+        // }
         // echo '<pre>';print_r($AllGames);die;
         $data = [
-            'title' => 'Game History',
-            'AllGames' => $AllGames
+            'title' => 'Animal Roulette History',
+            'AllGames' => $AllGames,
+            'RandomFlag'=>$RandomFlag->animal_roulette_random
         ];
         template('animal_roulette/index', $data);
     }
@@ -38,5 +40,15 @@ class AnimalRoulette extends MY_Controller
             'AllUsers' => $AllUsers
         ];
         template('animal_roulette/show_details', $data);
+    }
+    public function ChangeStatus() {
+        
+        $Change = $this->AnimalRoulette_model->ChangeStatus();
+        if ( $Change ) {
+            echo 'true';
+        } else {
+            echo 'false';
+        }
+       
     }
 }

@@ -1,31 +1,31 @@
 <?php
-class Baccarat extends MY_Controller
+class RedBlack extends MY_Controller
 {
     public function __construct()
     {
         parent::__construct();
-        $this->load->model(['Baccarat_model','Users_model']);
+        $this->load->model(['RedBlack_model','Users_model']);
     }
 
     public function index()
     {
-        $AllGames = $this->Baccarat_model->AllGames();
-        $RandomFlag = $this->Baccarat_model->getRandomFlag('bacarate_random');
+        $AllGames = $this->RedBlack_model->AllGames();
+        $RandomFlag = $this->RedBlack_model->getRandomFlag('red_black_random');
         // foreach ($AllGames as $key => $value) {
-        //     $AllGames[$key]->details=$this->Baccarat_model->ViewBet('',$value->id);
+        //     $AllGames[$key]->details=$this->RedBlack_model->ViewBet('',$value->id);
         // }
         // echo '<pre>';print_r($AllGames);die;
         $data = [
-            'title' => 'Baccarat History',
+            'title' => 'Red Vs Black History',
             'AllGames' => $AllGames,
-            'RandomFlag'=>$RandomFlag->bacarate_random
+            'RandomFlag'=>$RandomFlag->red_black_random
         ];
-        template('baccarat/index', $data);
+        template('red_black/index', $data);
     }
 
-    public function baccarat_bet($id){
+    public function RedBlackBet($id){
 
-        $AllUsers = $this->Baccarat_model->ViewBet('',$id);
+        $AllUsers = $this->RedBlack_model->ViewBet('',$id);
         foreach ($AllUsers as $key => $value) {
             $user_details= $this->Users_model->UserProfile($value->user_id);
             if($user_details){
@@ -38,11 +38,11 @@ class Baccarat extends MY_Controller
             'title' => 'Game History',
             'AllUsers' => $AllUsers
         ];
-        template('baccarat/show_details', $data);
+        template('red_black/show_details', $data);
     }
     public function ChangeStatus() {
         
-        $Change = $this->Baccarat_model->ChangeStatus();
+        $Change = $this->RedBlack_model->ChangeStatus();
         if ( $Change ) {
             echo 'true';
         } else {

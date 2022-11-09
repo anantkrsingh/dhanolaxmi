@@ -176,12 +176,14 @@ class ColorPrediction_model extends MY_Model
         return $Query->result();
     }
 
-    public function TotalBetAmount($color_prediction_id, $bet)
+    public function TotalBetAmount($color_prediction_id, $bet='')
     {
         $this->db->select('SUM(amount) as amount', false);
         $this->db->from('tbl_color_prediction_bet');
         $this->db->where('color_prediction_id', $color_prediction_id);
-        $this->db->where('bet', $bet);
+        if ($bet!=='') {
+            $this->db->where('bet', $bet);
+        }
         $Query = $this->db->get();
         // echo $this->db->last_query();
         return $Query->row()->amount;
@@ -265,6 +267,7 @@ class ColorPrediction_model extends MY_Model
 
     public function AllGames()
     {
+        $this->db->select('tbl_color_prediction.*,(select count(id) from tbl_color_prediction_bet where tbl_color_prediction.id=tbl_color_prediction_bet.color_prediction_id) as total_users');
         $this->db->from('tbl_color_prediction');
         $this->db->order_by('id', 'DESC');
         $this->db->limit(10);
@@ -284,5 +287,21 @@ class ColorPrediction_model extends MY_Model
         // echo $this->db->last_query();
         // die();
         return $Query->result();
+    }
+    public function getRandomFlag($column)
+    {
+        $this->db->select($column);
+        $this->db->from('tbl_admin');
+        $this->db->order_by('id', 'DESC');
+        $Query = $this->db->get();
+        return $Query->row();
+    }
+    public function ChangeStatus()
+    {
+        $return = false;
+        $this->db->set('color_prediction_random', $this->input->post('type')); //value that used to update column
+        // $this->db->where('id', $id); //which row want to upgrade
+        $return = $this->db->update('tbl_admin');  //table name
+        return $return;
     }
 }

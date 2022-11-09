@@ -1,31 +1,31 @@
 <?php
-class Baccarat extends MY_Controller
+class Roulette extends MY_Controller
 {
     public function __construct()
     {
         parent::__construct();
-        $this->load->model(['Baccarat_model','Users_model']);
+        $this->load->model(['Roulette_model','Users_model']);
     }
 
     public function index()
     {
-        $AllGames = $this->Baccarat_model->AllGames();
-        $RandomFlag = $this->Baccarat_model->getRandomFlag('bacarate_random');
+        $AllGames = $this->Roulette_model->AllGames();
+        $RandomFlag = $this->Roulette_model->getRandomFlag('roulette_random');
         // foreach ($AllGames as $key => $value) {
-        //     $AllGames[$key]->details=$this->Baccarat_model->ViewBet('',$value->id);
+        //     $AllGames[$key]->details=$this->Roulette_model->ViewBet('',$value->id);
         // }
         // echo '<pre>';print_r($AllGames);die;
         $data = [
-            'title' => 'Baccarat History',
+            'title' => 'Roulette History',
             'AllGames' => $AllGames,
-            'RandomFlag'=>$RandomFlag->bacarate_random
+            'RandomFlag'=>$RandomFlag->roulette_random
         ];
-        template('baccarat/index', $data);
+        template('roulette/index', $data);
     }
 
-    public function baccarat_bet($id){
+    public function RouletteBet($id){
 
-        $AllUsers = $this->Baccarat_model->ViewBet('',$id);
+        $AllUsers = $this->Roulette_model->ViewBet('',$id);
         foreach ($AllUsers as $key => $value) {
             $user_details= $this->Users_model->UserProfile($value->user_id);
             if($user_details){
@@ -35,14 +35,14 @@ class Baccarat extends MY_Controller
             }
         }
         $data = [
-            'title' => 'Game History',
+            'title' => 'Roulette History',
             'AllUsers' => $AllUsers
         ];
-        template('baccarat/show_details', $data);
+        template('roulette/show_details', $data);
     }
     public function ChangeStatus() {
         
-        $Change = $this->Baccarat_model->ChangeStatus();
+        $Change = $this->Roulette_model->ChangeStatus();
         if ( $Change ) {
             echo 'true';
         } else {

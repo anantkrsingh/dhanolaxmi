@@ -10,9 +10,7 @@
                         <tr>
                             <th>Sr. No.</th>
                             <th>Boot Value</th>
-                            <th>Maximum Blind</th>
-                            <th>Chaal Value</th>
-                            <th>Pot Limit</th>
+                            <th>Pool Point</th>
                             <th>Added Date</th>
                             <th>Action</th>
                         </tr>
@@ -22,13 +20,11 @@
                         $i = 0;
                         foreach ($AllPoolTableMaster as $key => $PoolTableMaster) {
                             $i++;
-                        ?>
+                            ?>
                         <tr>
                             <td><?= $i ?></td>
                             <td><?= $PoolTableMaster->boot_value ?></td>
-                            <td><?= $PoolTableMaster->maximum_blind ?></td>
-                            <td><?= $PoolTableMaster->chaal_limit ?></td>
-                            <td><?= $PoolTableMaster->pot_limit ?></td>
+                            <td><?= $PoolTableMaster->pool_point ?></td>
                             <td><?= date("d-m-Y", strtotime($PoolTableMaster->added_date)) ?></td>
                             <td>
                                 <a href="<?= base_url('backend/PoolTableMaster/edit/' . $PoolTableMaster->id) ?>"

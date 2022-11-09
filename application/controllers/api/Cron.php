@@ -394,6 +394,7 @@ class Cron extends CI_Controller
 
         foreach ($tables as $val) {
             $game = $this->RummyPool_model->getActiveGameOnTable($val->rummy_pool_table_id);
+            $table = $this->RummyPool_model->isTableAvail($val->rummy_pool_table_id);
             if ($game) {
                 $chaal = 0;
                 $isChaal = false;
@@ -489,7 +490,7 @@ class Cron extends CI_Controller
                         }
                     } else {
                         $percent = CHAAL_PERCENT;
-                        $this->RummyPool_model->PackGame($chaal, $game->id, 1, '', '', $percent);
+                        $this->RummyPool_model->PackGame($chaal, $val->rummy_pool_table_id, $game->id, 1, '', '', $percent);
                         $game_users = $this->RummyPool_model->GameUser($game->id);
 
                         if (count($game_users)==1) {
@@ -505,7 +506,8 @@ class Cron extends CI_Controller
                                 $exceed_count = 1;
                                 $user_ids = array();
                                 foreach ($All_table_users as $key => $value) {
-                                    if ($value->total_points>MAX_POINT) {
+                                    // if ($value->total_points>MAX_POINT) {
+                                    if ($value->total_points>$table->pool_point) {
                                         $exceed_count++;
                                         $user_ids[] = $value->user_id;
                                     } else {
@@ -555,6 +557,7 @@ class Cron extends CI_Controller
                 $time = time()-strtotime($game_log[0]->added_date);
 
                 $game_users = $this->RummyDeal_model->GameAllUser($game->id);
+                // print_r($game_users);
 
                 $element = 0;
                 foreach ($game_users as $key => $value) {
@@ -578,26 +581,95 @@ class Cron extends CI_Controller
                 $given_time = ($user_type==0) ? 32 : 1;
 
                 if ($time>$given_time) {
-                    $table_user_data = [
-                        'table_id' => $val->rummy_deal_table_id,
-                        'user_id' => $chaal
-                    ];
+                    // echo $chaal;
+                    $timeout_log = $this->RummyDeal_model->GameLog($game->id, '', 2, $chaal, 1);
+                    // echo count($timeout_log);
+                    // exit;
+                    if (count($timeout_log)<2) {
+                        $cards = $this->RummyDeal_model->getMyCards($game->id, $chaal);
 
-                    $this->RummyDeal_model->RemoveTableUser($table_user_data);
-                    $this->RummyDeal_model->PackGame($chaal, $game->id);
-                    $game_users = $this->RummyDeal_model->GameUser($game->id);
+                        if (count($cards)<=13) {
+                            $random_card = $this->RummyDeal_model->GetRamdomGameCard($game->id);
 
-                    if (count($game_users)==1) {
-                        $comission = $this->Setting_model->Setting()->admin_commission;
+                            if ($random_card) {
+                                $table_user_data = [
+                                    'game_id' => $game->id,
+                                    'user_id' => $chaal,
+                                    'card' => $random_card[0]->cards,
+                                    'added_date' => date('Y-m-d H:i:s'),
+                                    'updated_date' => date('Y-m-d H:i:s'),
+                                    'isDeleted' => 0
+                                ];
 
-                        $TotalAmount = $this->RummyDeal_model->TotalAmountOnTable($val->rummy_deal_table_id);
+                                $this->RummyDeal_model->GiveGameCards($table_user_data);
+                            }
+                        }
+                        $user_card = $this->RummyDeal_model->GameUserCard($game->id, $chaal);
+                        if (!empty($user_card)) {
+                            $json_arr = $this->RummyDeal_model->GameLog($game->id, 1, 2, $chaal);
+                            $json = (empty($json_arr)) ? '' : $json_arr[0]->json;
 
-                        $admin_winning_amt = round($TotalAmount * round($comission/100, 2));
-                        $user_winning_amt = round($TotalAmount - $admin_winning_amt, 2);
+                            // Joker Card Code
+                            // $joker_num = substr(trim($game->joker,'_'), 2);
+                            // $card_num = substr(trim($user_card->card,'_'), 2);
+                            $card = "";
 
-                        $this->RummyDeal_model->MakeWinner($game->id, 0, $game_users[0]->user_id, $admin_winning_amt);
-                        $this->RummyDeal_model->updateTotalWinningAmtTable($TotalAmount, $user_winning_amt, $admin_winning_amt, $val->rummy_deal_table_id, $game_users[0]->user_id);
-                        $this->RummyDeal_model->AddToWallet($user_winning_amt, $game_users[0]->user_id);
+                            // if($joker_num==$card_num)
+                            if ($user_card->card=='JKR1' || $user_card->card=='JKR2') {
+                                $arr = json_decode($json);
+
+                                $final_arr = array();
+
+                                $card_json = array();
+                                foreach ($arr as $key => $value) {
+                                    if (empty($card) && $value->card_group==0) {
+                                        $card = $value->cards[0];
+                                        //var_dump($value->cards);
+                                        $card_json['card_group'] = "0";
+                                        $card_json['cards'][0] = $user_card->card;
+                                        $final_arr[] = $card_json;
+                                        continue;
+                                    }
+
+                                    $final_arr[] = $value;
+                                }
+                                $json =  json_encode($final_arr);
+                            }
+
+                            $card = (!empty($card)) ? $card : $user_card->card;
+
+                            $table_user_data = [
+                                'game_id' => $game->id,
+                                'user_id' => $chaal,
+                                'card' => $card
+                            ];
+
+                            $this->RummyDeal_model->DropGameCards($table_user_data, $json, 1);
+                        }
+                    } else {
+                        // echo 'hello';
+                        // exit;
+                        $table_user_data = [
+                            'table_id' => $val->rummy_deal_table_id,
+                            'user_id' => $chaal
+                        ];
+
+                        $this->RummyDeal_model->RemoveTableUser($table_user_data);
+                        $this->RummyDeal_model->PackGame($chaal, $game->id, 1);
+                        $game_users = $this->RummyDeal_model->GameUser($game->id);
+
+                        if (count($game_users)==1) {
+                            $comission = $this->Setting_model->Setting()->admin_commission;
+
+                            $TotalAmount = $this->RummyDeal_model->TotalAmountOnTable($val->rummy_deal_table_id);
+
+                            $admin_winning_amt = round($TotalAmount * round($comission/100, 2));
+                            $user_winning_amt = round($TotalAmount - $admin_winning_amt, 2);
+
+                            $this->RummyDeal_model->MakeWinner($game->id, 0, $game_users[0]->user_id, $admin_winning_amt);
+                            $this->RummyDeal_model->updateTotalWinningAmtTable($TotalAmount, $user_winning_amt, $admin_winning_amt, $val->rummy_deal_table_id, $game_users[0]->user_id);
+                            $this->RummyDeal_model->AddToWallet($user_winning_amt, $game_users[0]->user_id);
+                        }
                     }
                 }
             }
@@ -850,6 +922,9 @@ class Cron extends CI_Controller
 
                 if ($game_data[0]->status==0) {
                     if ((strtotime($game_data[0]->added_date)+DRAGON_TIME_FOR_BET)<=time()) {
+                        $TotalWinningAmount = 0;
+                        $TotalBetAmount = $this->HeadTail_model->TotalBetAmount($game_data[0]->id);
+
                         $DragonBetAmount = $this->HeadTail_model->TotalBetAmount($game_data[0]->id, HEAD)*2;
                         $TigerBetAmount = $this->HeadTail_model->TotalBetAmount($game_data[0]->id, TAIL)*2;
 
@@ -907,11 +982,14 @@ class Cron extends CI_Controller
                         if ($bets) {
                             // print_r($bets);
                             $comission = $this->Setting_model->Setting()->admin_commission;
+
                             foreach ($bets as $key => $value) {
                                 // if ($winning==TIE) {
                                 //     $this->HeadTail_model->MakeWinner($value->user_id, $value->id, $value->amount*11, $comission, $game_data[0]->id);
                                 // } else {
-                                $this->HeadTail_model->MakeWinner($value->user_id, $value->id, $value->amount*2, $comission, $game_data[0]->id);
+                                $amount = $value->amount*2;
+                                $TotalWinningAmount += $amount;
+                                $this->HeadTail_model->MakeWinner($value->user_id, $value->id, $amount, $comission, $game_data[0]->id);
                                 // }
                             }
                             echo "Winning Amount Given".PHP_EOL;
@@ -920,6 +998,8 @@ class Cron extends CI_Controller
                         }
                         $update_data['status'] = 1;
                         $update_data['winning'] = $winning;
+                        $update_data['total_amount'] = $TotalBetAmount;
+                        $update_data['admin_profit'] = $TotalBetAmount - $TotalWinningAmount;
                         $update_data['updated_date'] = date('Y-m-d H:i:s');
                         $update_data['end_datetime'] = date('Y-m-d H:i:s', strtotime('+'.DRAGON_TIME_FOR_START_NEW_GAME.' seconds'));
                         $this->HeadTail_model->Update($update_data, $game_data[0]->id);
@@ -990,6 +1070,8 @@ class Cron extends CI_Controller
                     if ((strtotime($game_data[0]->added_date)+DRAGON_TIME_FOR_BET)<=time()) {
                         $min = ($this->Setting_model->Setting()->jackpot_status==1) ? 'SET' : '';
                         if ($min!='SET') {
+                            $TotalWinningAmount = 0;
+                            $TotalBetAmount = $this->Jackpot_model->TotalBetAmount($game_data[0]->id);
                             $HighCardAmount = $this->Jackpot_model->TotalBetAmount($game_data[0]->id, HIGH_CARD);
                             $PairAmount = $this->Jackpot_model->TotalBetAmount($game_data[0]->id, PAIR);
                             $ColorAmount = $this->Jackpot_model->TotalBetAmount($game_data[0]->id, COLOR);
@@ -1200,9 +1282,12 @@ class Cron extends CI_Controller
                                 if ($winning==SET) {
                                     $winning_percent = round(($value->amount/$SetAmount)*100);
                                     $winning_amount = round(($winning_percent/100)*$give_coins);
+                                    $TotalWinningAmount += $winning_amount;
                                     $this->Jackpot_model->MakeWinner($value->user_id, $value->id, $winning_amount, $comission, $game_data[0]->id);
                                 } else {
-                                    $this->Jackpot_model->MakeWinner($value->user_id, $value->id, $value->amount*$multiply, $comission, $game_data[0]->id);
+                                    $amount = $value->amount*$multiply;
+                                    $TotalWinningAmount += $amount;
+                                    $this->Jackpot_model->MakeWinner($value->user_id, $value->id, $amount, $comission, $game_data[0]->id);
                                 }
                             }
                             echo "Winning Amount Given".PHP_EOL;
@@ -1211,6 +1296,8 @@ class Cron extends CI_Controller
                         }
                         $update_data['status'] = 1;
                         $update_data['winning'] = $winning;
+                        $update_data['total_amount'] = $TotalBetAmount;
+                        $update_data['admin_profit'] = $TotalBetAmount - $TotalWinningAmount;
                         $update_data['updated_date'] = date('Y-m-d H:i:s');
                         $update_data['end_datetime'] = date('Y-m-d H:i:s', strtotime('+'.DRAGON_TIME_FOR_START_NEW_GAME.' seconds'));
                         $this->Jackpot_model->Update($update_data, $game_data[0]->id);
@@ -1423,6 +1510,9 @@ class Cron extends CI_Controller
                         //         break;
                         // }
 
+                        $TotalWinningAmount = 0;
+                        $TotalBetAmount = $this->RedBlack_model->TotalBetAmount($game_data[0]->id);
+
                         $cards = $this->RedBlack_model->GetCards(6);
                         $card1 = $cards[0]->cards;
                         $card2 = $cards[1]->cards;
@@ -1455,7 +1545,9 @@ class Cron extends CI_Controller
                                 //     $winning_amount = round(($winning_percent/100)*$give_coins);
                                 //     $this->RedBlack_model->MakeWinner($value->user_id, $value->id, $winning_amount, $comission, $game_data[0]->id);
                                 // } else {
-                                $this->RedBlack_model->MakeWinner($value->user_id, $value->id, $value->amount*$multiply, $comission, $game_data[0]->id);
+                                $amount = $value->amount*$multiply;
+                                $TotalWinningAmount += $amount;
+                                $this->RedBlack_model->MakeWinner($value->user_id, $value->id, $amount, $comission, $game_data[0]->id);
                                 // }
                             }
                             echo "Winning Amount Given".PHP_EOL;
@@ -1463,13 +1555,6 @@ class Cron extends CI_Controller
                             echo "No Winning Bet Found".PHP_EOL;
                         }
                         $winning_rule = ($winning==RB_RED) ? $redPoint[0] : $blackPoint[0];
-                        $update_data['status'] = 1;
-                        $update_data['winning'] = $winning;
-                        $update_data['winning_rule'] = $winning_rule;
-                        $update_data['updated_date'] = date('Y-m-d H:i:s');
-                        $update_data['end_datetime'] = date('Y-m-d H:i:s', strtotime('+'.DRAGON_TIME_FOR_START_NEW_GAME.' seconds'));
-                        $this->RedBlack_model->Update($update_data, $game_data[0]->id);
-
 
                         if ($winning_rule>0) {
                             switch ($winning_rule) {
@@ -1502,13 +1587,24 @@ class Cron extends CI_Controller
                                 // print_r($bets);
                                 $comission = $this->Setting_model->Setting()->admin_commission;
                                 foreach ($bets as $key => $value) {
-                                    $this->RedBlack_model->MakeWinner($value->user_id, $value->id, $value->amount*$multiply_rule, $comission, $game_data[0]->id);
+                                    $amount = $value->amount*$multiply_rule;
+                                    $TotalWinningAmount += $amount;
+                                    $this->RedBlack_model->MakeWinner($value->user_id, $value->id, $amount, $comission, $game_data[0]->id);
                                 }
                                 echo "Winning Amount Given".PHP_EOL;
                             } else {
                                 echo "No Winning Bet Found".PHP_EOL;
                             }
                         }
+
+                        $update_data['status'] = 1;
+                        $update_data['winning'] = $winning;
+                        $update_data['winning_rule'] = $winning_rule;
+                        $update_data['total_amount'] = $TotalBetAmount;
+                        $update_data['admin_profit'] = $TotalBetAmount - $TotalWinningAmount;
+                        $update_data['updated_date'] = date('Y-m-d H:i:s');
+                        $update_data['end_datetime'] = date('Y-m-d H:i:s', strtotime('+'.DRAGON_TIME_FOR_START_NEW_GAME.' seconds'));
+                        $this->RedBlack_model->Update($update_data, $game_data[0]->id);
                     } else {
                         echo "No Game to Start".PHP_EOL;
                     }
@@ -1549,6 +1645,9 @@ class Cron extends CI_Controller
 
                 if ($game_data[0]->status==0) {
                     if ((strtotime($game_data[0]->added_date)+DRAGON_TIME_FOR_BET)<=time()) {
+                        $TotalWinningAmount = 0;
+                        $TotalBetAmount = $this->SevenUp_model->TotalBetAmount($game_data[0]->id);
+
                         $UpBetAmount = $this->SevenUp_model->TotalBetAmount($game_data[0]->id, UP);
                         $DownBetAmount = $this->SevenUp_model->TotalBetAmount($game_data[0]->id, DOWN);
                         $TieBetAmount = $this->SevenUp_model->TotalBetAmount($game_data[0]->id, TIE);
@@ -1593,6 +1692,8 @@ class Cron extends CI_Controller
                         }
                         $update_data['status'] = 1;
                         $update_data['winning'] = $winning;
+                        $update_data['total_amount'] = $TotalBetAmount;
+                        $update_data['admin_profit'] = $TotalBetAmount - $TotalWinningAmount;
                         $update_data['updated_date'] = date('Y-m-d H:i:s');
                         $update_data['end_datetime'] = date('Y-m-d H:i:s', strtotime('+'.DRAGON_TIME_FOR_START_NEW_GAME.' seconds'));
                         $this->SevenUp_model->Update($update_data, $game_data[0]->id);
@@ -1639,6 +1740,10 @@ class Cron extends CI_Controller
                     if ((strtotime($game_data[0]->added_date)+DRAGON_TIME_FOR_BET)<=time()) {
                         // $min = ($this->Setting_model->Setting()->jackpot_status==1) ? 'SET' : '';
                         // if ($min!='SET') {
+
+                        $TotalWinningAmount = 0;
+                        $TotalBetAmount = $this->CarRoulette_model->TotalBetAmount($game_data[0]->id);
+
                         $ToyotaAmount = $this->CarRoulette_model->TotalBetAmount($game_data[0]->id, TOYOTA);
                         $MahindraAmount = $this->CarRoulette_model->TotalBetAmount($game_data[0]->id, MAHINDRA);
                         $AudiAmount = $this->CarRoulette_model->TotalBetAmount($game_data[0]->id, AUDI);
@@ -1714,7 +1819,9 @@ class Cron extends CI_Controller
                         if ($bets) {
                             $comission = $this->Setting_model->Setting()->admin_commission;
                             foreach ($bets as $key => $value) {
-                                $this->CarRoulette_model->MakeWinner($value->user_id, $value->id, $value->amount*$multiply, $comission, $game_data[0]->id);
+                                $amount = $value->amount*$multiply;
+                                $TotalWinningAmount += $amount;
+                                $this->CarRoulette_model->MakeWinner($value->user_id, $value->id, $amount, $comission, $game_data[0]->id);
                             }
                             echo "Winning Amount Given".PHP_EOL;
                         } else {
@@ -1722,6 +1829,8 @@ class Cron extends CI_Controller
                         }
                         $update_data['status'] = 1;
                         $update_data['winning'] = $winning;
+                        $update_data['total_amount'] = $TotalBetAmount;
+                        $update_data['admin_profit'] = $TotalBetAmount - $TotalWinningAmount;
                         $update_data['updated_date'] = date('Y-m-d H:i:s');
                         $update_data['end_datetime'] = date('Y-m-d H:i:s', strtotime('+'.DRAGON_TIME_FOR_START_NEW_GAME.' seconds'));
                         $this->CarRoulette_model->Update($update_data, $game_data[0]->id);
@@ -1768,6 +1877,10 @@ class Cron extends CI_Controller
                     if ((strtotime($game_data[0]->added_date)+DRAGON_TIME_FOR_BET)<=time()) {
                         // $min = ($this->Setting_model->Setting()->jackpot_status==1) ? 'SET' : '';
                         // if ($min!='SET') {
+
+                        $TotalWinningAmount = 0;
+                        $TotalBetAmount = $this->AnimalRoulette_model->TotalBetAmount($game_data[0]->id);
+
                         $TigerAmount = $this->AnimalRoulette_model->TotalBetAmount($game_data[0]->id, TIGER);
                         $SnakeAmount = $this->AnimalRoulette_model->TotalBetAmount($game_data[0]->id, SNAKE);
                         $SharkAmount = $this->AnimalRoulette_model->TotalBetAmount($game_data[0]->id, SHARK);
@@ -1844,7 +1957,9 @@ class Cron extends CI_Controller
                         if ($bets) {
                             $comission = $this->Setting_model->Setting()->admin_commission;
                             foreach ($bets as $key => $value) {
-                                $this->AnimalRoulette_model->MakeWinner($value->user_id, $value->id, $value->amount*$multiply, $comission, $game_data[0]->id);
+                                $amount = $value->amount*$multiply;
+                                $TotalWinningAmount += $amount;
+                                $this->AnimalRoulette_model->MakeWinner($value->user_id, $value->id, $amount, $comission, $game_data[0]->id);
                             }
                             echo "Winning Amount Given".PHP_EOL;
                         } else {
@@ -1852,6 +1967,8 @@ class Cron extends CI_Controller
                         }
                         $update_data['status'] = 1;
                         $update_data['winning'] = $winning;
+                        $update_data['total_amount'] = $TotalBetAmount;
+                        $update_data['admin_profit'] = $TotalBetAmount - $TotalWinningAmount;
                         $update_data['updated_date'] = date('Y-m-d H:i:s');
                         $update_data['end_datetime'] = date('Y-m-d H:i:s', strtotime('+'.DRAGON_TIME_FOR_START_NEW_GAME.' seconds'));
                         $this->AnimalRoulette_model->Update($update_data, $game_data[0]->id);
@@ -1896,6 +2013,9 @@ class Cron extends CI_Controller
 
                 if ($game_data[0]->status==0) {
                     if ((strtotime($game_data[0]->added_date)+DRAGON_TIME_FOR_BET)<=time()) {
+                        $TotalWinningAmount = 0;
+                        $TotalBetAmount = $this->ColorPrediction_model->TotalBetAmount($game_data[0]->id);
+
                         $ZeroAmount = $this->ColorPrediction_model->TotalBetAmount($game_data[0]->id, 0);
                         $OneAmount = $this->ColorPrediction_model->TotalBetAmount($game_data[0]->id, 1);
                         $TwoAmount = $this->ColorPrediction_model->TotalBetAmount($game_data[0]->id, 2);
@@ -2021,7 +2141,9 @@ class Cron extends CI_Controller
                         $bets = $this->ColorPrediction_model->ViewBet("", $game_data[0]->id, $number);
                         if ($bets) {
                             foreach ($bets as $key => $value) {
-                                $this->ColorPrediction_model->MakeWinner($value->user_id, $value->id, $value->amount*$number_multiply, $comission, $game_data[0]->id);
+                                $amount = $value->amount*$number_multiply;
+                                $TotalWinningAmount += $amount;
+                                $this->ColorPrediction_model->MakeWinner($value->user_id, $value->id, $amount, $comission, $game_data[0]->id);
                             }
                             echo "Winning Amount Given".PHP_EOL;
                         } else {
@@ -2033,7 +2155,9 @@ class Cron extends CI_Controller
                             $color_bets = $this->ColorPrediction_model->ViewBet("", $game_data[0]->id, $color);
                             if ($color_bets) {
                                 foreach ($color_bets as $key => $value) {
-                                    $this->ColorPrediction_model->MakeWinner($value->user_id, $value->id, $value->amount*$color_multiply, $comission, $game_data[0]->id);
+                                    $amount = $value->amount*$color_multiply;
+                                    $TotalWinningAmount += $amount;
+                                    $this->ColorPrediction_model->MakeWinner($value->user_id, $value->id, $amount, $comission, $game_data[0]->id);
                                 }
                                 echo "Winning Amount Given".PHP_EOL;
                             } else {
@@ -2046,7 +2170,9 @@ class Cron extends CI_Controller
                             $color_1_bets = $this->ColorPrediction_model->ViewBet("", $game_data[0]->id, $color_1);
                             if ($color_1_bets) {
                                 foreach ($color_1_bets as $key => $value) {
-                                    $this->ColorPrediction_model->MakeWinner($value->user_id, $value->id, $value->amount*$color_1_multiply, $comission, $game_data[0]->id);
+                                    $amount = $value->amount*$color_1_multiply;
+                                    $TotalWinningAmount += $amount;
+                                    $this->ColorPrediction_model->MakeWinner($value->user_id, $value->id, $amount, $comission, $game_data[0]->id);
                                 }
                                 echo "Winning Amount Given".PHP_EOL;
                             } else {
@@ -2056,6 +2182,8 @@ class Cron extends CI_Controller
 
                         $update_data['status'] = 1;
                         $update_data['winning'] = $number;
+                        $update_data['total_amount'] = $TotalBetAmount;
+                        $update_data['admin_profit'] = $TotalBetAmount - $TotalWinningAmount;
                         $update_data['updated_date'] = date('Y-m-d H:i:s');
                         $update_data['end_datetime'] = date('Y-m-d H:i:s', strtotime('+'.DRAGON_TIME_FOR_START_NEW_GAME.' seconds'));
                         $this->ColorPrediction_model->Update($update_data, $game_data[0]->id);
@@ -2169,6 +2297,9 @@ class Cron extends CI_Controller
 
                 if ($game_data[0]->status==0) {
                     if ((strtotime($game_data[0]->added_date)+DRAGON_TIME_FOR_BET)<=time()) {
+                        $TotalWinningAmount = 0;
+                        $TotalBetAmount = $this->Baccarat_model->TotalBetAmount($game_data[0]->id);
+
                         $cards = $this->Baccarat_model->GetCards(6);
                         $card1 = $cards[0]->cards;
                         $card2 = $cards[1]->cards;
@@ -2193,7 +2324,9 @@ class Cron extends CI_Controller
                             // print_r($bets);
                             $comission = $this->Setting_model->Setting()->admin_commission;
                             foreach ($bets as $key => $value) {
-                                $this->Baccarat_model->MakeWinner($value->user_id, $value->id, $value->amount*$multiply, $comission, $game_data[0]->id);
+                                $amount = $value->amount*$multiply;
+                                $TotalWinningAmount += $amount;
+                                $this->Baccarat_model->MakeWinner($value->user_id, $value->id, $amount, $comission, $game_data[0]->id);
                             }
                             echo "Winning Amount Given".PHP_EOL;
                         } else {
@@ -2204,21 +2337,15 @@ class Cron extends CI_Controller
                         $bankerPair = $this->Baccarat_model->isPair($card3, $card4);
                         $bankerPairMultiply = BANKER_PAIR_MULTIPLE;
 
-                        $update_data['status'] = 1;
-                        $update_data['winning'] = $winning;
-                        $update_data['player_pair'] = $playerPair;
-                        $update_data['banker_pair'] = $bankerPair;
-                        $update_data['updated_date'] = date('Y-m-d H:i:s');
-                        $update_data['end_datetime'] = date('Y-m-d H:i:s', strtotime('+'.DRAGON_TIME_FOR_START_NEW_GAME.' seconds'));
-                        $this->Baccarat_model->Update($update_data, $game_data[0]->id);
-
                         if ($playerPair) {
                             $bets = $this->Baccarat_model->ViewBet("", $game_data[0]->id, PLAYER_PAIR);
                             if ($bets) {
                                 // print_r($bets);
                                 $comission = $this->Setting_model->Setting()->admin_commission;
                                 foreach ($bets as $key => $value) {
-                                    $this->Baccarat_model->MakeWinner($value->user_id, $value->id, $value->amount*$playerPairMultiply, $comission, $game_data[0]->id);
+                                    $amount = $value->amount*$playerPairMultiply;
+                                    $TotalWinningAmount += $amount;
+                                    $this->Baccarat_model->MakeWinner($value->user_id, $value->id, $amount, $comission, $game_data[0]->id);
                                 }
                                 echo "Winning Amount Given".PHP_EOL;
                             } else {
@@ -2232,13 +2359,25 @@ class Cron extends CI_Controller
                                 // print_r($bets);
                                 $comission = $this->Setting_model->Setting()->admin_commission;
                                 foreach ($bets as $key => $value) {
-                                    $this->Baccarat_model->MakeWinner($value->user_id, $value->id, $value->amount*$bankerPairMultiply, $comission, $game_data[0]->id);
+                                    $amount = $value->amount*$bankerPairMultiply;
+                                    $TotalWinningAmount += $amount;
+                                    $this->Baccarat_model->MakeWinner($value->user_id, $value->id, $amount, $comission, $game_data[0]->id);
                                 }
                                 echo "Winning Amount Given".PHP_EOL;
                             } else {
                                 echo "No Winning Bet Found".PHP_EOL;
                             }
                         }
+
+                        $update_data['status'] = 1;
+                        $update_data['winning'] = $winning;
+                        $update_data['player_pair'] = $playerPair;
+                        $update_data['banker_pair'] = $bankerPair;
+                        $update_data['total_amount'] = $TotalBetAmount;
+                        $update_data['admin_profit'] = $TotalBetAmount - $TotalWinningAmount;
+                        $update_data['updated_date'] = date('Y-m-d H:i:s');
+                        $update_data['end_datetime'] = date('Y-m-d H:i:s', strtotime('+'.DRAGON_TIME_FOR_START_NEW_GAME.' seconds'));
+                        $this->Baccarat_model->Update($update_data, $game_data[0]->id);
                     } else {
                         echo "No Game to Start".PHP_EOL;
                     }
@@ -2280,6 +2419,9 @@ class Cron extends CI_Controller
 
                 if ($game_data[0]->status==0) {
                     if ((strtotime($game_data[0]->added_date)+DRAGON_TIME_FOR_BET)<=time()) {
+                        $TotalWinningAmount = 0;
+                        $TotalBetAmount = $this->JhandiMunda_model->TotalBetAmount($game_data[0]->id);
+
                         $this->JhandiMunda_model->CreateMap($game_data[0]->id, rand(1, 6));
                         $this->JhandiMunda_model->CreateMap($game_data[0]->id, rand(1, 6));
                         $this->JhandiMunda_model->CreateMap($game_data[0]->id, rand(1, 6));
@@ -2327,7 +2469,9 @@ class Cron extends CI_Controller
                                         // print_r($bets);
 
                                         foreach ($bets as $key => $value) {
-                                            $this->JhandiMunda_model->MakeWinner($value->user_id, $value->id, $value->amount*$multiply, $comission, $game_data[0]->id);
+                                            $amount = $value->amount*$multiply;
+                                            $TotalWinningAmount += $amount;
+                                            $this->JhandiMunda_model->MakeWinner($value->user_id, $value->id, $amount, $comission, $game_data[0]->id);
                                         }
                                         echo "Winning Amount Given".PHP_EOL;
                                     } else {
@@ -2341,6 +2485,8 @@ class Cron extends CI_Controller
                         // $update_data['winning'] = $winning;
                         // $update_data['player_pair'] = $playerPair;
                         // $update_data['banker_pair'] = $bankerPair;
+                        $update_data['total_amount'] = $TotalBetAmount;
+                        $update_data['admin_profit'] = $TotalBetAmount - $TotalWinningAmount;
                         $update_data['updated_date'] = date('Y-m-d H:i:s');
                         $update_data['end_datetime'] = date('Y-m-d H:i:s', strtotime('+'.DRAGON_TIME_FOR_START_NEW_GAME.' seconds'));
                         $this->JhandiMunda_model->Update($update_data, $game_data[0]->id);
@@ -2385,6 +2531,8 @@ class Cron extends CI_Controller
 
                 if ($game_data[0]->status==0) {
                     if ((strtotime($game_data[0]->added_date)+DRAGON_TIME_FOR_BET)<=time()) {
+                        $TotalWinningAmount = 0;
+                        $TotalBetAmount = $this->Roulette_model->TotalBetAmount($game_data[0]->id);
                         // $ZeroAmount = $this->ColorPrediction_model->TotalBetAmount($game_data[0]->id, 0);
                         // $OneAmount = $this->ColorPrediction_model->TotalBetAmount($game_data[0]->id, 1);
                         // $TwoAmount = $this->ColorPrediction_model->TotalBetAmount($game_data[0]->id, 2);
@@ -2697,7 +2845,9 @@ class Cron extends CI_Controller
                         $bets = $this->Roulette_model->ViewBet("", $game_data[0]->id, $number);
                         if ($bets) {
                             foreach ($bets as $key => $value) {
-                                $this->Roulette_model->MakeWinner($value->user_id, $value->id, $value->amount*$number_multiply, $comission, $game_data[0]->id);
+                                $amount = $value->amount*$number_multiply;
+                                $TotalWinningAmount += $amount;
+                                $this->Roulette_model->MakeWinner($value->user_id, $value->id, $amount, $comission, $game_data[0]->id);
                             }
                             echo "Winning Amount Given".PHP_EOL;
                         } else {
@@ -2709,7 +2859,9 @@ class Cron extends CI_Controller
                             $color_bets = $this->Roulette_model->ViewBet("", $game_data[0]->id, $color);
                             if ($color_bets) {
                                 foreach ($color_bets as $key => $value) {
-                                    $this->Roulette_model->MakeWinner($value->user_id, $value->id, $value->amount*$color_multiply, $comission, $game_data[0]->id);
+                                    $amount = $value->amount*$color_multiply;
+                                    $TotalWinningAmount += $amount;
+                                    $this->Roulette_model->MakeWinner($value->user_id, $value->id, $amount, $comission, $game_data[0]->id);
                                 }
                                 echo "Winning Amount Given".PHP_EOL;
                             } else {
@@ -2722,7 +2874,9 @@ class Cron extends CI_Controller
                             $odd_even_bets = $this->Roulette_model->ViewBet("", $game_data[0]->id, $odd_even);
                             if ($odd_even_bets) {
                                 foreach ($odd_even_bets as $key => $value) {
-                                    $this->Roulette_model->MakeWinner($value->user_id, $value->id, $value->amount*$odd_even_multiply, $comission, $game_data[0]->id);
+                                    $amount = $value->amount*$odd_even_multiply;
+                                    $TotalWinningAmount += $amount;
+                                    $this->Roulette_model->MakeWinner($value->user_id, $value->id, $amount, $comission, $game_data[0]->id);
                                 }
                                 echo "Winning Amount Given".PHP_EOL;
                             } else {
@@ -2735,7 +2889,9 @@ class Cron extends CI_Controller
                             $twelfth_column_bets = $this->Roulette_model->ViewBet("", $game_data[0]->id, $twelfth_column);
                             if ($twelfth_column_bets) {
                                 foreach ($twelfth_column_bets as $key => $value) {
-                                    $this->Roulette_model->MakeWinner($value->user_id, $value->id, $value->amount*$twelfth_column_multiply, $comission, $game_data[0]->id);
+                                    $amount = $value->amount*$twelfth_column_multiply;
+                                    $TotalWinningAmount += $amount;
+                                    $this->Roulette_model->MakeWinner($value->user_id, $value->id, $amount, $comission, $game_data[0]->id);
                                 }
                                 echo "Winning Amount Given".PHP_EOL;
                             } else {
@@ -2748,7 +2904,9 @@ class Cron extends CI_Controller
                             $eighteenth_column_bets = $this->Roulette_model->ViewBet("", $game_data[0]->id, $eighteenth_column);
                             if ($eighteenth_column_bets) {
                                 foreach ($eighteenth_column_bets as $key => $value) {
-                                    $this->Roulette_model->MakeWinner($value->user_id, $value->id, $value->amount*$eighteenth_column_multiply, $comission, $game_data[0]->id);
+                                    $amount = $value->amount*$eighteenth_column_multiply;
+                                    $TotalWinningAmount += $amount;
+                                    $this->Roulette_model->MakeWinner($value->user_id, $value->id, $amount, $comission, $game_data[0]->id);
                                 }
                                 echo "Winning Amount Given".PHP_EOL;
                             } else {
@@ -2761,7 +2919,9 @@ class Cron extends CI_Controller
                             $row_bets = $this->Roulette_model->ViewBet("", $game_data[0]->id, $row);
                             if ($row_bets) {
                                 foreach ($row_bets as $key => $value) {
-                                    $this->Roulette_model->MakeWinner($value->user_id, $value->id, $value->amount*$row_multiply, $comission, $game_data[0]->id);
+                                    $amount = $value->amount*$row_multiply;
+                                    $TotalWinningAmount += $amount;
+                                    $this->Roulette_model->MakeWinner($value->user_id, $value->id, $amount, $comission, $game_data[0]->id);
                                 }
                                 echo "Winning Amount Given".PHP_EOL;
                             } else {
@@ -2770,6 +2930,8 @@ class Cron extends CI_Controller
                         }
                         $update_data['status'] = 1;
                         $update_data['winning'] = $number;
+                        $update_data['total_amount'] = $TotalBetAmount;
+                        $update_data['admin_profit'] = $TotalBetAmount - $TotalWinningAmount;
                         $update_data['updated_date'] = date('Y-m-d H:i:s');
                         $update_data['end_datetime'] = date('Y-m-d H:i:s', strtotime('+'.DRAGON_TIME_FOR_START_NEW_GAME.' seconds'));
                         $this->Roulette_model->Update($update_data, $game_data[0]->id);

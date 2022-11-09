@@ -270,6 +270,7 @@ class DragonTiger_model extends MY_Model
 
     public function AllGames()
     {
+        $this->db->select('tbl_dragon_tiger.*,(select count(id) from tbl_dragon_tiger_bet where tbl_dragon_tiger.id=tbl_dragon_tiger_bet.dragon_tiger_id) as total_users');
         $this->db->from('tbl_dragon_tiger');
         $this->db->order_by('id', 'DESC');
         $this->db->limit(10);

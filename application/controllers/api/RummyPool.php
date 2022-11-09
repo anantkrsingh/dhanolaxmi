@@ -171,7 +171,8 @@ class RummyPool extends REST_Controller
 
         if (empty($TableId)) {
             $table_data = [
-                'boot_value' => $table_amount,
+                'boot_value' => $isMaster[0]->boot_value,
+                'pool_point' => $isMaster[0]->pool_point,
                 'added_date' => date('Y-m-d H:i:s'),
                 'updated_date' => date('Y-m-d H:i:s')
             ];
@@ -740,7 +741,7 @@ class RummyPool extends REST_Controller
         $game = $this->RummyPool_model->getActiveGameOnTable($user[0]->rummy_pool_table_id);
 
         if ($game) {
-            $this->RummyPool_model->PackGame($this->data['user_id'], $game->id);
+            $this->RummyPool_model->PackGame($this->data['user_id'], $user[0]->rummy_pool_table_id, $game->id);
             $game_users = $this->RummyPool_model->GameUser($game->id);
 
             if (count($game_users)==1) {
@@ -819,6 +820,8 @@ class RummyPool extends REST_Controller
             exit();
         }
 
+        $table = $this->RummyPool_model->isTableAvail($user[0]->rummy_pool_table_id);
+
         // $game_log = $this->RummyPool_model->GameLog($game->id,1);
 
         // $game_users = $this->RummyPool_model->GameAllUser($game->id);
@@ -869,7 +872,8 @@ class RummyPool extends REST_Controller
                 $exceed_count = 1;
                 $user_ids = array();
                 foreach ($All_table_users as $key => $value) {
-                    if ($value->total_points>MAX_POINT) {
+                    // if ($value->total_points>MAX_POINT) {
+                    if ($value->total_points>$table->pool_point) {
                         $exceed_count++;
                         $user_ids[] = $value->user_id;
                     } else {
@@ -1419,6 +1423,7 @@ class RummyPool extends REST_Controller
             exit();
         }
 
+        $table = $this->RummyPool_model->isTableAvail($user[0]->rummy_pool_table_id);
         $amount = 0;
 
         $game_log = $this->RummyPool_model->GameLog($game->id, 1);
@@ -1474,7 +1479,8 @@ class RummyPool extends REST_Controller
                 $exceed_count = 1;
                 $user_ids = array();
                 foreach ($All_table_users as $key => $value) {
-                    if ($value->total_points>MAX_POINT) {
+                    // if ($value->total_points>MAX_POINT) {
+                    if ($value->total_points>$table->pool_point) {
                         $exceed_count++;
                         $user_ids[] = $value->user_id;
                     } else {

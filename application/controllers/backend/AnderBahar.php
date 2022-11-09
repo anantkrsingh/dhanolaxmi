@@ -11,9 +11,9 @@ class AnderBahar extends MY_Controller
     {
         $AllGames = $this->AnderBahar_model->AllGames();
         $RandomFlag = $this->AnderBahar_model->getRandomFlag('ander_bahar_random');
-        foreach ($AllGames as $key => $value) {
-            $AllGames[$key]->details=$this->AnderBahar_model->ViewBet('',$value->id);
-        }
+        // foreach ($AllGames as $key => $value) {
+        //     $AllGames[$key]->details=$this->AnderBahar_model->ViewBet('',$value->id);
+        // }
         // echo '<pre>';print_r($AllGames);die;
         $data = [
             'title' => 'Andar Bahar History',

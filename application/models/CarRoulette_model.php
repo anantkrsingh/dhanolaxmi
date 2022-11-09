@@ -176,12 +176,14 @@ class CarRoulette_model extends MY_Model
         return $Query->result();
     }
 
-    public function TotalBetAmount($car_roulette_id, $bet)
+    public function TotalBetAmount($car_roulette_id, $bet='')
     {
         $this->db->select('SUM(amount) as amount', false);
         $this->db->from('tbl_car_roulette_bet');
         $this->db->where('car_roulette_id', $car_roulette_id);
-        $this->db->where('bet', $bet);
+        if ($bet!=='') {
+            $this->db->where('bet', $bet);
+        }
         $Query = $this->db->get();
         // echo $this->db->last_query();
         return $Query->row()->amount;
@@ -265,6 +267,7 @@ class CarRoulette_model extends MY_Model
 
     public function AllGames()
     {
+        $this->db->select('tbl_car_roulette.*,(select count(id) from tbl_car_roulette_bet where tbl_car_roulette.id=tbl_car_roulette_bet.car_roulette_id) as total_users');
         $this->db->from('tbl_car_roulette');
         $this->db->order_by('id', 'DESC');
         $this->db->limit(10);

@@ -1,4 +1,5 @@
 <?php
+
 class PoolTableMaster extends MY_Controller
 {
     public function __construct()
@@ -50,9 +51,7 @@ class PoolTableMaster extends MY_Controller
     {
         $data = [
             'boot_value' => $this->input->post('boot_value'),
-            'maximum_blind' => 4,
-            'chaal_limit' => $this->input->post('chaal_limit'),
-            'pot_limit' => $this->input->post('pot_limit'),
+            'pool_point' => $this->input->post('pool_point'),
             'added_date' => date('Y-m-d H:i:s')
         ];
         $PoolTableMaster = $this->RummyPoolTableMaster_model->AddTableMaster($data);
@@ -68,9 +67,7 @@ class PoolTableMaster extends MY_Controller
     {
         $data = [
             'boot_value' => $this->input->post('boot_value'),
-            'maximum_blind' => 4,
-            'chaal_limit' => $this->input->post('chaal_limit'),
-            'pot_limit' => $this->input->post('pot_limit'),
+            'pool_point' => $this->input->post('pool_point'),
             'updated_date' => date('Y-m-d H:i:s')
         ];
         $PoolTableMaster = $this->RummyPoolTableMaster_model->UpdateTableMaster($data, $this->input->post('id'));
@@ -81,5 +78,4 @@ class PoolTableMaster extends MY_Controller
         }
         redirect('backend/PoolTableMaster');
     }
-
 }

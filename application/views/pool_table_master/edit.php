@@ -10,22 +10,20 @@
                 <div class="form-group row"><label for="boot_value" class="col-sm-2 col-form-label">Boot Value *</label>
                     <div class="col-sm-10">
                         <input class="form-control" type="number" min="0" step="0.01" name="boot_value" required
-                            id="boot_value" value="<?= $PoolTableMaster->boot_value?>" onkeyup="updateValue(this.value)">
+                            id="boot_value" value="<?= $PoolTableMaster->boot_value?>"
+                            onkeyup="updateValue(this.value)">
                     </div>
                 </div>
 
-                <div class="form-group row"><label for="chaal_limit" class="col-sm-2 col-form-label">Chaal Limit
+                <div class="form-group row"><label for="pool_point" class="col-sm-2 col-form-label">Pool Point
                         *</label>
                     <div class="col-sm-10">
-                        <input class="form-control" type="number" min="0" step="0.01" name="chaal_limit" readonly
-                            id="chaal_limit" value="<?= $PoolTableMaster->chaal_limit?>">
-                    </div>
-                </div>
-
-                <div class="form-group row"><label for="pot_limit" class="col-sm-2 col-form-label">Pot Limit *</label>
-                    <div class="col-sm-10">
-                        <input class="form-control" type="number" min="0" step="0.01" name="pot_limit" readonly
-                            id="pot_limit" value="<?= $PoolTableMaster->pot_limit?>">
+                        <select class="form-control" name="pool_point" required>
+                            <option value="101" <?= ($PoolTableMaster->pool_point=='101') ? 'selected' : ''; ?>>101
+                            </option>
+                            <option value="201" <?= ($PoolTableMaster->pool_point=='201') ? 'selected' : ''; ?>>201
+                            </option>
+                        </select>
                     </div>
                 </div>
 
@@ -33,13 +31,13 @@
                     <div>
                         <?php
                         echo form_submit('submit', 'Update', ['class' => 'btn btn-primary waves-effect waves-light mr-1']);
-                        echo form_reset(['class' => 'btn btn-secondary waves-effect', 'value' => 'Cancel']);
-                        ?>
+                echo form_reset(['class' => 'btn btn-secondary waves-effect', 'value' => 'Cancel']);
+                ?>
                     </div>
                 </div>
                 <?php
             echo form_close();
-            ?>
+                ?>
             </div>
         </div><!-- end col -->
     </div>

@@ -194,7 +194,7 @@ class HeadTail_model extends MY_Model
         return $Query->result();
     }
 
-    public function TotalBetAmount($head_tail_id, $bet, $user_id='')
+    public function TotalBetAmount($head_tail_id, $bet='', $user_id='')
     {
         $this->db->select('SUM(amount) as amount', false);
         $this->db->from('tbl_head_tail_bet');
@@ -202,7 +202,9 @@ class HeadTail_model extends MY_Model
         if ($user_id!='') {
             $this->db->where('user_id', $user_id);
         }
-        $this->db->where('bet', $bet);
+        if ($bet!=='') {
+            $this->db->where('bet', $bet);
+        }
         $Query = $this->db->get();
         // echo $this->db->last_query();
         if ($Query->row()) {
@@ -268,6 +270,7 @@ class HeadTail_model extends MY_Model
 
     public function AllGames()
     {
+        $this->db->select('tbl_head_tail.*,(select count(id) from tbl_head_tail_bet where tbl_head_tail.id=tbl_head_tail_bet.head_tail_id) as total_users');
         $this->db->from('tbl_head_tail');
         $this->db->order_by('id', 'DESC');
         $this->db->limit(10);
@@ -275,5 +278,22 @@ class HeadTail_model extends MY_Model
         // echo $this->db->last_query();
         // die();
         return $Query->result();
+    }
+
+    public function getRandomFlag($column)
+    {
+        $this->db->select($column);
+        $this->db->from('tbl_admin');
+        $this->db->order_by('id', 'DESC');
+        $Query = $this->db->get();
+        return $Query->row();
+    }
+    public function ChangeStatus()
+    {
+        $return = false;
+        $this->db->set('head_tail_random', $this->input->post('type')); //value that used to update column
+        // $this->db->where('id', $id); //which row want to upgrade
+        $return = $this->db->update('tbl_admin');  //table name
+        return $return;
     }
 }

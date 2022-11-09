@@ -11,9 +11,9 @@ class CarRoulette extends MY_Controller
     {
         $AllGames = $this->CarRoulette_model->AllGames();
         $RandomFlag = $this->CarRoulette_model->getRandomFlag('car_roulette_random');
-        foreach ($AllGames as $key => $value) {
-            $AllGames[$key]->details=$this->CarRoulette_model->ViewBet('',$value->id);
-        }
+        // foreach ($AllGames as $key => $value) {
+        //     $AllGames[$key]->details=$this->CarRoulette_model->ViewBet('',$value->id);
+        // }
         // echo '<pre>';print_r($AllGames);die;
         $data = [
             'title' => 'Car Roulette History',

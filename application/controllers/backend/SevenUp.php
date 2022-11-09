@@ -11,9 +11,9 @@ class SevenUp extends MY_Controller
     {
         $AllGames = $this->SevenUp_model->AllGames();
         $RandomFlag = $this->SevenUp_model->getRandomFlag('up_down_random');
-        foreach ($AllGames as $key => $value) {
-            $AllGames[$key]->details=$this->SevenUp_model->ViewBet('',$value->id);
-        }
+        // foreach ($AllGames as $key => $value) {
+        //     $AllGames[$key]->details=$this->SevenUp_model->ViewBet('',$value->id);
+        // }
         // echo '<pre>';print_r($AllGames);die;
         $data = [
             'title' => 'Seven Up History',

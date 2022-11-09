@@ -1,31 +1,31 @@
 <?php
-class Baccarat extends MY_Controller
+class HeadTails extends MY_Controller
 {
     public function __construct()
     {
         parent::__construct();
-        $this->load->model(['Baccarat_model','Users_model']);
+        $this->load->model(['HeadTail_model','Users_model']);
     }
 
     public function index()
     {
-        $AllGames = $this->Baccarat_model->AllGames();
-        $RandomFlag = $this->Baccarat_model->getRandomFlag('bacarate_random');
+        $AllGames = $this->HeadTail_model->AllGames();
+        $RandomFlag = $this->HeadTail_model->getRandomFlag('head_tail_random');
         // foreach ($AllGames as $key => $value) {
-        //     $AllGames[$key]->details=$this->Baccarat_model->ViewBet('',$value->id);
+        //     $AllGames[$key]->details=$this->HeadTail_model->ViewBet('',$value->id);
         // }
         // echo '<pre>';print_r($AllGames);die;
         $data = [
-            'title' => 'Baccarat History',
+            'title' => 'Head & Tails History',
             'AllGames' => $AllGames,
-            'RandomFlag'=>$RandomFlag->bacarate_random
+            'RandomFlag'=>$RandomFlag->head_tail_random
         ];
-        template('baccarat/index', $data);
+        template('head_tails/index', $data);
     }
 
-    public function baccarat_bet($id){
+    public function HeadTailsBet($id){
 
-        $AllUsers = $this->Baccarat_model->ViewBet('',$id);
+        $AllUsers = $this->HeadTail_model->ViewBet('',$id);
         foreach ($AllUsers as $key => $value) {
             $user_details= $this->Users_model->UserProfile($value->user_id);
             if($user_details){
@@ -35,14 +35,14 @@ class Baccarat extends MY_Controller
             }
         }
         $data = [
-            'title' => 'Game History',
+            'title' => 'Head & Tails History',
             'AllUsers' => $AllUsers
         ];
         template('baccarat/show_details', $data);
     }
     public function ChangeStatus() {
         
-        $Change = $this->Baccarat_model->ChangeStatus();
+        $Change = $this->HeadTail_model->ChangeStatus();
         if ( $Change ) {
             echo 'true';
         } else {

@@ -315,5 +315,6 @@ define('TOURNAMENT', true);
 define('RED_VS_BLACK', true);
 define('HEAD_TAILS', true);
 define('JHANDI_MUNDA', true);
+define('ROULETTE_RANDOM', true);
 // FCM Notification
 define('SERVER_KEY', 'AAAA2bfIo_E:APA91bGFMoeE0wGoYy6q95ImATZ8KofZjx0yXi6ARfBkFzyHJ23Vi6tbV-gJ0kSbL_dzshsR_oVSomIsYP60RJAxzu3QeprGe9H62vEIpzBmI9IH5-6b5W-AFE2DjxiRjN8-2EoU7o03');

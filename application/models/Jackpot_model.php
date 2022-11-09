@@ -176,12 +176,14 @@ class Jackpot_model extends MY_Model
         return $Query->result();
     }
 
-    public function TotalBetAmount($jackpot_id, $bet)
+    public function TotalBetAmount($jackpot_id, $bet='')
     {
         $this->db->select('SUM(amount) as amount', false);
         $this->db->from('tbl_jackpot_bet');
         $this->db->where('jackpot_id', $jackpot_id);
-        $this->db->where('bet', $bet);
+        if ($bet!=='') {
+            $this->db->where('bet', $bet);
+        }
         $Query = $this->db->get();
         // echo $this->db->last_query();
         return $Query->row()->amount;

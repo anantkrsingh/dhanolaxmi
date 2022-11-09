@@ -177,7 +177,7 @@ class RummyDeal_model extends MY_Model
         return $Query->result();
     }
 
-    public function GameLog($game_id, $limit = '', $action = '', $user_id = '')
+    public function GameLog($game_id, $limit = '', $action = '', $user_id = '', $timeout = '')
     {
         $this->db->from('tbl_rummy_deal_log');
         $this->db->where('game_id', $game_id);
@@ -187,6 +187,9 @@ class RummyDeal_model extends MY_Model
         }
         if (!empty($user_id)) {
             $this->db->where('user_id', $user_id);
+        }
+        if (!empty($timeout)) {
+            $this->db->where('timeout', $timeout);
         }
         if (!empty($limit)) {
             $this->db->limit($limit);
@@ -536,7 +539,7 @@ class RummyDeal_model extends MY_Model
         return $TableId;
     }
 
-    public function DropGameCards($where, $json='')
+    public function DropGameCards($where, $json='', $timeout=0)
     {
         $data = ['isDeleted' => 1, 'updated_date' => date('Y-m-d H:i:s')];
         $this->db->update('tbl_rummy_deal_card', $data, $where);
@@ -549,6 +552,7 @@ class RummyDeal_model extends MY_Model
             'user_id' => $where['user_id'],
             'game_id' => $where['game_id'],
             'json' => $json,
+            'timeout' => $timeout,
             'action' => 2,
             'added_date' => date('Y-m-d H:i:s')
         ];

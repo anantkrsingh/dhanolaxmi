@@ -327,6 +327,7 @@ class AnderBahar_model extends MY_Model
 
     public function AllGames()
     {
+        $this->db->select('tbl_ander_baher.*,(select count(id) from tbl_ander_baher_bet where tbl_ander_baher.id=tbl_ander_baher_bet.ander_baher_id) as total_users');
         $this->db->from('tbl_ander_baher');
         $this->db->order_by('id', 'DESC');
         $this->db->limit(10);

@@ -171,8 +171,8 @@ class RummyPool_model extends MY_Model
         $this->db->select('tbl_rummy_pool_card.user_id,tbl_rummy_pool_card.packed,tbl_users.name');
         $this->db->from('tbl_rummy_pool_card');
         $this->db->join('tbl_users', 'tbl_users.id=tbl_rummy_pool_card.user_id');
-        $this->db->where('game_id', $game_id);
-        $this->db->group_by('user_id');
+        $this->db->where('tbl_rummy_pool_card.game_id', $game_id);
+        $this->db->group_by('tbl_rummy_pool_card.user_id');
         $Query = $this->db->get();
         return $Query->result();
     }
@@ -387,7 +387,7 @@ class RummyPool_model extends MY_Model
         return true;
     }
 
-    public function PackGame($user_id, $game_id, $timeout = 0, $json = '')
+    public function PackGame($user_id, $table_id, $game_id, $timeout = 0, $json = '', $amount = 0, $percent = 0)
     {
         $this->db->set('packed', 1); //value that used to update column
         $this->db->where('user_id', $user_id); //which row want to upgrade
@@ -401,17 +401,39 @@ class RummyPool_model extends MY_Model
         // $Query = $this->db->get();
         // $seen = $Query->row()->seen;
         $seen = 0;
+        $points = round(($percent / 100) * MAX_POINTS);
+        // $data = [
+        //     'user_id' => $user_id,
+        //     'game_id' => $game_id,
+        //     'seen' => $seen,
+        //     'points' => $points,
+        //     'json' => $json,
+        //     'timeout' => (isset($timeout)) ? $timeout : 0,
+        //     'action' => 1,
+        //     'added_date' => date('Y-m-d H:i:s')
+        // ];
+        // $this->db->insert('tbl_rummy_pool_log', $data);
 
-        $data = [
+        $this->db->set('total_points', 'total_points+' . $points, false);
+        $this->db->where('table_id', $table_id);
+        $this->db->where('user_id', $user_id);
+        $this->db->update('tbl_rummy_pool_table_user');
+        // echo $this->db->last_query();
+
+        $this->db->select('total_points');
+        $this->db->where('table_id', $table_id);
+        $this->db->where('user_id', $user_id);
+        $total_points = $this->db->get('tbl_rummy_pool_table_user')->row()->total_points;
+
+        $log_data = [
             'user_id' => $user_id,
             'game_id' => $game_id,
-            'seen' => $seen,
-            'json' => $json,
-            'timeout' => (isset($timeout)) ? $timeout : 0,
+            'points' => $points,
+            'total_points' => $total_points,
             'action' => 1,
             'added_date' => date('Y-m-d H:i:s')
         ];
-        $this->db->insert('tbl_rummy_pool_log', $data);
+        $inserted_id = $this->AddGameLog($log_data);
         return true;
     }
 
@@ -433,9 +455,9 @@ class RummyPool_model extends MY_Model
 
 
         // $amount = ($win_amount * 0.02);
-        // $this->db->set('admin_coin', 'admin_coin+' . $admin_winning_amt, false);
-        // $this->db->set('updated_date', date('Y-m-d H:i:s'));
-        // $this->db->update('tbl_admin');
+        $this->db->set('admin_coin', 'admin_coin+' . $admin_winning_amt, false);
+        $this->db->set('updated_date', date('Y-m-d H:i:s'));
+        $this->db->update('tbl_admin');
         return true;
     }
 
@@ -504,20 +526,6 @@ class RummyPool_model extends MY_Model
         $this->db->set('wallet', 'wallet-' . $amount, false);
         $this->db->where('id', $user_id);
         $this->db->update('tbl_users');
-
-        $this->db->select('winning_wallet');
-        $this->db->from('tbl_users');
-        $this->db->where('id', $user_id);
-        $Query = $this->db->get();
-        $winning_wallet = $Query->row()->winning_wallet;
-
-        $winning_wallet_minus = ($winning_wallet>$amount) ? $amount : $winning_wallet;
-
-        if ($winning_wallet_minus>0) {
-            $this->db->set('winning_wallet', 'winning_wallet-' . $winning_wallet_minus, false);
-            $this->db->where('id', $user_id);
-            $this->db->update('tbl_users');
-        }
 
         return $this->db->affected_rows();
     }
@@ -1247,7 +1255,10 @@ class RummyPool_model extends MY_Model
         $this->db->join('tbl_rummy_pool', 'tbl_rummy_pool_log.game_id=tbl_rummy_pool.id');
         $this->db->join('tbl_users', 'tbl_users.id=tbl_rummy_pool_log.user_id');
         $this->db->where('tbl_rummy_pool.table_id', $table_id);
+        $this->db->group_start();
         $this->db->where('tbl_rummy_pool_log.action', 3);
+        $this->db->or_where('tbl_rummy_pool_log.action', 1);
+        $this->db->group_end();
         $this->db->order_by('tbl_rummy_pool_log.id', 'ASC');
         $Query = $this->db->get();
         // echo $this->db->last_query();
@@ -1366,14 +1377,22 @@ class RummyPool_model extends MY_Model
         $this->db->update('tbl_users');
     }
 
+    // public function updateTotalWinningAmtTable($amount, $table_id)
+    // {
+    //     $this->db->set('winning_amount', $amount, false);
+    //     $this->db->where('id', $table_id);
+    //     $this->db->update('tbl_rummy_pool_table');
+    // }
+
     public function updateTotalWinningAmtTable($amount, $user_winning_amt, $admin_winning_amt, $table_id, $winner_id)
     {
         $this->db->set('winning_amount', $amount, false);
-        $this->db->set('user_winning_amt', $user_winning_amt, false);
-        $this->db->set('admin_winning_amt', $admin_winning_amt, false);
+        $this->db->set('user_amount', $user_winning_amt, false);
+        $this->db->set('commission_amount', $admin_winning_amt, false);
         $this->db->set('winner_id', $winner_id);
         $this->db->where('id', $table_id);
         $this->db->update('tbl_rummy_pool_table');
+        // echo $this->db->last_query();
 
         $this->db->set('admin_coin', 'admin_coin+' . $admin_winning_amt, false);
         $this->db->set('updated_date', date('Y-m-d H:i:s'));
@@ -1450,17 +1469,15 @@ class RummyPool_model extends MY_Model
         return $GameId;
     }
 
-    public function AllGames()
+    public function LastGameCard($game_id)
     {
-        $this->db->select('tbl_rummy_pool.*,tbl_users.name');
-        $this->db->from('tbl_rummy_pool');
-        $this->db->join('tbl_users', 'tbl_users.id=tbl_rummy_pool.winner_id', 'left');
-        $this->db->order_by('tbl_rummy_pool.id', 'DESC');
-        $this->db->limit(10);
+        $this->db->from('tbl_rummy_pool_card');
+        $this->db->where('packed', false);
+        $this->db->where('game_id', $game_id);
+        $this->db->limit(1);
+        $this->db->order_by('id', 'DESC');
         $Query = $this->db->get();
-        // echo $this->db->last_query();
-        // die();
-        return $Query->result();
+        return $Query->row();
     }
 
     public function Comission()
@@ -1474,16 +1491,5 @@ class RummyPool_model extends MY_Model
         // echo $this->db->last_query();
         // die();
         return $Query->result();
-    }
-
-    public function LastGameCard($game_id)
-    {
-        $this->db->from('tbl_rummy_pool_card');
-        $this->db->where('packed', false);
-        $this->db->where('game_id', $game_id);
-        $this->db->limit(1);
-        $this->db->order_by('id', 'DESC');
-        $Query = $this->db->get();
-        return $Query->row();
     }
 }

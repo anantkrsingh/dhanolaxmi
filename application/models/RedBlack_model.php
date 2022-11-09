@@ -176,12 +176,14 @@ class RedBlack_model extends MY_Model
         return $Query->result();
     }
 
-    public function TotalBetAmount($red_black_id, $bet)
+    public function TotalBetAmount($red_black_id, $bet='')
     {
         $this->db->select('SUM(amount) as amount', false);
         $this->db->from('tbl_red_black_bet');
         $this->db->where('red_black_id', $red_black_id);
-        $this->db->where('bet', $bet);
+        if ($bet!=='') {
+            $this->db->where('bet', $bet);
+        }
         $Query = $this->db->get();
         // echo $this->db->last_query();
         return $Query->row()->amount;
@@ -265,6 +267,7 @@ class RedBlack_model extends MY_Model
 
     public function AllGames()
     {
+        $this->db->select('tbl_red_black.*,(select count(id) from tbl_red_black_bet where tbl_red_black.id=tbl_red_black_bet.red_black_id) as total_users');
         $this->db->from('tbl_red_black');
         $this->db->order_by('id', 'DESC');
         $this->db->limit(10);
@@ -453,5 +456,21 @@ class RedBlack_model extends MY_Model
         }
 
         return $winner;
+    }
+    public function getRandomFlag($column)
+    {
+        $this->db->select($column);
+        $this->db->from('tbl_admin');
+        $this->db->order_by('id', 'DESC');
+        $Query = $this->db->get();
+        return $Query->row();
+    }
+    public function ChangeStatus()
+    {
+        $return = false;
+        $this->db->set('red_black_random', $this->input->post('type')); //value that used to update column
+        // $this->db->where('id', $id); //which row want to upgrade
+        $return = $this->db->update('tbl_admin');  //table name
+        return $return;
     }
 }

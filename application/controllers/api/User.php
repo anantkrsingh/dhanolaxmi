@@ -322,6 +322,17 @@ class User extends REST_Controller
         exit();
     }
 
+    public function game_on_off_post()
+    {
+        $setting = $this->Setting_model->GetPermission('`teen_patti`, `dragon_tiger`, `andar_bahar`, `point_rummy`, `private_rummy`, `pool_rummy`, `deal_rummy`, `private_table`, `custom_boot`, `seven_up_down`, `car_roulette`, `jackpot_teen_patti`, `animal_roulette`, `color_prediction`, `poker`, `head_tails`, `red_vs_black`, `ludo`, `bacarate`, `jhandi_munda`');
+
+        $data['message'] = 'Success';
+        $data['game_setting'] = $setting;
+        $data['code'] = HTTP_OK;
+        $this->response($data, HTTP_OK);
+        exit();
+    }
+
     public function leaderboard_post()
     {
         if (!$this->Users_model->TokenConfirm($this->data['user_id'], $this->data['token'])) {
@@ -780,6 +791,34 @@ class User extends REST_Controller
 
         $data = [
             'GameLog' => $this->Users_model->JackpotAmount($user_id),
+            'MinRedeem' => min_redeem(),
+            'message' => 'Success',
+            'code' => HTTP_OK,
+        ];
+        $this->response($data, HTTP_OK);
+    }
+
+    public function wallet_history_head_tail_post()
+    {
+        $user_id = $this->input->post('user_id');
+
+        if (empty($user_id)) {
+            $data['message'] = 'Invalid Params';
+            $data['code'] = HTTP_BLANK;
+            $this->response($data, 200);
+            exit();
+        }
+
+        $user = $this->Users_model->UserProfile($user_id);
+        if (empty($user)) {
+            $data['message'] = 'Invalid User';
+            $data['code'] = HTTP_NOT_ACCEPTABLE;
+            $this->response($data, 200);
+            exit();
+        }
+
+        $data = [
+            'GameLog' => $this->Users_model->HeadTailAmount($user_id),
             'MinRedeem' => min_redeem(),
             'message' => 'Success',
             'code' => HTTP_OK,

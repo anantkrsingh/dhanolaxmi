@@ -743,7 +743,7 @@ class Users_model extends MY_Model
 
     public function TeenPattiLog($user_id)
     {
-        $Query = $this->db->query('SELECT `game_id`,SUM(`amount`) as invest,IFNULL((SELECT user_winning_amt FROM `tbl_game` WHERE winner_id='.$user_id.' AND id=`game_id`),0) as winning_amount,added_date FROM `tbl_game_log` WHERE `user_id`='.$user_id.' GROUP BY `game_id`');
+        $Query = $this->db->query('SELECT tbl_game_log.`game_id`,SUM(tbl_game_log.`amount`) as invest,IFNULL((SELECT user_winning_amt FROM `tbl_game` WHERE winner_id='.$user_id.' AND id=`game_id`),0) as winning_amount,tbl_game_log.added_date,tbl_table.private as table_type FROM `tbl_game_log` JOIN tbl_game on tbl_game_log.game_id=tbl_game.id join tbl_table on tbl_table.id=tbl_game.table_id  WHERE tbl_game_log.`user_id`='.$user_id.' GROUP BY tbl_game_log.`game_id`');
         // $this->db->get();
         return $Query->result();
     }
@@ -827,6 +827,16 @@ class Users_model extends MY_Model
         $this->db->from('tbl_jackpot_bet');
         $this->db->join('tbl_jackpot', 'tbl_jackpot.id=tbl_jackpot_bet.jackpot_id');
         $this->db->where('tbl_jackpot_bet.user_id', $user_id);
+        $Query = $this->db->get();
+        return $Query->result();
+    }
+
+    public function HeadTailAmount($user_id)
+    {
+        $this->db->select('tbl_head_tail_bet.*,tbl_head_tail.room_id');
+        $this->db->from('tbl_head_tail_bet');
+        $this->db->join('tbl_head_tail', 'tbl_head_tail.id=tbl_head_tail_bet.head_tail_id');
+        $this->db->where('tbl_head_tail_bet.user_id', $user_id);
         $Query = $this->db->get();
         return $Query->result();
     }

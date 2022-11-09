@@ -47,6 +47,18 @@
                     <?php if (LUDO==true) { ?>
                     <li><a data-toggle="tab" href="#ludoHistory">Ludo Log</a></li>
                     <?php } ?>
+                    <?php if (HEAD_TAILS==true) { ?>
+                    <li><a data-toggle="tab" href="#head_tails">Head & Tails Log</a></li>
+                    <?php } ?>
+                    <?php if (RED_VS_BLACK==true) { ?>
+                    <li><a data-toggle="tab" href="#red_black">Red Vs Black Log</a></li>
+                    <?php } ?>
+                    <?php if (BACCARAT==true) { ?>
+                    <li><a data-toggle="tab" href="#red_black">Baccarat Log</a></li>
+                    <?php } ?>
+                    <?php if (JHANDI_MUNDA==true) { ?>
+                    <li><a data-toggle="tab" href="#red_black">Jhandi Munda Log</a></li>
+                    <?php } ?>
                 </ul>
                 <div class="tab-content">
                     <br>
@@ -350,6 +362,7 @@
                                     <th>Game ID</th>
                                     <th>Invest</th>
                                     <th>Winning Amount</th>
+                                    <th>Game Type</th>
                                     <th>Added Date</th>
                                 </tr>
                             </thead>
@@ -357,6 +370,13 @@
                                 <?php
                                 $i = 0;
                                 foreach ($TeenPattiLog as $key => $teen) {
+                                    if($teen->table_type==0){
+                                        $table_type='Teen Patti';
+                                                                            }else if($teen->table_type==1){
+                                                                                $table_type='Private Table';
+                                                                            }else{
+                                                                                $table_type='Custom Boot';
+                                                                            }
                                     $i++;
                                 ?>
                                 <tr>
@@ -364,6 +384,7 @@
                                     <td><?= $teen->game_id ?></td>
                                     <td><?= $teen->invest ?></td>
                                     <td><?= $teen->winning_amount ?></td>
+                                    <td><?= $table_type ?></td>
                                     <td><?= date("d-m-Y", strtotime($teen->added_date)) ?></td>
                                 </tr>
                                 <?php }
@@ -546,6 +567,8 @@
                                     <th>Bet</th>
                                     <th>Amount</th>
                                     <th>Winning Amount</th>
+                                    <th>User Amount</th>
+                                    <th>Commision Amount</th>
                                     <th>Added Date</th>
                                 </tr>
                             </thead>
@@ -562,6 +585,8 @@
                                     <td><?= $car->bet ?></td>
                                     <td><?= $car->amount ?></td>
                                     <td><?= $car->winning_amount ?></td>
+                                    <td><?= $car->user_amount ?></td>
+                                    <td><?= $car->comission_amount ?></td>
                                     <td><?= date("d-m-Y", strtotime($car->added_date)) ?></td>
                                 </tr>
                                 <?php }
@@ -584,6 +609,8 @@
                                     <th>Bet</th>
                                     <th>Amount</th>
                                     <th>Winning Amount</th>
+                                    <th>User Amount</th>
+                                    <th>Commision Amount</th>
                                     <th>Added Date</th>
                                 </tr>
                             </thead>
@@ -600,6 +627,8 @@
                                     <td><?= $animal->bet ?></td>
                                     <td><?= $animal->amount ?></td>
                                     <td><?= $animal->winning_amount ?></td>
+                                    <td><?= $animal->user_amount ?></td>
+                                    <td><?= $animal->comission_amount ?></td>
                                     <td><?= date("d-m-Y", strtotime($animal->added_date)) ?></td>
                                 </tr>
                                 <?php }

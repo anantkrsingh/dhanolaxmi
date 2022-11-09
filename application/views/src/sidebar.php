@@ -217,6 +217,58 @@ $final_url = str_replace(strtolower(base_url()), '', strtolower($actual_link));
                                 </ul>
                             </li>
                             <?php } ?>
+
+                            <?php if (HEAD_TAILS==true) { ?>
+                <li class="<?= (array_filter([strpos($final_url, "backend/headtails")], 'is_numeric')) ? 'mm-active' : '' ?>">
+                                <a href="javascript: void(0);" class="has-arrow waves-effect" >
+                                    <i class="ti-layout-grid2-alt"></i>
+                                    <span>Head & Tail Mgmt.</span>
+                                </a>
+                                <ul class="sub-menu mm-collapse">
+                                <li class="<?= (array_filter([strpos($final_url, "headtails"),], 'is_numeric')) ? 'mm-active' : '' ?>"><a href="<?= base_url('backend/HeadTails') ?>" class="waves-effect">
+                        <span>Head & Tail History</span></a></li>
+                                </ul>
+                            </li>
+                            <?php } ?>
+
+                            <?php if (RED_VS_BLACK==true) { ?>
+                <li class="<?= (array_filter([strpos($final_url, "backend/redblack")], 'is_numeric')) ? 'mm-active' : '' ?>">
+                                <a href="javascript: void(0);" class="has-arrow waves-effect" >
+                                    <i class="ti-layout-grid2-alt"></i>
+                                    <span>Red Vs Black Mgmt.</span>
+                                </a>
+                                <ul class="sub-menu mm-collapse">
+                                <li class="<?= (array_filter([strpos($final_url, "redblack"),], 'is_numeric')) ? 'mm-active' : '' ?>"><a href="<?= base_url('backend/RedBlack') ?>" class="waves-effect">
+                        <span>Red Vs Black History</span></a></li>
+                                </ul>
+                            </li>
+                            <?php } ?>
+
+                            <?php if (JHANDI_MUNDA==true) { ?>
+                <li class="<?= (array_filter([strpos($final_url, "backend/jhandimunda")], 'is_numeric')) ? 'mm-active' : '' ?>">
+                                <a href="javascript: void(0);" class="has-arrow waves-effect" >
+                                    <i class="ti-layout-grid2-alt"></i>
+                                    <span>Jhandi Munda Mgmt.</span>
+                                </a>
+                                <ul class="sub-menu mm-collapse">
+                                <li class="<?= (array_filter([strpos($final_url, "jhandimunda"),], 'is_numeric')) ? 'mm-active' : '' ?>"><a href="<?= base_url('backend/JhandiMunda') ?>" class="waves-effect">
+                        <span>Jhandi Munda History</span></a></li>
+                                </ul>
+                            </li>
+                            <?php } ?>
+
+                            <?php if (ROULETTE_RANDOM==true) { ?>
+                           <li class="<?= (array_filter([strpos($final_url, "backend/roulette")], 'is_numeric')) ? 'mm-active' : '' ?>">
+                                <a href="javascript: void(0);" class="has-arrow waves-effect" >
+                                    <i class="ti-layout-grid2-alt"></i>
+                                    <span>Roulette Mgmt.</span>
+                                </a>
+                                <ul class="sub-menu mm-collapse">
+                                <li class="<?= (array_filter([strpos($final_url, "roulette"),], 'is_numeric')) ? 'mm-active' : '' ?>"><a href="<?= base_url('backend/Roulette') ?>" class="waves-effect">
+                        <span>Roulette History</span></a></li>
+                                </ul>
+                            </li>
+                            <?php } ?>
               
                 <?php if (CHIPS_MANAGEMENT==true) { ?>
                 <li><a href="<?= base_url('backend/chips') ?>" class="waves-effect"><i class="ion ion-md-contact"></i>

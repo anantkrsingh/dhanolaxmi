@@ -185,12 +185,14 @@ class Roulette_model extends MY_Model
         return $Query->result();
     }
 
-    public function TotalBetAmount($roulette_id, $bet)
+    public function TotalBetAmount($roulette_id, $bet='')
     {
         $this->db->select('SUM(amount) as amount', false);
         $this->db->from('tbl_roulette_bet');
         $this->db->where('roulette_id', $roulette_id);
-        $this->db->where('bet', $bet);
+        if ($bet!=='') {
+            $this->db->where('bet', $bet);
+        }
         $Query = $this->db->get();
         // echo $this->db->last_query();
         return $Query->row()->amount;
@@ -274,6 +276,7 @@ class Roulette_model extends MY_Model
 
     public function AllGames()
     {
+        $this->db->select('tbl_roulette.*,(select count(id) from tbl_roulette_bet where tbl_roulette.id=tbl_roulette_bet.roulette_id) as total_users');
         $this->db->from('tbl_roulette');
         $this->db->order_by('id', 'DESC');
         $this->db->limit(10);
@@ -462,5 +465,22 @@ class Roulette_model extends MY_Model
         }
 
         return $winner;
+    }
+
+    public function getRandomFlag($column)
+    {
+        $this->db->select($column);
+        $this->db->from('tbl_admin');
+        $this->db->order_by('id', 'DESC');
+        $Query = $this->db->get();
+        return $Query->row();
+    }
+    public function ChangeStatus()
+    {
+        $return = false;
+        $this->db->set('roulette_random', $this->input->post('type')); //value that used to update column
+        // $this->db->where('id', $id); //which row want to upgrade
+        $return = $this->db->update('tbl_admin');  //table name
+        return $return;
     }
 }

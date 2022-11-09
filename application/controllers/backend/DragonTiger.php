@@ -11,9 +11,9 @@ class DragonTiger extends MY_Controller
     {
         $AllGames = $this->DragonTiger_model->AllGames();
         $RandomFlag = $this->DragonTiger_model->getRandomFlag('dragon_tiger_random');
-        foreach ($AllGames as $key => $value) {
-            $AllGames[$key]->details=$this->DragonTiger_model->ViewBet('',$value->id);
-        }
+        // foreach ($AllGames as $key => $value) {
+        //     $AllGames[$key]->details=$this->DragonTiger_model->ViewBet('',$value->id);
+        // }
         // echo '<pre>';print_r($AllGames);die;
         $data = [
             'title' => 'Dragon Tiger History',

@@ -21,7 +21,7 @@
                             <tr>
                                 <td><?= $i++ ?></td>
                                 <td><?= $Gift->name ?></td>
-                                <td><img src="<?= base_url('data/post/' . $Gift->image) ?>" alt=""></td>
+                                <td><img src="<?= base_url('data/post/' . $Gift->image) ?>" width="400px" height="400px"></td>
                                 <td><?= $Gift->coin ?></td>
                                 <td><?= date("d-m-Y", strtotime($Gift->added_date)) ?></td>
                                 <td>
