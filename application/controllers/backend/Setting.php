@@ -221,11 +221,22 @@ class Setting extends MY_Controller {
                 $Change = $this->Setting_model->UpdateGamesStatus( $column, $type );
             }
             break;
-            case 'ludo':
+            case 'ludo_online':
             if ( LUDO == true ) {
                 $Change = $this->Setting_model->UpdateGamesStatus( $column, $type );
             }
             break;
+            case 'ludo_local':
+                if ( LUDO_LOCAL == true ) {
+                    $Change = $this->Setting_model->UpdateGamesStatus( $column, $type );
+                }
+                break;
+
+                case 'ludo_computer':
+                    if ( LUDO_COMPUTER == true ) {
+                        $Change = $this->Setting_model->UpdateGamesStatus( $column, $type );
+                    }
+                    break;
             case 'bacarate':
                 if ( BACCARAT == true ) {
                     $Change = $this->Setting_model->UpdateGamesStatus( $column, $type );
@@ -236,6 +247,11 @@ class Setting extends MY_Controller {
                         $Change = $this->Setting_model->UpdateGamesStatus( $column, $type );
                     }
                     break;
+                    case 'roulette':
+                        if ( ROULETTE == true ) {
+                            $Change = $this->Setting_model->UpdateGamesStatus( $column, $type );
+                        }
+                        break;
             default:
             $Change = false;
             break;

@@ -15,10 +15,11 @@
                             <th>UPI</th>
                             <th>Mobile/Email</th>
                             <th>User Type</th>
-                            <?php if(USER_CATEGORY){ ?>
+                            <?php if (USER_CATEGORY) { ?>
                             <th>User Category</th>
                             <?php } ?>
                             <th>Wallet</th>
+                            <th>Winning Wallet</th>
                             <th>On Table</th>
                             <th>Status</th>
                             <th>Added Date</th>
@@ -26,7 +27,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                     
+
 
                     </tbody>
                 </table>
@@ -86,13 +87,14 @@ $(document).ready(function() {
             {
                 data: 'user_type'
             },
-            <?php if(USER_CATEGORY){ ?>
-            {
+            <?php if (USER_CATEGORY) { ?> {
                 data: 'user_category'
             },
-            <?php } ?>
-            {
+            <?php } ?> {
                 data: 'wallet'
+            },
+            {
+                data: 'winning_wallet'
             },
             {
                 data: 'on_table'
@@ -120,5 +122,4 @@ $(document).ready(function() {
 
     });
 });
-
 </script>

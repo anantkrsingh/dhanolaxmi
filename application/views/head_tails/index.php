@@ -28,7 +28,7 @@
                         <tr>
                             <td><?= $Games->id ?></td>
                             <td><?= date("H:i", strtotime($Games->added_date)) ?></td>
-                            <td><u><a href="<?= base_url('backend/Baccarat/HeadTailsBet/'.$Games->id)?>">
+                            <td><u><a href="<?= base_url('backend/HeadTails/HeadTailsBet/'.$Games->id)?>">
                             <?= $Games->total_users ?> </a></u></td>
                             <td><?= $Games->total_amount ?></td>
                             <td><?= $Games->admin_profit ?></td>

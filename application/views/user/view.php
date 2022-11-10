@@ -11,7 +11,7 @@
                     <li><a data-toggle="tab" href="#purchase_reffer">Purchase Reffer</a></li>
                     <li><a data-toggle="tab" href="#welcome_reffer">Welcome Reffer</a></li>
                     <li><a data-toggle="tab" href="#wallet_log">Wallet Log</a></li>
-                    <?php if (RUMMY==true) { ?>
+                    <?php if (POINT_RUMMY==true) { ?>
                     <li><a data-toggle="tab" href="#rummy_log">Point Rummy Log</a></li>
                     <?php } ?>
                     <?php if (RUMMY_POOL==true) { ?>
@@ -30,7 +30,7 @@
                     <li><a data-toggle="tab" href="#ander_log">Ander Bahar Log</a></li>
                     <?php } ?>
                     <?php if (SEVEN_UP_DOWN==true) { ?>
-                    <li><a data-toggle="tab" href="#seven_up">Seven Up Log</a></li>
+                    <li><a data-toggle="tab" href="#seven_up">Seven Up Down Log</a></li>
                     <?php } ?>
                     <?php if (COLOR_PREDICTION==true) { ?>
                     <li><a data-toggle="tab" href="#color_prediction">Color Prediction Log</a></li>
@@ -41,7 +41,7 @@
                     <?php if (ANIMAL_ROULETTE==true) { ?>
                     <li><a data-toggle="tab" href="#animal_roulette">Animal Roulette Log</a></li>
                     <?php } ?>
-                    <?php if (JACKPOT_HISTORY==true) { ?>
+                    <?php if (JACKPOT==true) { ?>
                     <li><a data-toggle="tab" href="#jackpot">Jackpot Log</a></li>
                     <?php } ?>
                     <?php if (LUDO==true) { ?>
@@ -54,10 +54,10 @@
                     <li><a data-toggle="tab" href="#red_black">Red Vs Black Log</a></li>
                     <?php } ?>
                     <?php if (BACCARAT==true) { ?>
-                    <li><a data-toggle="tab" href="#red_black">Baccarat Log</a></li>
+                    <li><a data-toggle="tab" href="#baccarat">Baccarat Log</a></li>
                     <?php } ?>
                     <?php if (JHANDI_MUNDA==true) { ?>
-                    <li><a data-toggle="tab" href="#red_black">Jhandi Munda Log</a></li>
+                    <li><a data-toggle="tab" href="#jhandimunda">Jhandi Munda Log</a></li>
                     <?php } ?>
                 </ul>
                 <div class="tab-content">
@@ -250,7 +250,7 @@
                             </tbody>
                         </table>
                     </div>
-                    <?php if (RUMMY==true) { ?>
+                    <?php if (POINT_RUMMY==true) { ?>
                     <div id="rummy_log" class="tab-pane fade">
                         <table class="table table-bordered dt-responsive nowrap"
                             style="border-collapse: collapse; border-spacing: 0; width: 100%;">
@@ -416,13 +416,20 @@
                                 <?php
                                 $i = 0;
                                 foreach ($DragonWalletAmount as $key => $dragon) {
+                                    if($dragon->bet==DRAGON){
+                                        $bet='Dragon';
+                                    }else if($dragon->bet==TIGER){
+                                        $bet='Tiger';
+                                    }else{
+                                        $bet='Tie';
+                                    }
                                     $i++;
                                 ?>
                                 <tr>
                                     <td><?= $i ?></td>
                                     <td><?= $dragon->dragon_tiger_id ?></td>
                                     <td><?= $dragon->user_id ?></td>
-                                    <td><?= $dragon->bet ?></td>
+                                    <td><?= $bet ?></td>
                                     <td><?= $dragon->amount ?></td>
                                     <td><?= $dragon->winning_amount ?></td>
                                     <td><?= $dragon->user_amount ?></td>
@@ -464,7 +471,7 @@
                                     <td><?= $i ?></td>
                                     <td><?= $ander_baher->ander_baher_id ?></td>
                                     <td><?= $ander_baher->user_id ?></td>
-                                    <td><?= $ander_baher->bet ?></td>
+                                    <td><?= ($ander_baher->bet==ANDER)?'Andar':'Bahar' ?></td>
                                     <td><?= $ander_baher->amount ?></td>
                                     <td><?= $ander_baher->winning_amount ?></td>
                                     <td><?= $ander_baher->user_amount ?></td>
@@ -491,6 +498,8 @@
                                     <th>Bet</th>
                                     <th>Amount</th>
                                     <th>Winning Amount</th>
+                                    <th>User Amount</th>
+                                    <th>Comission Amount</th>
                                     <th>Added Date</th>
                                 </tr>
                             </thead>
@@ -504,9 +513,11 @@
                                     <td><?= $i ?></td>
                                     <td><?= $seven->seven_up_id ?></td>
                                     <td><?= $seven->user_id ?></td>
-                                    <td><?= $seven->bet ?></td>
+                                    <td><?= ($seven->bet==DOWN)?'Down':'Up' ?></td>
                                     <td><?= $seven->amount ?></td>
                                     <td><?= $seven->winning_amount ?></td>
+                                    <td><?= $seven->user_amount ?></td>
+                                    <td><?= $seven->comission_amount ?></td>
                                     <td><?= date("d-m-Y", strtotime($seven->added_date)) ?></td>
                                 </tr>
                                 <?php }
@@ -529,6 +540,8 @@
                                     <th>Bet</th>
                                     <th>Amount</th>
                                     <th>Winning Amount</th>
+                                    <th>User Amount</th>
+                                    <th>Comission Amount</th>
                                     <th>Added Date</th>
                                 </tr>
                             </thead>
@@ -536,15 +549,26 @@
                                 <?php
                                 $i = 0;
                                 foreach ($ColorPrediction as $key => $color) {
+                                    if($color->bet==GREEN){
+                                        $bet='Green';
+                                    }else if($color->bet==VIOLET){
+                                        $bet='Violet';
+                                    }else if($color->bet==RED){
+                                        $bet='Red';
+                                    }else{
+                                        $bet=$color->bet;
+                                    }
                                     $i++;
                                 ?>
                                 <tr>
                                     <td><?= $i ?></td>
                                     <td><?= $color->color_prediction_id ?></td>
                                     <td><?= $color->user_id ?></td>
-                                    <td><?= $color->bet ?></td>
+                                    <td><?= $bet ?></td>
                                     <td><?= $color->amount ?></td>
                                     <td><?= $color->winning_amount ?></td>
+                                    <td><?= $color->user_amount ?></td>
+                                    <td><?= $color->comission_amount ?></td>
                                     <td><?= date("d-m-Y", strtotime($color->added_date)) ?></td>
                                 </tr>
                                 <?php }
@@ -575,14 +599,16 @@
                             <tbody>
                                 <?php
                                 $i = 0;
+                                $bet=[0=>'',TOYOTA=>'Tata',MAHINDRA=>'Mahindra',AUDI=>'Audi',BMW=>'Bmw',MERCEDES=>'Mercedes',PORSCHE=>'Porshe',LAMBORGHINI=>'Lamborghini',FERRARI=>'Ferrari'];
                                 foreach ($CarRoulette as $key => $car) {
+            
                                     $i++;
                                 ?>
                                 <tr>
                                     <td><?= $i ?></td>
                                     <td><?= $car->car_roulette_id ?></td>
                                     <td><?= $car->user_id ?></td>
-                                    <td><?= $car->bet ?></td>
+                                    <td><?= $bet[$car->bet] ?></td>
                                     <td><?= $car->amount ?></td>
                                     <td><?= $car->winning_amount ?></td>
                                     <td><?= $car->user_amount ?></td>
@@ -617,6 +643,7 @@
                             <tbody>
                                 <?php
                                 $i = 0;
+                                $bet=[0=>'',TIGER=>'Tiger',SNAKE=>'Snake',SHARK=>'Shark',FOX=>'Fox',CHEETAH=>'Cheetah',BEAR=>'Bear',WHALE=>'Whale',LION=>'Lion'];
                                 foreach ($AnimalRoulette as $key => $animal) {
                                     $i++;
                                 ?>
@@ -624,7 +651,7 @@
                                     <td><?= $i ?></td>
                                     <td><?= $animal->animal_roulette_id ?></td>
                                     <td><?= $animal->user_id ?></td>
-                                    <td><?= $animal->bet ?></td>
+                                    <td><?= $bet[$animal->bet] ?></td>
                                     <td><?= $animal->amount ?></td>
                                     <td><?= $animal->winning_amount ?></td>
                                     <td><?= $animal->user_amount ?></td>
@@ -658,6 +685,7 @@
                             <tbody>
                                 <?php
                                 $i = 0;
+                                $bet=[0=>'',HIGH_CARD=>'High Card',PAIR=>'Pair',COLOR=>'Color',SEQUENCE=>'Sequence',PURE_SEQUENCE=>'Pure Sequence',SET=>'Set'];
                                 foreach ($Jackpot as $key => $jackpot) {
                                     $i++;
                                 ?>
@@ -665,7 +693,7 @@
                                     <td><?= $i ?></td>
                                     <td><?= $jackpot->jackpot_id ?></td>
                                     <td><?= $jackpot->user_id ?></td>
-                                    <td><?= $jackpot->bet ?></td>
+                                    <td><?= $bet[$jackpot->bet] ?></td>
                                     <td><?= $jackpot->amount ?></td>
                                     <td><?= $jackpot->winning_amount ?></td>
                                     <td><?= $jackpot->user_amount ?></td>
@@ -704,6 +732,178 @@
                                     <td><?= $ludo->winner_id ?></td>
                                     <td><?= $ludo->amount ?></td>
                                     <td><?= date("d-m-Y", strtotime($ludo->added_date)) ?></td>
+                                </tr>
+                                <?php }
+                                ?>
+
+
+                            </tbody>
+                        </table>
+                    </div>
+                    <?php } ?>
+                    <?php if (HEAD_TAILS==true) { ?>
+                    <div id="head_tails" class="tab-pane fade">
+                        <table class="table table-bordered dt-responsive nowrap"
+                            style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                            <thead>
+                                <tr>
+                                    <th>Sr. No.</th>
+                                    <th>Game ID</th>
+                                    <th>User Id</th>
+                                    <th>Bet</th>
+                                    <th>Amount</th>
+                                    <th>Winning Amount</th>
+                                    <th>User Amount</th>
+                                    <th>Comission Amount</th>
+                                    <th>Added Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php
+                                $i = 0;
+                                $bet=[HEAD=>'Head',TAIL=>'Tail'];
+                                foreach ($HeadTails as $key => $HeadTail) {
+                                    $i++;
+                                ?>
+                                <tr>
+                                    <td><?= $i ?></td>
+                                    <td><?= $HeadTail->head_tail_id ?></td>
+                                    <td><?= $HeadTail->user_id ?></td>
+                                    <td><?= $bet[$HeadTail->bet] ?></td>
+                                    <td><?= $HeadTail->amount ?></td>
+                                    <td><?= $HeadTail->winning_amount ?></td>
+                                    <td><?= $HeadTail->user_amount ?></td>
+                                    <td><?= $HeadTail->comission_amount ?></td>
+                                    <td><?= date("d-m-Y", strtotime($HeadTail->added_date)) ?></td>
+                                </tr>
+                                <?php }
+                                ?>
+
+
+                            </tbody>
+                        </table>
+                    </div>
+                    <?php } ?>
+                    <?php if (RED_VS_BLACK==true) { ?>
+                    <div id="red_black" class="tab-pane fade">
+                        <table class="table table-bordered dt-responsive nowrap"
+                            style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                            <thead>
+                                <tr>
+                                    <th>Sr. No.</th>
+                                    <th>Game ID</th>
+                                    <th>User Id</th>
+                                    <th>Bet</th>
+                                    <th>Amount</th>
+                                    <th>Winning Amount</th>
+                                    <th>User Amount</th>
+                                    <th>Comission Amount</th>
+                                    <th>Added Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php
+                                $i = 0;
+                                $bet=[0=>'',RB_RED=>'Red',RB_BLACK=>'Black',RB_PAIR=>'Pair',RB_COLOR=>'Color',RB_SEQUENCE=>'Sequence',RB_PURE_SEQUENCE=>'Pure Sequence',RB_SET=>'Set'];
+                                foreach ($RedBlacks as $key => $RedBlack) {
+                                    $i++;
+                                ?>
+                                <tr>
+                                    <td><?= $i ?></td>
+                                    <td><?= $RedBlack->red_black_id ?></td>
+                                    <td><?= $RedBlack->user_id ?></td>
+                                    <td><?= $bet[$RedBlack->bet] ?></td>
+                                    <td><?= $RedBlack->amount ?></td>
+                                    <td><?= $RedBlack->winning_amount ?></td>
+                                    <td><?= $RedBlack->user_amount ?></td>
+                                    <td><?= $RedBlack->comission_amount ?></td>
+                                    <td><?= date("d-m-Y", strtotime($RedBlack->added_date)) ?></td>
+                                </tr>
+                                <?php }
+                                ?>
+
+
+                            </tbody>
+                        </table>
+                    </div>
+                    <?php } ?>
+                    <?php if (BACCARAT==true) { ?>
+                    <div id="baccarat" class="tab-pane fade">
+                        <table class="table table-bordered dt-responsive nowrap"
+                            style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                            <thead>
+                                <tr>
+                                    <th>Sr. No.</th>
+                                    <th>Game ID</th>
+                                    <th>User Id</th>
+                                    <th>Bet</th>
+                                    <th>Amount</th>
+                                    <th>Winning Amount</th>
+                                    <th>User Amount</th>
+                                    <th>Comission Amount</th>
+                                    <th>Added Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php
+                                $i = 0;
+                                $bet=[PLAYER=>'Player',BANKER=>'Banker',TIE=>'Tie',PLAYER_PAIR=>'Player Pair',BANKER_PAIR=>'Banker Payer'];
+                                foreach ($Baccarats as $key => $Baccarat) {
+                                    $i++;
+                                ?>
+                                <tr>
+                                    <td><?= $i ?></td>
+                                    <td><?= $Baccarat->baccarat_id ?></td>
+                                    <td><?= $Baccarat->user_id ?></td>
+                                    <td><?= $bet[$Baccarat->bet] ?></td>
+                                    <td><?= $Baccarat->amount ?></td>
+                                    <td><?= $Baccarat->winning_amount ?></td>
+                                    <td><?= $Baccarat->user_amount ?></td>
+                                    <td><?= $Baccarat->comission_amount ?></td>
+                                    <td><?= date("d-m-Y", strtotime($Baccarat->added_date)) ?></td>
+                                </tr>
+                                <?php }
+                                ?>
+
+
+                            </tbody>
+                        </table>
+                    </div>
+                    <?php } ?>
+                    <?php if (JHANDI_MUNDA==true) { ?>
+                    <div id="jhandimunda" class="tab-pane fade">
+                        <table class="table table-bordered dt-responsive nowrap"
+                            style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                            <thead>
+                                <tr>
+                                    <th>Sr. No.</th>
+                                    <th>Game ID</th>
+                                    <th>User Id</th>
+                                    <th>Bet</th>
+                                    <th>Amount</th>
+                                    <th>Winning Amount</th>
+                                    <th>User Amount</th>
+                                    <th>Comission Amount</th>
+                                    <th>Added Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php
+                                $i = 0;
+                                $bet=[0=>'',HEART=>'Heart',SPADE=>'Spade',DIAMOND=>'Daimond',CLUB=>'Club',FACE=>'Face',FLAG=>'Flag'];
+                                foreach ($JhandiMundas as $key => $JhandiMunda) {
+                                    $i++;
+                                ?>
+                                <tr>
+                                    <td><?= $i ?></td>
+                                    <td><?= $JhandiMunda->jhandi_munda_id ?></td>
+                                    <td><?= $JhandiMunda->user_id ?></td>
+                                    <td><?= $bet[$JhandiMunda->bet] ?></td>
+                                    <td><?= $JhandiMunda->amount ?></td>
+                                    <td><?= $JhandiMunda->winning_amount ?></td>
+                                    <td><?= $JhandiMunda->user_amount ?></td>
+                                    <td><?= $JhandiMunda->comission_amount ?></td>
+                                    <td><?= date("d-m-Y", strtotime($JhandiMunda->added_date)) ?></td>
                                 </tr>
                                 <?php }
                                 ?>

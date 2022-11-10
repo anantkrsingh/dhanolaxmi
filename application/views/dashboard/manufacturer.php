@@ -59,7 +59,7 @@
             </div>
         </a>
     </div>
-    <?php if (JACKPOT_HISTORY==true) { ?>
+    <?php if (JACKPOT==true) { ?>
     <div class="col-xl-3 col-md-6">
         <label>Jackpot Status</label>
         <select class="form-control" onchange="ChangeStatus(this.value)">
@@ -83,7 +83,7 @@
         </a>
     </div>
     <?php } ?>
-    <?php if (RUMMY==true) { ?>
+    <?php if (POINT_RUMMY==true) { ?>
     <div class="col-xl-3 col-md-6">
         <label>Rummy Bot</label>
         <select class="form-control" onchange="ChangeRummyBotStatus(this.value)">

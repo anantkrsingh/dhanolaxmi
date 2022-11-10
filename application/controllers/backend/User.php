@@ -183,6 +183,10 @@ class User extends MY_Controller
             'AnimalRoulette' => $this->Users_model->AnimalRouletteAmount($user_id),
             'Jackpot' => $this->Users_model->JackpotAmount($user_id),
             'Ludos' => $this->Users_model->getHistory($user_id),
+            'HeadTails' => $this->Users_model->HeadTailAmount($user_id),
+            'RedBlacks' => $this->Users_model->RedBlack($user_id),
+            'Baccarats' => $this->Users_model->BaccaratLog($user_id),
+            'JhandiMundas' => $this->Users_model->JhandiMunda($user_id),
         ];
         // echo '<pre>';print_r($data);die;
         template('user/view', $data);

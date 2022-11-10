@@ -2,10 +2,8 @@
 
     <div class="col-12">
         <div class="card">
-            <div class="card-body">
-
-                <table id="datatable" class="table table-bordered dt-responsive nowrap"
-                    style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+            <div class="card-body table-responsive">
+                <table id="datatable" class="table table-bordered nowrap">
                     <thead>
                         <tr>
                             <th>Sr. No.</th>
@@ -16,7 +14,7 @@
                             <th>Account Number</th>
                             <th>Passbook</th>
                             <th>Added Date</th>
-                            <th>Action</th>
+                            <!-- <th>Action</th> -->
                         </tr>
                     </thead>
                     <tbody>
@@ -34,12 +32,6 @@
                             <td><?= $bank->acc_no ?></td>
                             <td><img src="<?= base_url('data/post/' . strtolower($bank->passbook_img)); ?>" height="160px" width="300px"></td>
                             <td><?= date("d-m-Y h:i A", strtotime($bank->added_date)) ?></td>
-                             <!-- <td>
-                                | <a href="<?= base_url('backend/BankDeatails/delete/' . $bank->id) ?>"
-                                    class="btn btn-danger" data-toggle="tooltip" data-placement="top"
-                                    title="Delete"><span class="fa fa-times"></span></a>
-                            </td> -->
-                         
                         </tr>
                         <?php }
                         ?>

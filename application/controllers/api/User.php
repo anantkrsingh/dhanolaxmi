@@ -322,9 +322,27 @@ class User extends REST_Controller
         exit();
     }
 
+    public function withdrawal_log_post()
+    {
+        if (!$this->Users_model->TokenConfirm($this->data['user_id'], $this->data['token'])) {
+            $data['message'] = 'Invalid User';
+            $data['code'] = HTTP_INVALID;
+            $this->response($data, HTTP_OK);
+            exit();
+        }
+
+        $this->load->model('WithdrawalLog_model');
+        $UserData = $this->WithdrawalLog_model->WithDrawal_log($this->data['user_id']);
+        $data['message'] = 'Success';
+        $data['data'] = $UserData;
+        $data['code'] = HTTP_OK;
+        $this->response($data, HTTP_OK);
+        exit();
+    }
+
     public function game_on_off_post()
     {
-        $setting = $this->Setting_model->GetPermission('`teen_patti`, `dragon_tiger`, `andar_bahar`, `point_rummy`, `private_rummy`, `pool_rummy`, `deal_rummy`, `private_table`, `custom_boot`, `seven_up_down`, `car_roulette`, `jackpot_teen_patti`, `animal_roulette`, `color_prediction`, `poker`, `head_tails`, `red_vs_black`, `ludo`, `bacarate`, `jhandi_munda`');
+        $setting = $this->Setting_model->GetPermission('*');
 
         $data['message'] = 'Success';
         $data['game_setting'] = $setting;
@@ -931,6 +949,50 @@ class User extends REST_Controller
         }
 
         $this->Users_model->UpdateUserPic($user_id, $name, $profile_pic, $bank_detail, $adhar_card, $upi);
+        $data['message'] = 'Success';
+        $data['code'] = HTTP_OK;
+        $this->response($data, HTTP_OK);
+        exit();
+    }
+
+    public function change_password_post()
+    {
+        $user_id = $this->input->post('user_id');
+        $old_password = $this->input->post('old_password');
+        $new_password = $this->input->post('new_password');
+
+        if (empty($user_id)) {
+            $data['message'] = 'Invalid Params';
+            $data['code'] = HTTP_BLANK;
+            $this->response($data, 200);
+            exit();
+        }
+
+        if (!$this->Users_model->TokenConfirm($this->data['user_id'], $this->data['token'])) {
+            $data['message'] = 'Invalid User';
+            $data['code'] = HTTP_INVALID;
+            $this->response($data, HTTP_OK);
+            exit();
+        }
+
+        $user = $this->Users_model->UserProfile($user_id);
+        if (empty($user)) {
+            $data['message'] = 'Invalid User';
+            $data['code'] = HTTP_NOT_ACCEPTABLE;
+            $this->response($data, 200);
+            exit();
+        }
+
+        if ($user[0]->password!=$old_password) {
+            $data['message'] = 'Invalid Old Password';
+            $data['code'] = HTTP_NOT_ACCEPTABLE;
+            $this->response($data, 200);
+            exit();
+        }
+
+        $user_data['password'] = $new_password;
+
+        $this->Users_model->Update($user_id, $user_data);
         $data['message'] = 'Success';
         $data['code'] = HTTP_OK;
         $this->response($data, HTTP_OK);

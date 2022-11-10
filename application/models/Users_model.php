@@ -841,6 +841,34 @@ class Users_model extends MY_Model
         return $Query->result();
     }
 
+    public function RedBlack($user_id)
+    {
+        $this->db->select('tbl_red_black_bet.*,tbl_red_black.room_id');
+        $this->db->from('tbl_red_black_bet');
+        $this->db->join('tbl_red_black', 'tbl_red_black.id=tbl_red_black_bet.red_black_id');
+        $this->db->where('tbl_red_black_bet.user_id', $user_id);
+        $Query = $this->db->get();
+        return $Query->result();
+    }
+    public function BaccaratLog($user_id)
+    {
+        $this->db->select('tbl_baccarat_bet.*,tbl_baccarat.room_id');
+        $this->db->from('tbl_baccarat_bet');
+        $this->db->join('tbl_baccarat', 'tbl_baccarat.id=tbl_baccarat_bet.baccarat_id');
+        $this->db->where('tbl_baccarat_bet.user_id', $user_id);
+        $Query = $this->db->get();
+        return $Query->result();
+    }
+    public function JhandiMunda($user_id)
+    {
+        $this->db->select('tbl_jhandi_munda_bet.*,tbl_jhandi_munda.room_id');
+        $this->db->from('tbl_jhandi_munda_bet');
+        $this->db->join('tbl_jhandi_munda', 'tbl_jhandi_munda.id=tbl_jhandi_munda_bet.jhandi_munda_id');
+        $this->db->where('tbl_jhandi_munda_bet.user_id', $user_id);
+        $Query = $this->db->get();
+        return $Query->result();
+    }
+
     public function getHistory($user_id)
     {
         $this->db->select('tbl_ludo.*,tbl_users.name');
@@ -957,6 +985,7 @@ class Users_model extends MY_Model
               "user_type"=>$record->user_type==1 ? 'BOT' : 'REAL',
               "user_category"=>$record->user_category,
               "wallet"=>$record->wallet,
+              "winning_wallet"=>$record->winning_wallet,
               "on_table"=>($record->table_id > 0) ? 'Yes' : 'No',
               "status"=>$status,
               "added_date"=>date("d-m-Y", strtotime($record->added_date)),
