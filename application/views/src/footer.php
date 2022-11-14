@@ -1,6 +1,6 @@
    <!-- content -->
    <footer class="footer">© <?= date("Y").' '. PROJECT_NAME ?> <span class="d-none d-sm-inline-block">- Crafted with <i
-               class="mdi mdi-heart text-danger"></i> by Androappstech</span>.</footer>
+               class="mdi mdi-heart text-danger"></i> by <?= COMPANY_NAME ?></span>.</footer>
    </div>
    <!-- ============================================================== -->
    <!-- End Right content here -->

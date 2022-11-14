@@ -1656,7 +1656,7 @@ class Cron extends CI_Controller
                         if ($setting->up_down_random==1) {
                             $winning = RAND(0, 2);
                         } else {
-                            if ($DownBetAmount==0 || $UpBetAmount==0 || $TieBetAmount==0) {
+                            if ($DownBetAmount==0 && $UpBetAmount==0 && $TieBetAmount==0) {
                                 $winning = RAND(0, 2);
                             } elseif ($DownBetAmount>$TieBetAmount && $UpBetAmount>$TieBetAmount) {
                                 $winning = TIE;
@@ -2032,7 +2032,7 @@ class Cron extends CI_Controller
                         $RedAmount = $this->ColorPrediction_model->TotalBetAmount($game_data[0]->id, RED);
 
                         $setting = $this->Setting_model->Setting();
-                        if ($setting->animal_roulette_random==1) {
+                        if ($setting->color_prediction_random==1) {
                             $arr = ['ZERO','ONE','TWO','THREE','FOUR','FIVE','SIX','SEVEN','EIGHT','NINE'];
                             $min = $arr[array_rand($arr)];
                         } else {
@@ -2046,10 +2046,10 @@ class Cron extends CI_Controller
                             $arr['SEVEN'] = ($SevenAmount*NUMBER_MULTIPLE)+($GreenAmount*GREEN_RED_MULTIPLE);
                             $arr['EIGHT'] = ($EightAmount*NUMBER_MULTIPLE)+($RedAmount*GREEN_RED_MULTIPLE);
                             $arr['NINE'] = ($NineAmount*NUMBER_MULTIPLE)+($GreenAmount*GREEN_RED_MULTIPLE);
-                        }
 
-                        $min_arr = array_keys($arr, min($arr));
-                        $min = $min_arr[0];
+                            $min_arr = array_keys($arr, min($arr));
+                            $min = $arr[$min_arr[0]];
+                        }
 
                         $color = '';
                         $color_multiply = '';
@@ -2134,6 +2134,7 @@ class Cron extends CI_Controller
                                 break;
                         }
 
+                        // echo $number.'hi';
                         $this->ColorPrediction_model->CreateMap($game_data[0]->id, $number);
 
                         $comission = $this->Setting_model->Setting()->admin_commission;

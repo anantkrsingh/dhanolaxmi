@@ -95,6 +95,7 @@ defined('EXIT_DATABASE')       or define('EXIT_DATABASE', 8); // database error
 defined('EXIT__AUTO_MIN')      or define('EXIT__AUTO_MIN', 9); // lowest automatically-assigned error code
 defined('EXIT__AUTO_MAX')      or define('EXIT__AUTO_MAX', 125); // highest automatically-assigned error code
 define('PROJECT_NAME', 'Lets Card');
+define('COMPANY_NAME', 'ASAG Androapps Technology Pvt Ltd.');
 define('SUPERADMIN', 0);
 define('KEY', '2018');
 define('URL_ENCRYPT_KEY', 'Housie432423');

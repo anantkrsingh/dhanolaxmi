@@ -22,8 +22,7 @@
                 <div class="right">
                     <div class="text">
                         <p>
-                            <?= PROJECT_NAME ?> is online Rummy portal completely owned and operated by ASAG Androapps
-                            Technology Pvt Ltd. We providing best-in-class gaming experience to all its users. Our aim
+                            <?= PROJECT_NAME ?> is online Rummy portal completely owned and operated by <?= COMPANY_NAME ?> We providing best-in-class gaming experience to all its users. Our aim
                             is to
                             give every
                             player a premium and hassle-free rummy-playing experience on our android and iOS app. Our

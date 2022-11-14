@@ -370,6 +370,23 @@ $final_url = str_replace(strtolower(base_url()), '', strtolower($actual_link));
                 </li>
                 <?php } ?>
 
+                <?php if (POKER==true) { ?>
+                <li
+                    class="<?= (array_filter([strpos($final_url, "backend/poker")], 'is_numeric')) ? 'mm-active' : '' ?>">
+                    <a href="javascript: void(0);" class="has-arrow waves-effect">
+                        <i class="ti-layout-grid2-alt"></i>
+                        <span>Poker Mgmt.</span>
+                    </a>
+                    <ul class="sub-menu mm-collapse">
+                        <li
+                            class="<?= (array_filter([strpos($final_url, "poker"),], 'is_numeric')) ? 'mm-active' : '' ?>">
+                            <a href="<?= base_url('backend/Pokers') ?>" class="waves-effect">
+                                <span>Poker History</span></a>
+                        </li>
+                    </ul>
+                </li>
+                <?php } ?>
+
                 <?php if (CHIPS_MANAGEMENT==true) { ?>
                 <li><a href="<?= base_url('backend/chips') ?>" class="waves-effect"><i class="ion ion-md-contact"></i>
                         <span>Chips Management</span></a></li>

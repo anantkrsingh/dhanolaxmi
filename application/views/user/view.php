@@ -27,7 +27,7 @@
                     <li><a data-toggle="tab" href="#dragon_log">Dragon Tiger Log</a></li>
                     <?php } ?>
                     <?php if (ANDER_BAHAR==true) { ?>
-                    <li><a data-toggle="tab" href="#ander_log">Ander Bahar Log</a></li>
+                    <li><a data-toggle="tab" href="#ander_log">Andar Bahar Log</a></li>
                     <?php } ?>
                     <?php if (SEVEN_UP_DOWN==true) { ?>
                     <li><a data-toggle="tab" href="#seven_up">Seven Up Down Log</a></li>
@@ -58,6 +58,9 @@
                     <?php } ?>
                     <?php if (JHANDI_MUNDA==true) { ?>
                     <li><a data-toggle="tab" href="#jhandimunda">Jhandi Munda Log</a></li>
+                    <?php } ?>
+                    <?php if (POKER==true) { ?>
+                    <li><a data-toggle="tab" href="#poker">Poker</a></li>
                     <?php } ?>
                 </ul>
                 <div class="tab-content">
@@ -904,6 +907,43 @@
                                     <td><?= $JhandiMunda->user_amount ?></td>
                                     <td><?= $JhandiMunda->comission_amount ?></td>
                                     <td><?= date("d-m-Y", strtotime($JhandiMunda->added_date)) ?></td>
+                                </tr>
+                                <?php }
+                                ?>
+
+
+                            </tbody>
+                        </table>
+                    </div>
+                    <?php } ?>
+                    <br>
+                    <?php if (POKER==true) { ?>
+                    <div id="poker" class="tab-pane fade">
+                        <table class="table table-bordered dt-responsive nowrap"
+                            style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                            <thead>
+                                <tr>
+                                    <th>Sr. No.</th>
+                                    <th>Game ID</th>
+                                    <th>Invest</th>
+                                    <th>Winning Amount</th>
+                                    <th>Commision Amount</th>
+                                    <th>Added Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php
+                                $i = 0;
+                                foreach ($AllPokers as $key => $Game) {
+                                    $i++;
+                                ?>
+                                <tr>
+                                    <td><?= $i ?></td>
+                                    <td><?= $Game->id ?></td>
+                                    <td><?= $Game->amount ?></td>
+                                    <td><?= $Game->user_winning_amt ?></td>
+                                    <td><?= $Game->admin_winning_amt ?></td>
+                                    <td><?= date("d-m-Y", strtotime($Game->added_date)) ?></td>
                                 </tr>
                                 <?php }
                                 ?>

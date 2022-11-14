@@ -17,6 +17,19 @@ class User extends MY_Controller
         template('user/list', $data);
     }
 
+    public function LadgerReports($id)
+    {
+        $postData=[];
+        $records=$this->Users_model->GetAllLogs($id,$postData);
+        $data = [
+            'title' => 'Ladger Report Management',
+             'id' => $id,
+             'AllReports'=>$records
+        ];
+        // $data['SideBarbutton'] = ['backend/user/add', 'Add Boat'];
+        template('user/ladger_report', $data);
+    }
+
     public function edit($id)
     {
         $data = [
@@ -68,6 +81,16 @@ class User extends MY_Controller
 
         // Get data
         $data = $this->Users_model->GetUsers($postData);
+
+        echo json_encode($data);
+    }
+
+
+    public function GetLadgerReports($id)
+    {
+        $postData = $this->input->post();
+        // Get data
+        $data = $this->Users_model->GetLadgerReports($id,$postData);
 
         echo json_encode($data);
     }
@@ -187,6 +210,7 @@ class User extends MY_Controller
             'RedBlacks' => $this->Users_model->RedBlack($user_id),
             'Baccarats' => $this->Users_model->BaccaratLog($user_id),
             'JhandiMundas' => $this->Users_model->JhandiMunda($user_id),
+            'AllPokers' => $this->Users_model->Poker($user_id),
         ];
         // echo '<pre>';print_r($data);die;
         template('user/view', $data);

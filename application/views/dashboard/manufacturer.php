@@ -52,7 +52,7 @@
                     <div class="mb-4">
                         <div class="float-left mini-stat-img mr-4"><img
                                 src="<?= base_url("assets/images/money-bag.png") ?>" alt=""></div>
-                        <h5 class="font-14 text-uppercase mt-0 text-white-50">Total Pucharse</h5>
+                        <h5 class="font-14 text-uppercase mt-0 text-white-50">Total Purchase</h5>
                         <h4 class="font-500"><?= number_format($TotalCoins) ?></h4>
                     </div>
                 </div>
