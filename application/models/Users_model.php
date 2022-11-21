@@ -314,6 +314,8 @@ class Users_model extends MY_Model
         $this->db->insert('tbl_users', $data);
         $UserId =  $this->db->insert_id();
 
+        $this->WalletLog($bonus_amount, 0, $UserId);
+
         return $UserId;
     }
 
@@ -409,6 +411,18 @@ class Users_model extends MY_Model
         $this->db->update('tbl_users');
 
         return true;
+    }
+
+    public function ExtraWalletLog($user_id, $amount, $type)
+    {
+        $data = [
+            'user_id' => $user_id,
+            'coin' => $amount,
+            'type' => $type,
+            'added_date' => date('Y-m-d H:i:s')
+        ];
+        $this->db->insert('tbl_extra_wallet_log', $data);
+        return $this->db->insert_id();
     }
 
     public function WalletLog($amount, $bonus, $user_id)
@@ -1016,14 +1030,14 @@ class Users_model extends MY_Model
         return $response;
     }
 
-    public function GetLadgerReports($id,$postData=null)
+    public function GetLadgerReports($id, $postData=null)
     {
         $response = array();
         # Total number of records without filtering
-        $totalRecordwithoutFilter=$this->TotalRecordsWithoutFilter($id,$postData);
-         # Total number of records with filtering
-        $totalRecordwithFilter=$this->TotalRecordsWithFilter($id,$postData);
-        $records=$this->GetAllLogs($id,$postData);
+        $totalRecordwithoutFilter=$this->TotalRecordsWithoutFilter($id, $postData);
+        # Total number of records with filtering
+        $totalRecordwithFilter=$this->TotalRecordsWithFilter($id, $postData);
+        $records=$this->GetAllLogs($id, $postData);
         $data = array();
         $start = $postData['start'];
         $draw = $postData['draw'];
@@ -1032,7 +1046,7 @@ class Users_model extends MY_Model
         $total = $records[0]->user_wallet;
         foreach ($records as $record) {
             $amount = $record->winning_amount-$record->amount;
-            $total=$total+$amount;            
+            $total=$total+$amount;
             $data[] = array(
               "id"=>$i,
               "game"=>$record->game,
@@ -1054,17 +1068,17 @@ class Users_model extends MY_Model
         return $response;
     }
 
-    public function TotalRecordsWithFilter($id,$postData)
+    public function TotalRecordsWithFilter($id, $postData)
     {
-           ## Read value
-           $draw = $postData['draw'];
-           $start = $postData['start'];
-           $rowperpage = $postData['length']; // Rows display per page
-           $columnIndex = $postData['order'][0]['column']; // Column index
-           $columnName = $postData['columns'][$columnIndex]['data']; // Column name
-           $columnSortOrder = $postData['order'][0]['dir']; // asc or desc
-           $searchValue = $postData['search']['value']; // Search value
-   $sql='SELECT main_table.*,tbl_users.wallet as user_wallet FROM (SELECT 
+        ## Read value
+        $draw = $postData['draw'];
+        $start = $postData['start'];
+        $rowperpage = $postData['length']; // Rows display per page
+        $columnIndex = $postData['order'][0]['column']; // Column index
+        $columnName = $postData['columns'][$columnIndex]['data']; // Column name
+        $columnSortOrder = $postData['order'][0]['dir']; // asc or desc
+        $searchValue = $postData['search']['value']; // Search value
+        $sql='SELECT main_table.*,tbl_users.wallet as user_wallet FROM (SELECT 
    "Andar Bahar" as game,user_id,winning_amount,added_date,amount,user_amount
    FROM tbl_ander_baher_bet where user_id="'.$id.'"
     UNION
@@ -1144,15 +1158,15 @@ class Users_model extends MY_Model
    "Purchase" as game,user_id,"0" as winning_amount,added_date,coin as amount,"" as user_amount
    FROM tbl_purchase where user_id="'.$id.'"
    ) as main_table join tbl_users on tbl_users.id=main_table.user_id Where tbl_users.isDeleted=0';
-   if ($searchValue) {
-    $sql .= ' and game like "%' . $searchValue . '%"';
-}
+        if ($searchValue) {
+            $sql .= ' and game like "%' . $searchValue . '%"';
+        }
         $query=$this->db->query($sql);
         // $this->db->where($defaultWhere);
-      
+
         return $totalRecordwithFilter = $query->num_rows();
     }
-    public function TotalRecordsWithoutFilter($id,$postData)
+    public function TotalRecordsWithoutFilter($id, $postData)
     {
         $query=$this->db->query('SELECT main_table.*,tbl_users.wallet as user_wallet FROM (SELECT 
         "Andar Bahar" as game,user_id,winning_amount,added_date,amount,user_amount
@@ -1234,13 +1248,13 @@ class Users_model extends MY_Model
         "Purchase" as game,user_id,coin as winning_amount,added_date,"0" as amount,"" as user_amount
         FROM tbl_purchase where user_id="'.$id.'"
         ) as main_table join tbl_users on tbl_users.id=main_table.user_id');
-   
+
         return $query->num_rows();
     }
 
-    public function GetAllLogs($id,$postData)
+    public function GetAllLogs($id, $postData=[])
     {
-           ## Read value
+        ## Read value
         //    $draw = $postData['draw'];
         //    $start = $postData['start'];
         //    $rowperpage = $postData['length']; // Rows display per page
@@ -1248,95 +1262,119 @@ class Users_model extends MY_Model
         //    $columnName = $postData['columns'][$columnIndex]['data']; // Column name
         //    $columnSortOrder = $postData['order'][0]['dir']; // asc or desc
         //    $searchValue = $postData['search']['value']; // Search value
-   $sql='SELECT main_table.*,tbl_users.wallet as user_wallet FROM (SELECT 
-   "Andar Bahar" as game,user_id,winning_amount,added_date,amount,user_amount
+        $sql='SELECT main_table.*,tbl_users.wallet as user_wallet FROM (SELECT 
+   "Andar Bahar" as game,ander_baher_id as reff_id,id as bet_id,user_id,winning_amount,added_date,amount,user_amount
    FROM tbl_ander_baher_bet where user_id="'.$id.'"
     UNION
    SELECT 
-   "Dragon & Tiger" as game,user_id,winning_amount,added_date,amount,user_amount
+   "Dragon & Tiger" as game,dragon_tiger_id as reff_id,id as bet_id,user_id,winning_amount,added_date,amount,user_amount
    FROM tbl_dragon_tiger_bet where user_id="'.$id.'"
    UNION
    SELECT 
-   "Baccarat" as game,user_id,winning_amount,added_date,amount,user_amount
+   "Baccarat" as game,baccarat_id as reff_id,id as bet_id,user_id,winning_amount,added_date,amount,user_amount
    FROM tbl_baccarat_bet where user_id="'.$id.'"
    UNION
    SELECT 
-   "Seven Up Down" as game,user_id,winning_amount,added_date,amount,user_amount
+   "Seven Up Down" as game,seven_up_id as reff_id,id as bet_id,user_id,winning_amount,added_date,amount,user_amount
    FROM tbl_seven_up_bet where user_id="'.$id.'"
    UNION
    SELECT 
-   "Car Roulette" as game,user_id,winning_amount,added_date,amount,user_amount
+   "Car Roulette" as game,car_roulette_id as reff_id,id as bet_id,user_id,winning_amount,added_date,amount,user_amount
    FROM tbl_car_roulette_bet where user_id="'.$id.'"
    UNION
    SELECT 
-   "Color Predection" as game,user_id,winning_amount,added_date,amount,user_amount
+   "Color Predection" as game,color_prediction_id as reff_id,id as bet_id,user_id,winning_amount,added_date,amount,user_amount
    FROM tbl_color_prediction_bet where user_id="'.$id.'"
    UNION
    SELECT 
-   "Animal Roulette" as game,user_id,winning_amount,added_date,amount,user_amount
+   "Animal Roulette" as game,animal_roulette_id as reff_id,id as bet_id,user_id,winning_amount,added_date,amount,user_amount
    FROM tbl_animal_roulette_bet where user_id="'.$id.'"
    UNION
    SELECT 
-   "Head Tail" as game,user_id,winning_amount,added_date,amount,user_amount
+   "Head Tail" as game,head_tail_id as reff_id,id as bet_id,user_id,winning_amount,added_date,amount,user_amount
    FROM tbl_head_tail_bet where user_id="'.$id.'"
    UNION
    SELECT 
-   "Red Vs Black" as game,user_id,winning_amount,added_date,amount,user_amount
+   "Red Vs Black" as game,red_black_id as reff_id,id as bet_id,user_id,winning_amount,added_date,amount,user_amount
    FROM tbl_red_black_bet where user_id="'.$id.'"
    UNION
    SELECT 
-   "Dragon & Tiger" as game,user_id,winning_amount,added_date,amount,user_amount
-   FROM tbl_jhandi_munda_bet where user_id="'.$id.'"
+   "Dragon & Tiger" as game,dragon_tiger_id as reff_id,id as bet_id,user_id,winning_amount,added_date,amount,user_amount
+   FROM tbl_dragon_tiger_bet where user_id="'.$id.'"
    UNION
    SELECT 
-   "Roulette" as game,user_id,winning_amount,added_date,amount,user_amount
+   "Roulette" as game,id as reff_id,id as bet_id,user_id,winning_amount,added_date,amount,user_amount
    FROM tbl_roulette_bet where user_id="'.$id.'"
    UNION
    SELECT 
-   "Poker" as game,winner_id as user_id,user_winning_amt as winning_amount,added_date,amount,"" as user_amount
+   "Jhandi Munda" as game,jhandi_munda_id as reff_id,id as bet_id,user_id,winning_amount,added_date,amount,user_amount
+   FROM tbl_jhandi_munda_bet where user_id="'.$id.'"
+   UNION
+   SELECT 
+   "Poker" as game,poker_table_id as reff_id,id as bet_id,winner_id as user_id,user_winning_amt as winning_amount,added_date,amount,user_winning_amt as user_amount
    FROM tbl_poker where winner_id="'.$id.'"
    UNION
    SELECT 
-   "Teen Patti" as game,winner_id as user_id,user_winning_amt as winning_amount,added_date,amount,"" as user_amount
+   "Teen Patti" as game,table_id as reff_id,id as bet_id,winner_id as user_id,user_winning_amt as winning_amount,added_date,amount,user_winning_amt as user_amount
    FROM tbl_game where winner_id="'.$id.'"
    UNION
    SELECT 
-   "JackPot" as game,user_id,winning_amount,added_date,amount,user_amount
+   "JackPot" as game,jackpot_id as reff_id,id as bet_id,user_id,winning_amount,added_date,amount,user_amount
    FROM tbl_jackpot_bet where user_id="'.$id.'"
    UNION
    SELECT 
-   "Rummy" as game,winner_id as user_id,user_winning_amt as winning_amount,added_date,amount,"" as user_amount
+   "Rummy" as game,table_id as reff_id,id as bet_id,winner_id as user_id,user_winning_amt as winning_amount,added_date,amount,user_winning_amt as user_amount
    FROM tbl_rummy where winner_id="'.$id.'"
    UNION
    SELECT 
-   "Deal Rummy" as game,winner_id as user_id,user_winning_amt as winning_amount,added_date,amount,"" as user_amount
+   "Deal Rummy" as game,table_id as reff_id,id as bet_id,winner_id as user_id,user_winning_amt as winning_amount,added_date,amount,user_winning_amt as user_amount
    FROM tbl_rummy_deal where winner_id="'.$id.'"
    UNION
    SELECT 
-   "Pool Rummy" as game,winner_id as user_id,user_winning_amt as winning_amount,added_date,amount,"" as user_amount
+   "Pool Rummy" as game,table_id as reff_id,id as bet_id,winner_id as user_id,user_winning_amt as winning_amount,added_date,amount,user_winning_amt as user_amount
    FROM tbl_rummy_pool where winner_id="'.$id.'"
    UNION
    SELECT 
-   "Ludo" as game,winner_id as user_id,user_winning_amt as winning_amount,added_date,amount,"" as user_amount
+   "Ludo" as game,ludo_table_id as reff_id,id as bet_id,winner_id as user_id,user_winning_amt as winning_amount,added_date,amount,user_winning_amt as user_amount
    FROM tbl_ludo where winner_id="'.$id.'"
    UNION
    SELECT 
-   "Wallet Log" as game,user_id,coin as winning_amount,added_date,"0" as amount,"" as user_amount
+   "Register Bonus" as game,id as reff_id,id as bet_id,user_id,"" as winning_amount,added_date,"0" as amount,coin as user_amount
    FROM tbl_wallet_log where user_id="'.$id.'"
    UNION
    SELECT 
-   "Purchase" as game,user_id,coin as winning_amount,added_date,"0" as amount,"" as user_amount
-   FROM tbl_purchase where user_id="'.$id.'"
+   "Purchase" as game,id as reff_id,id as bet_id,user_id,"0" as winning_amount,added_date,"0" as amount,coin as user_amount
+   FROM tbl_purchase where payment=1 and user_id="'.$id.'"
+   UNION
+   SELECT 
+   "Welcome Bonus" as game,id as reff_id,id as bet_id,user_id,"0" as winning_amount,added_date,"0" as amount,coin as user_amount
+   FROM tbl_welcome_log where user_id="'.$id.'"
+   UNION
+   SELECT 
+   "Withdrawl" as game,id as reff_id,id as bet_id,user_id,"0" as winning_amount,created_date as added_date,coin as amount,"0" as user_amount
+   FROM tbl_withdrawal_log where (status=0 OR status=1) and user_id="'.$id.'"
+   UNION
+   SELECT 
+   "Tip" as game,id as reff_id,id as bet_id,user_id,"0" as winning_amount, added_date,"0" as amount,coin as user_amount
+   FROM tbl_tip_log where user_id="'.$id.'"
+   UNION
+   SELECT 
+   "Refferal Bonus" as game,id as reff_id,id as bet_id,user_id,"0" as winning_amount, added_date,"0" as amount,coin as user_amount
+   FROM tbl_referral_bonus_log where user_id="'.$id.'"
+   UNION
+   SELECT 
+   "Extra Bonus" as game,id as reff_id,id as bet_id,user_id,"0" as winning_amount, added_date,"0" as amount,coin as user_amount
+   FROM tbl_extra_wallet_log where user_id="'.$id.'"
    ) as main_table join tbl_users on tbl_users.id=main_table.user_id where tbl_users.isDeleted=0 ';
-   
+
 //    if ($searchValue) {
 //     $sql .= ' and game like "%' . $searchValue . '%"';
-// } 
-$sql.=' order by added_date desc';
-// $sql.=' order by '.$columnName.' '.$columnSortOrder;
-// $sql.=' limit '.$start.','.$rowperpage.'';    
-   $query=$this->db->query($sql);
-       
+        // }
+        $sql.=' order by added_date desc limit 100';
+        // $sql.=' order by '.$columnName.' '.$columnSortOrder;
+        // $sql.=' limit '.$start.','.$rowperpage.'';
+        $query=$this->db->query($sql);
+
         // $this->db->order_by($columnName, $columnSortOrder);
         return $records = $query->result();
     }

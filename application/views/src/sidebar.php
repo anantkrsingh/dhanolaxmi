@@ -162,6 +162,11 @@ $final_url = str_replace(strtolower(base_url()), '', strtolower($actual_link));
                         <span>Rummy Management</span>
                     </a>
                     <ul class="sub-menu mm-collapse">
+                    <li
+                            class="<?= (array_filter([strpos($final_url, "backend/rtummyablemaster")], 'is_numeric')) ? 'mm-active' : '' ?>">
+                            <a href="<?= base_url('backend/RummyTableMaster') ?>" class="waves-effect">
+                                <span>Point Table Master</span></a>
+                        </li>
                         <li
                             class="<?= (array_filter([strpos($final_url, "rummy"),], 'is_numeric')) ? 'mm-active' : '' ?>">
                             <a href="<?= base_url('backend/Rummy') ?>" class="waves-effect">
@@ -186,6 +191,24 @@ $final_url = str_replace(strtolower(base_url()), '', strtolower($actual_link));
                     </ul>
                 </li>
                 <?php } ?>
+
+                <?php if (RUMMY_TOURNAMENT==true) { ?>
+                <li
+                    class="<?= (array_filter([strpos($final_url, "backend/rummytournament")], 'is_numeric')) ? 'mm-active' : '' ?>">
+                    <a href="javascript: void(0);" class="has-arrow waves-effect">
+                        <i class="ti-layout-grid2-alt"></i>
+                        <span>Rummy Tournament</span>
+                    </a>
+                    <ul class="sub-menu mm-collapse">
+                        <li
+                            class="<?= (array_filter([strpos($final_url, "rummytournament"),], 'is_numeric')) ? 'mm-active' : '' ?>">
+                            <a href="<?= base_url('backend/RummyTournaMent') ?>" class="waves-effect">
+                                <span>Tournament</span></a>
+                        </li>
+                    </ul>
+                </li>
+                <?php } ?>
+
                 <?php if (ANDER_BAHAR==true) { ?>
                 <li
                     class="<?= (array_filter([strpos($final_url, "backend/andarbahar")], 'is_numeric')) ? 'mm-active' : '' ?>">

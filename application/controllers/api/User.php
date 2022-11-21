@@ -844,6 +844,42 @@ class User extends REST_Controller
         $this->response($data, HTTP_OK);
     }
 
+    public function wallet_history_all_post()
+    {
+        $user_id = $this->input->post('user_id');
+
+        if (empty($user_id)) {
+            $data['message'] = 'Invalid Params';
+            $data['code'] = HTTP_BLANK;
+            $this->response($data, 200);
+            exit();
+        }
+
+        $user = $this->Users_model->UserProfile($user_id);
+        if (empty($user)) {
+            $data['message'] = 'Invalid User';
+            $data['code'] = HTTP_NOT_ACCEPTABLE;
+            $this->response($data, 200);
+            exit();
+        }
+
+        $GameLog = $this->Users_model->GetAllLogs($user_id);
+        $total = !empty($GameLog[0]->user_wallet) ? $GameLog[0]->user_wallet : 0;
+        foreach ($GameLog as $key => $value) {
+            $amount = $value->user_amount-$value->amount;
+            $GameLog[$key]->bracket_amount = $amount;
+            $GameLog[$key]->total = $total;
+            $total=$total-$amount;
+        }
+
+        $data = [
+            'GameLog' => $GameLog,
+            'message' => 'Success',
+            'code' => HTTP_OK,
+        ];
+        $this->response($data, HTTP_OK);
+    }
+
     public function min_amount_post()
     {
         $user_id = $this->input->post('user_id');
@@ -1199,28 +1235,28 @@ class User extends REST_Controller
         if (empty($bonus_log)) {
             if ($WelcomeBonus[0]->game_played<=$user[0]->game_played) {
                 $this->Users_model->AddWelcomeBonus($WelcomeBonus[0]->coin, $this->data['user_id']);
-                $setting = $this->Setting_model->Setting();
-                for ($i=1; $i <= 3; $i++) {
-                    if ($user[0]->referred_by!=0) {
-                        $level = 'level_'.$i;
-                        $coins = (($WelcomeBonus[0]->coin*$setting->$level)/100);
-                        $this->Users_model->UpdateWalletOrder($coins, $user[0]->referred_by);
+                // $setting = $this->Setting_model->Setting();
+                // for ($i=1; $i <= 3; $i++) {
+                //     if ($user[0]->referred_by!=0) {
+                //         $level = 'level_'.$i;
+                //         $coins = (($WelcomeBonus[0]->coin*$setting->$level)/100);
+                //         $this->Users_model->UpdateWalletOrder($coins, $user[0]->referred_by);
 
-                        $log_data = [
-                            'user_id' => $user[0]->referred_by,
-                            'day' => $WelcomeBonus[0]->id,
-                            'bonus_user_id' => $this->data['user_id'],
-                            'coin' => $coins,
-                            'added_date' => date('Y-m-d H:i:s'),
-                            'level' => $i,
-                        ];
+                //         $log_data = [
+                //             'user_id' => $user[0]->referred_by,
+                //             'day' => $WelcomeBonus[0]->id,
+                //             'bonus_user_id' => $this->data['user_id'],
+                //             'coin' => $coins,
+                //             'added_date' => date('Y-m-d H:i:s'),
+                //             'level' => $i,
+                //         ];
 
-                        $this->Users_model->AddWelcomeReferLog($log_data);
-                        $user = $this->Users_model->UserProfile($user[0]->referred_by);
-                    } else {
-                        break;
-                    }
-                }
+                //         $this->Users_model->AddWelcomeReferLog($log_data);
+                //         $user = $this->Users_model->UserProfile($user[0]->referred_by);
+                //     } else {
+                //         break;
+                //     }
+                // }
                 $data['message'] = 'Success';
                 $data['coin'] = $WelcomeBonus[0]->coin;
                 $data['code'] = HTTP_OK;

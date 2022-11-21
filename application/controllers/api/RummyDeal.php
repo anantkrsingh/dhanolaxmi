@@ -1782,7 +1782,7 @@ class RummyDeal extends REST_Controller
             // $data['table_users'] = $table_data;
 
             $table_new_data = array();
-            for ($i=0; $i < 7; $i++) {
+            for ($i=0; $i < 6; $i++) {
                 $table_new_data[$i]['id'] = 0;
                 $table_new_data[$i]['table_id'] = 0;
                 $table_new_data[$i]['user_id'] = 0;

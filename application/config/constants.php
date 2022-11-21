@@ -274,7 +274,7 @@ define('R_TWELFTH_MULTIPLE', 3);
 define('R_EIGHTEENTH_MULTIPLE', 2);
 define('R_ROW_MULTIPLE', 3);
 
-define('APP_URL', '/');
+define('APP_URL', './');
 define('BANNER_URL', 'uploads/banner/');
 define('LOGO', 'uploads/logo/');
 define('IMAGE_URL', 'uploads/images/');
@@ -314,6 +314,7 @@ define('RED_VS_BLACK', true);
 define('HEAD_TAILS', true);
 define('JHANDI_MUNDA', true);
 define('ROULETTE', true);
+define('RUMMY_TOURNAMENT', true);
 
 define('TEENPATTI_LOG', 1);
 define('POINT_RUMMY_LOG', 2);

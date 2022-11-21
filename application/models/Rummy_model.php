@@ -169,10 +169,11 @@ class Rummy_model extends MY_Model
 
     public function GameOnlyUser($game_id)
     {
-        $this->db->select('user_id,packed');
+        $this->db->select('tbl_rummy_card.user_id,tbl_rummy_card.packed,tbl_users.name');
         $this->db->from('tbl_rummy_card');
-        $this->db->where('game_id', $game_id);
-        $this->db->group_by('user_id');
+        $this->db->join('tbl_users', 'tbl_users.id=tbl_rummy_card.user_id');
+        $this->db->where('tbl_rummy_card.game_id', $game_id);
+        $this->db->group_by('tbl_rummy_card.user_id');
         $Query = $this->db->get();
         return $Query->result();
     }

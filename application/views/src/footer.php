@@ -36,6 +36,7 @@
    <script src="<?= base_url('assets/js/bootstrap-datepicker.min.js')?>"></script>
    <script src="<?= base_url('assets/js/app.js')?>"></script>
    <script src="<?= base_url('assets/js/custom/validation.js')?>"></script>
+
    </body>
 
    </html>

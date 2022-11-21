@@ -123,7 +123,13 @@ class Callback extends REST_Controller
             $this->Users_model->UpdateSpin($post->user_id, ceil($post->amount/100), $category_id);
 
             if ($order_details[0]->extra>0) {
-                $this->Users_model->UpdateWalletOrder($order_details[0]->coin*($order_details[0]->extra/100), $post->user_id);
+                $extra_amount = $order_details[0]->coin*($order_details[0]->extra/100);
+                $this->Users_model->UpdateWalletOrder($extra_amount, $post->user_id);
+                $this->Users_model->ExtraWalletLog($post->user_id, $extra_amount, 0);
+            }
+
+            if ($category_amount>0) {
+                $this->Users_model->ExtraWalletLog($post->user_id, $category_amount, 1);
             }
 
             $data['message'] = 'Success';
@@ -163,6 +169,7 @@ class Callback extends REST_Controller
                 exit();
             }
             $this->Users_model->UpdateWalletSpin($post->user_id, $coin);
+            $this->Users_model->ExtraWalletLog($post->user_id, $coin, 0);
 
             $data['message'] = 'Success';
             $data['coin'] = $coin;
