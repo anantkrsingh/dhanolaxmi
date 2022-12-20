@@ -2496,7 +2496,7 @@ class Cron extends CI_Controller
                     }
                 } else {
                     if (strtotime($game_data[0]->end_datetime)<=time()) {
-                        $count = $this->Users_model->getOnlineUsers($room->id, 'baccarat_id');
+                        $count = $this->Users_model->getOnlineUsers($room->id, 'jhandi_munda_id');
                         if ($count>0) {
                             $this->JhandiMunda_model->Create($room->id);
 

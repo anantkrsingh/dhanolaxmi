@@ -1,17 +1,18 @@
 <?php
+
 class RummyTournaMent extends MY_Controller
 {
     public function __construct()
     {
         parent::__construct();
-        $this->load->model(['RummyTournaMent_model']);
+        $this->load->model(['RummyTournaMentMaster_model']);
     }
 
     public function index()
     {
         $data = [
             'title' => 'Manage Tournament',
-            'AllTournaments' => $this->RummyTournaMent_model->AllTournaMent()
+            'AllTournaments' => $this->RummyTournaMentMaster_model->AllTournaMent()
         ];
         $data['SideBarbutton'] = ['backend/RummyTournaMent/add', 'Add Tournament'];
         template('tournament/index', $data);
@@ -30,7 +31,7 @@ class RummyTournaMent extends MY_Controller
     {
         $data = [
             'title' => 'Edit Tournament',
-            'data' => $this->RummyTournaMent_model->ViewTableMaster($id)
+            'data' => $this->RummyTournaMentMaster_model->ViewTableMaster($id)
         ];
 
         template('tournament/edit', $data);
@@ -38,7 +39,7 @@ class RummyTournaMent extends MY_Controller
 
     public function delete($id)
     {
-        if ($this->RummyTournaMent_model->Delete($id)) {
+        if ($this->RummyTournaMentMaster_model->Delete($id)) {
             $this->session->set_flashdata('msg', array('message' => 'Tournament Removed Successfully', 'class' => 'success', 'position' => 'top-right'));
         } else {
             $this->session->set_flashdata('msg', array('message' => 'Somthing Went Wrong', 'class' => 'error', 'position' => 'top-right'));
@@ -55,20 +56,20 @@ class RummyTournaMent extends MY_Controller
             'first_price' => $this->input->post('first_price'),
             'second_price' => $this->input->post('second_price'),
             'third_price' => $this->input->post('third_price'),
-            'start_time' => date('Y-m-d H:i:s',strtotime($this->input->post('start_time'))),
+            'start_time' => date('Y-m-d H:i:s', strtotime($this->input->post('start_time'))),
             'added_date' => date('Y-m-d H:i:s')
         ];
-        $check=$this->RummyTournaMent_model->CheckDuplicate($this->input->post('name'));
-        if(empty($check)){
-        $category = $this->RummyTournaMent_model->AddTableMaster($data);
-        if ($category) {
-            $this->session->set_flashdata('msg', array('message' => 'Tournament Added Successfully', 'class' => 'success', 'position' => 'top-right'));
+        $check=$this->RummyTournaMentMaster_model->CheckDuplicate($this->input->post('name'));
+        if (empty($check)) {
+            $category = $this->RummyTournaMentMaster_model->AddTableMaster($data);
+            if ($category) {
+                $this->session->set_flashdata('msg', array('message' => 'Tournament Added Successfully', 'class' => 'success', 'position' => 'top-right'));
+            } else {
+                $this->session->set_flashdata('msg', array('message' => 'Somthing Went Wrong', 'class' => 'error', 'position' => 'top-right'));
+            }
         } else {
-            $this->session->set_flashdata('msg', array('message' => 'Somthing Went Wrong', 'class' => 'error', 'position' => 'top-right'));
+            $this->session->set_flashdata('msg', array('message' => 'Category Already Exists', 'class' => 'error', 'position' => 'top-right'));
         }
-    }else{
-        $this->session->set_flashdata('msg', array('message' => 'Category Already Exists', 'class' => 'error', 'position' => 'top-right'));
-    }
         redirect('backend/RummyTournaMent');
     }
 
@@ -81,10 +82,10 @@ class RummyTournaMent extends MY_Controller
             'first_price' => $this->input->post('first_price'),
             'second_price' => $this->input->post('second_price'),
             'third_price' => $this->input->post('third_price'),
-            'start_time' => date('Y-m-d H:i:s',strtotime($this->input->post('start_time'))),
+            'start_time' => date('Y-m-d H:i:s', strtotime($this->input->post('start_time'))),
             'added_date' => date('Y-m-d H:i:s')
         ];
-        $Category = $this->RummyTournaMent_model->UpdateTableMaster($data, $this->input->post('id'));
+        $Category = $this->RummyTournaMentMaster_model->UpdateTableMaster($data, $this->input->post('id'));
         if ($Category) {
             $this->session->set_flashdata('msg', array('message' => 'Tournament Updated Successfully', 'class' => 'success', 'position' => 'top-right'));
         } else {
@@ -92,5 +93,4 @@ class RummyTournaMent extends MY_Controller
         }
         redirect('backend/RummyTournaMent');
     }
-
 }

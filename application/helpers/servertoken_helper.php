@@ -80,40 +80,23 @@ function Send_SMS($MobileNo, $MSZ)
 
 function Send_OTP($MobileNo, $OTP)
 {
-    // // <editor-fold defaultstate="collapsed" desc="Send SMS">
-    // // $msz = urlencode($MSZ);
-    // $url = "https://2factor.in/API/V1/" . SMS_API_KEY . "/SMS/$MobileNo/$OTP/mobileotp";
-    // // echo $url;exit;
-    // // SMS_Log($MobileNo,$url);
-    // $curl = curl_init();
-    // curl_setopt($curl, CURLOPT_URL, $url);
-    // curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-    // curl_setopt($curl, CURLOPT_HEADER, false);
-    // $strc = curl_exec($curl);
-    // // exit;
-    // return $strc;
-    // // </editor-fold>
-
     $curl = curl_init();
 
     curl_setopt_array($curl, array(
-      CURLOPT_URL => 'https://2factor.in/API/R1/',
-      CURLOPT_RETURNTRANSFER => true,
-      CURLOPT_ENCODING => '',
-      CURLOPT_MAXREDIRS => 10,
-      CURLOPT_TIMEOUT => 0,
-      CURLOPT_FOLLOWLOCATION => true,
-      CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-      CURLOPT_CUSTOMREQUEST => 'POST',
-      CURLOPT_POSTFIELDS => 'module=TRANS_SMS&apikey=560cef97-4e88-11eb-8153-0200cd936042&to='.$MobileNo.'&from=MGCDIL&msg=Hi%2C%20'.$OTP.'%20is%20your%20one%20time%20password.%20MGCDIL',
-      CURLOPT_HTTPHEADER => array(
-        'Content-Type: application/x-www-form-urlencoded'
-      ),
+    CURLOPT_URL => 'https://2factor.in/API/V1/'.OTP_API_KEY.'/SMS/'.$MobileNo.'/'.$OTP,
+    CURLOPT_RETURNTRANSFER => true,
+    CURLOPT_ENCODING => '',
+    CURLOPT_MAXREDIRS => 10,
+    CURLOPT_TIMEOUT => 0,
+    CURLOPT_FOLLOWLOCATION => true,
+    CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+    CURLOPT_CUSTOMREQUEST => 'GET',
     ));
 
     $response = curl_exec($curl);
 
     curl_close($curl);
+
     return $response;
 }
 
@@ -165,14 +148,14 @@ function upload_image($file, $path, $i = '')
 function upload_apk($file, $path, $i = '')
 {
     $ci = &get_instance();
-    
+
     $_FILES['file']['name'] = $file['name'];
     $_FILES['file']['type'] = $file['type'];
     $_FILES['file']['tmp_name'] = $file['tmp_name'];
     $_FILES['file']['error'] = $file['error'];
     $_FILES['file']['size'] = $file['size'];
     $ext = pathinfo($file['name'], PATHINFO_EXTENSION);
-    
+
     $config['upload_path'] = $path;
     $config['allowed_types'] = '*';
     $file_name =  "game." . $ext;

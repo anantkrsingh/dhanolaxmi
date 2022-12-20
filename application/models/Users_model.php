@@ -292,12 +292,12 @@ class Users_model extends MY_Model
         return $this->db->affected_rows();
     }
 
-    public function RegisterUser($MobileNo, $Name, $profile_pic, $gender = 'm', $token, $password, $bonus_amount)
+    public function RegisterUser($MobileNo, $Name, $profile_pic, $gender = 'm', $token, $password, $bonus_amount='')
     {
         if (empty($profile_pic)) {
             $profile_pic = ($gender == 'f') ? 'f_' . rand(1, 3) . '.png' : 'm_' . rand(1, 10) . '.png';
         }
-        if (!$bonus_amount) {
+        if ($bonus_amount=='') {
             $bonus_amount = 25000;
         }
 
