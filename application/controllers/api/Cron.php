@@ -263,7 +263,8 @@ class Cron extends CI_Controller
                                 'card' => $card
                             ];
 
-                            $this->Rummy_model->DropGameCards($table_user_data, $json, 1);
+                            $time_out = ($user_type==0) ? 1 : 0;
+                            $this->Rummy_model->DropGameCards($table_user_data, $json, $time_out);
                         }
                     } else {
                         $table = $this->Rummy_model->isTableAvail($val->rummy_table_id);

@@ -37,6 +37,7 @@ class RummyTournament_model extends MY_Model
         if (!empty($tournament_id)) {
             $this->db->where('tbl_rummy_tournament_master.id', $tournament_id);
         }
+        $this->db->order_by('id', 'DESC');
         $Query = $this->db->get();
         // echo $this->db->last_query();
         return $Query->result();
@@ -112,9 +113,30 @@ class RummyTournament_model extends MY_Model
         return $Query->row();
     }
 
+    public function GetTournamentTable($tournament_id, $round)
+    {
+        $this->db->from('tbl_rummy_tournament_table');
+        $this->db->where('isDeleted', false);
+        $this->db->where('tournament_id', $tournament_id);
+        $this->db->where('round', $round);
+        $Query = $this->db->get();
+        return $Query->result();
+    }
+
+    public function GetTournamentTableLeftWinnerCount($tournament_id, $round)
+    {
+        $this->db->from('tbl_rummy_tournament_table');
+        $this->db->where('isDeleted', false);
+        $this->db->where('tournament_id', $tournament_id);
+        $this->db->where('round', $round);
+        $this->db->where('winner_id', 0);
+        $Query = $this->db->get();
+        return $Query->num_rows();
+    }
+
     public function GetSeatOnTable($TableId)
     {
-        $sql = "SELECT * FROM ( SELECT 1 AS mycolumn UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 ) a WHERE mycolumn NOT in ( SELECT seat_position FROM `tbl_rummy_tournament_table_user` WHERE table_id=" . $TableId . " AND isDeleted=0 ) LIMIT 1";
+        $sql = "SELECT * FROM ( SELECT 1 AS mycolumn UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 UNION SELECT 6 ) a WHERE mycolumn NOT in ( SELECT seat_position FROM `tbl_rummy_tournament_table_user` WHERE table_id=" . $TableId . " AND isDeleted=0 ) LIMIT 1";
         $Query = $this->db->query($sql, false);
         // echo $this->db->last_query();
         if ($Query->row()) {
@@ -124,14 +146,14 @@ class RummyTournament_model extends MY_Model
         }
     }
 
-    public function TableUser($TableId)
+    public function TableUser($TableId, $order_by='seat_position')
     {
         $this->db->select('tbl_rummy_tournament_table_user.*,tbl_users.name,tbl_users.mobile,tbl_users.profile_pic,tbl_users.wallet,tbl_users.user_type');
         $this->db->from('tbl_rummy_tournament_table_user');
         $this->db->join('tbl_users', 'tbl_rummy_tournament_table_user.user_id=tbl_users.id');
         $this->db->where('tbl_rummy_tournament_table_user.isDeleted', false);
         $this->db->where('tbl_rummy_tournament_table_user.table_id', $TableId);
-        $this->db->order_by('tbl_rummy_tournament_table_user.seat_position', 'asc');
+        $this->db->order_by('tbl_rummy_tournament_table_user.'.$order_by, 'asc');
         $Query = $this->db->get();
         return $Query->result();
     }
@@ -455,32 +477,32 @@ class RummyTournament_model extends MY_Model
         return true;
     }
 
-    public function MakeWinner($game_id, $win_amount, $user_id, $comission)
+    public function MakeWinner($game_id, $user_id, $table_id)
     {
-        $admin_winning_amt = round($win_amount * round($comission/100, 2), 2);
-        $user_winning_amt = round($win_amount - $admin_winning_amt, 2);
-        $this->db->set('wallet', 'wallet+' . $user_winning_amt, false);
-        $this->db->set('winning_wallet', 'winning_wallet+' . $user_winning_amt, false);
-        $this->db->where('id', $user_id);
-        $this->db->update('tbl_users');
-        // echo $this->db->affected_rows();
-        // echo $this->db->last_query();
-        // exit;
+        $this->db->set('winner_id', $user_id);
+        $this->db->set('updated_date', date('Y-m-d H:i:s'));
+        $this->db->where('id', $game_id);
+        $this->db->update('tbl_rummy_tournament');
 
         $this->db->set('winner_id', $user_id);
         $this->db->set('updated_date', date('Y-m-d H:i:s'));
-        $this->db->set('user_winning_amt', $user_winning_amt);
-        $this->db->set('admin_winning_amt', $admin_winning_amt);
-        $this->db->where('id', $game_id);
-        $this->db->update('tbl_rummy_tournament');
-        // return true;
-        // $amount = ($win_amount * 0.98);
+        $this->db->where('id', $table_id);
+        $this->db->update('tbl_rummy_tournament_table');
+        return true;
+    }
 
+    public function MakeTournamentWinner($tournament_id, $win_amount, $user_id, $level)
+    {
+        $this->db->set('wallet', 'wallet+' . $win_amount, false);
+        $this->db->set('winning_wallet', 'winning_wallet+' . $win_amount, false);
+        $this->db->where('id', $user_id);
+        $this->db->update('tbl_users');
 
-        // $amount = ($win_amount * 0.02);
-        $this->db->set('admin_coin', 'admin_coin+' . $admin_winning_amt, false);
+        $this->db->set($level, $user_id);
+        $this->db->set('status', 2);
         $this->db->set('updated_date', date('Y-m-d H:i:s'));
-        $this->db->update('tbl_admin');
+        $this->db->where('id', $tournament_id);
+        $this->db->update('tbl_rummy_tournament_master');
         return true;
     }
 
@@ -624,6 +646,11 @@ class RummyTournament_model extends MY_Model
         // $where['updated_date'] = date('Y-m-d H:i:s');
         // $this->db->insert('tbl_rummy_tournament_card_drop', $where);
         // $inserted_id =  $this->db->insert_id();
+
+        $this->db->set('points', $data['points'], false);
+        $this->db->where('table_id', $data['table_id']);
+        $this->db->where('user_id', $data['user_id']);
+        $this->db->update('tbl_rummy_tournament_table_user');
 
         $this->db->set('amount', 'amount+' . $data['actual_points'], false);
         $this->db->where('id', $data['game_id']);
@@ -1128,6 +1155,7 @@ class RummyTournament_model extends MY_Model
         $this->db->select('id,card');
         $this->db->from('tbl_rummy_tournament_card_drop');
         $this->db->where('isDeleted', false);
+        $this->db->where('game_id', $game_id);
         $this->db->limit(1);
         $this->db->order_by('id', 'DESC');
         $Query = $this->db->get();

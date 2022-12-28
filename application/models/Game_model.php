@@ -44,7 +44,7 @@ class Game_model extends MY_Model
 
     public function getTableMaster($boot_value='')
     {
-        $this->db->select('tbl_table_master.*,COUNT(tbl_users.id) AS online_members');
+        $this->db->select('tbl_table_master.*,COUNT(tbl_users.id) AS online_members,(tbl_table_master.boot_value)*50 as min_amount');
         $this->db->from('tbl_table_master');
         $this->db->join('tbl_table', 'tbl_table_master.boot_value=tbl_table.boot_value AND tbl_table.isDeleted=0', 'left');
         $this->db->join('tbl_users', 'tbl_users.table_id=tbl_table.id AND tbl_users.isDeleted=0', 'left');
@@ -250,12 +250,12 @@ class Game_model extends MY_Model
         return $Query->result();
     }
 
-    public function GetCards($limit,$robot_card_selected)
+    public function GetCards($limit, $robot_card_selected)
     {
         $this->db->from('tbl_cards');
         $this->db->order_by('id', 'RANDOM');
-        if(!empty($robot_card_selected)){
-            $this->db->where_not_in('cards',$robot_card_selected);
+        if (!empty($robot_card_selected)) {
+            $this->db->where_not_in('cards', $robot_card_selected);
         }
         $this->db->limit($limit);
         $Query = $this->db->get();
@@ -267,7 +267,7 @@ class Game_model extends MY_Model
         $this->db->from('tbl_robot_cards');
         $this->db->order_by('id', 'RANDOM');
         $this->db->limit($limit);
-        $this->db->where('isDeleted',0);
+        $this->db->where('isDeleted', 0);
         $Query = $this->db->get();
         return $Query->result();
     }

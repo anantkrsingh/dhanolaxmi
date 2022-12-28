@@ -110,6 +110,7 @@ class RummyTournament extends REST_Controller
         if (empty($TableId)) {
             $table_data = [
                 'tournament_id' => $tournament_id,
+                'round' => 1,
                 'added_date' => date('Y-m-d H:i:s'),
                 'updated_date' => date('Y-m-d H:i:s')
             ];
@@ -335,6 +336,7 @@ class RummyTournament extends REST_Controller
         ];
 
         $this->RummyTournament_model->AddTournamentUser($table_user_data);
+        $this->RummyTournament_model->MinusWallet($user[0]->id, $tournament->registration_fee);
 
         $data['message'] = 'Success';
         $data['code'] = HTTP_OK;
@@ -605,7 +607,7 @@ class RummyTournament extends REST_Controller
             if (count($game_users)==1) {
                 $game = $this->RummyTournament_model->getActiveGameOnTable($user[0]->rummy_tournament_table_id);
                 $comission = $this->Setting_model->Setting()->admin_commission;
-                $this->RummyTournament_model->MakeWinner($game->id, $game->amount, $game_users[0]->user_id, $comission);
+                $this->RummyTournament_model->MakeWinner($game->id, $game_users[0]->user_id, $user[0]->rummy_tournament_table_id);
             }
         }
 
@@ -715,7 +717,7 @@ class RummyTournament extends REST_Controller
         if (count($game_users)==1) {
             $game = $this->RummyTournament_model->getActiveGameOnTable($user[0]->rummy_tournament_table_id);
             $comission = $this->Setting_model->Setting()->admin_commission;
-            $this->RummyTournament_model->MakeWinner($game->id, $game->amount, $game_users[0]->user_id, $comission);
+            $this->RummyTournament_model->MakeWinner($game->id, $game_users[0]->user_id, $user[0]->rummy_tournament_table_id);
         }
 
         if ($timeout==1) {
@@ -1018,6 +1020,7 @@ class RummyTournament extends REST_Controller
         $data_declare = [
             'user_id' => $this->data['user_id'],
             'game_id' => $game->id,
+            'table_id' => $user->rummy_tournament_table_id,
             'points' => $points,
             'actual_points' => 0,
             'json' => $this->data['json']
@@ -1110,11 +1113,70 @@ class RummyTournament extends REST_Controller
             $game = $this->RummyTournament_model->getActiveGameOnTable($user[0]->rummy_tournament_table_id);
             // $table = $this->RummyTournament_model->isTableAvail($user[0]->rummy_tournament_table_id);
 
-            $actual_points = $points*round($table->boot_value/80, 2);
+            // $actual_points = $points*round($table->boot_value/80, 2);
 
-            $this->RummyTournament_model->MinusWallet($this->data['user_id'], $actual_points);
-            $comission = $this->Setting_model->Setting()->admin_commission;
-            $this->RummyTournament_model->MakeWinner($game->id, $game->amount, $declare_log[$declare_count-1]->user_id, $comission);
+            // $this->RummyTournament_model->MinusWallet($this->data['user_id'], $actual_points);
+            // $comission = $this->Setting_model->Setting()->admin_commission;
+            $winner_id = $declare_log[$declare_count-1]->user_id;
+            $this->RummyTournament_model->MakeWinner($game->id, $winner_id, $user[0]->rummy_tournament_table_id);
+
+            $current_round_tables = $this->RummyTournament_model->GetTournamentTable($table->tournament_id, $table->round);
+            $table_count = count($current_round_tables);
+            if ($table_count>1) {
+                $winner_left = $this->RummyTournament_model->GetTournamentTableLeftWinnerCount($table->tournament_id, $table->round);
+                if ($winner_left==0) {
+                    $round = $table->round+1;
+                    $new_table_count = floor($table_count/6);
+                    $user_per_table = round($table_count/$new_table_count);
+
+                    $i = 0;
+                    $seat_position = 0;
+                    foreach ($current_round_tables as $key => $value) {
+                        if ($i%$user_per_table==0) {
+                            $table_data = [
+                                'tournament_id' => $table->tournament_id,
+                                'round' => $round,
+                                'added_date' => date('Y-m-d H:i:s'),
+                                'updated_date' => date('Y-m-d H:i:s')
+                            ];
+                            $TableId = $this->RummyTournament_model->CreateTable($table_data);
+                            $seat_position = 1;
+                        }
+
+                        $table_user_data = [
+                            'table_id' => $TableId,
+                            'user_id' => $value->winner_id,
+                            'seat_position' => $seat_position,
+                            'added_date' => date('Y-m-d H:i:s'),
+                            'updated_date' => date('Y-m-d H:i:s')
+                        ];
+
+                        $this->RummyTournament_model->AddTableUser($table_user_data);
+                        $seat_position++;
+                        $i++;
+                    }
+                }
+            } else {
+                $table_data = $this->RummyTournament_model->TableUser($user[0]->rummy_tournament_table_id, 'points');
+                $tournament = $this->RummyTournament_model->getTableMaster($table->tournament_id);
+
+                $first_price = $tournament[0]->first_price;
+                $second_price = $tournament[0]->second_price;
+                $third_price = $tournament[0]->third_price;
+
+                $this->RummyTournament_model->MakeTournamentWinner($table->tournament_id, $first_price, $winner_id, 'first_winner');
+                $prize = 2;
+                foreach ($table_data as $key => $value) {
+                    if ($value->user_id!=$winner_id) {
+                        if ($prize==2) {
+                            $this->RummyTournament_model->MakeTournamentWinner($table->tournament_id, $second_price, $value->user_id, 'second_winner');
+                        } elseif ($prize==3) {
+                            $this->RummyTournament_model->MakeTournamentWinner($table->tournament_id, $third_price, $value->user_id, 'third_winner');
+                        }
+                        $prize++;
+                    }
+                }
+            }
         }
 
         $data['message'] = 'Success';
@@ -1359,7 +1421,7 @@ class RummyTournament extends REST_Controller
             // $data['table_users'] = $table_data;
 
             $table_new_data = array();
-            for ($i=0; $i < 6; $i++) {
+            for ($i=0; $i <= 6; $i++) {
                 $table_new_data[$i]['id'] = 0;
                 $table_new_data[$i]['table_id'] = 0;
                 $table_new_data[$i]['user_id'] = 0;

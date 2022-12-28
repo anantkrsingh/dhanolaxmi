@@ -186,8 +186,8 @@ class Game extends REST_Controller
         }
 
 
-        if ($user[0]->wallet<$isMaster[0]->pot_limit) {
-            $data['message'] = 'Required Minimum '.number_format($isMaster[0]->pot_limit).' Coins to Play';
+        if ($user[0]->wallet<($isMaster[0]->boot_value*50)) {
+            $data['message'] = 'Required Minimum '.number_format(($isMaster[0]->boot_value*50)).' Coins to Play';
             // if ($user[0]->wallet<30) {
         //     $data['message'] = 'Required Minimum 30 Coins to Play';
             $data['code'] = HTTP_NOT_ACCEPTABLE;
