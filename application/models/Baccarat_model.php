@@ -293,11 +293,11 @@ class Baccarat_model extends MY_Model
     {
         $points = 1;
 
-        $card1_num = substr($card1, 2);
+        $card1_num = (int) substr($card1, 2);
 
-        $card2_num = substr($card2, 2);
+        $card2_num = (int) substr($card2, 2);
 
-        $card3_num = substr($card3, 2);
+        $card3_num = (int) substr($card3, 2);
 
         $total_points = $card1_num+$card2_num+$card3_num;
         return ($total_points%10);

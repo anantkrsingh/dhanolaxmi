@@ -235,24 +235,26 @@ class Cron extends CI_Controller
 
                             // if($joker_num==$card_num)
                             if ($user_card->card=='JKR1' || $user_card->card=='JKR2') {
-                                $arr = json_decode($json);
+                                if ($json) {
+                                    $arr = json_decode($json);
 
-                                $final_arr = array();
+                                    $final_arr = array();
 
-                                $card_json = array();
-                                foreach ($arr as $key => $value) {
-                                    if (empty($card) && $value->card_group==0) {
-                                        $card = $value->cards[0];
-                                        //var_dump($value->cards);
-                                        $card_json['card_group'] = "0";
-                                        $card_json['cards'][0] = $user_card->card;
-                                        $final_arr[] = $card_json;
-                                        continue;
+                                    $card_json = array();
+                                    foreach ($arr as $key => $value) {
+                                        if (empty($card) && $value->card_group==0) {
+                                            $card = $value->cards[0];
+                                            //var_dump($value->cards);
+                                            $card_json['card_group'] = "0";
+                                            $card_json['cards'][0] = $user_card->card;
+                                            $final_arr[] = $card_json;
+                                            continue;
+                                        }
+
+                                        $final_arr[] = $value;
                                     }
-
-                                    $final_arr[] = $value;
+                                    $json =  json_encode($final_arr);
                                 }
-                                $json =  json_encode($final_arr);
                             }
 
                             $card = (!empty($card)) ? $card : $user_card->card;
@@ -795,6 +797,7 @@ class Cron extends CI_Controller
                 $game_data = $this->DragonTiger_model->getActiveGameOnTable($room->id);
 
                 if (!$game_data) {
+                    $card = "";
                     $this->DragonTiger_model->Create($room->id, $card);
 
                     echo 'First Dragon Tiger Game Created Successfully'.PHP_EOL;
@@ -1638,6 +1641,7 @@ class Cron extends CI_Controller
                 $game_data = $this->SevenUp_model->getActiveGameOnTable($room->id);
 
                 if (!$game_data) {
+                    $card = '';
                     $this->SevenUp_model->Create($room->id, $card);
 
                     echo 'First Seven Up Game Created Successfully'.PHP_EOL;

@@ -48,7 +48,11 @@ class Auth extends CI_Controller
                 );
                 $this->session->set_userdata($user_data);
                 $this->session->set_flashdata('msg', array('message' => 'You are now logged in', 'class' => 'success', 'position' => 'top-right'));
-                redirect('backend/dashboard');
+                if (empty($this->input->post('redirect'))) {
+                    redirect('backend/dashboard');
+                } else {
+                    redirect($this->input->post('redirect'));
+                }
             } else {
                 $this->session->set_flashdata('msg', array('message' => 'Invalid credentials', 'class' => 'error', 'position' => 'top-right'));
                 redirect('backend/auth/login');

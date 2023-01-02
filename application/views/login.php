@@ -69,7 +69,7 @@
         );
     echo form_input($email);
     ?>
-
+                </div>
                     <div class="form-group"><label for="userpassword">Password</label>
                         <?php
         $password = array(
@@ -84,6 +84,7 @@
         );
     echo form_input($password);
     ?>
+    </div>
                         <div class="form-group row m-t-20">
                             <div class="col-sm-6">
                                 <div class="custom-control custom-checkbox"><input type="checkbox"
@@ -91,6 +92,7 @@
                                         class="custom-control-label" for="customControlInline">Remember me</label></div>
                             </div>
                             <div class="col-sm-6 text-right">
+                                <input type="hidden" name="redirect" value="<?= $this->input->get('redirect') ?>">
                                 <?php
             echo form_submit('submit', 'Log In', array('class' => 'btn btn-primary login_bt w-md waves-effect waves-light'));
     ?>
