@@ -230,7 +230,7 @@ class Users_model extends MY_Model
         return $Query->row()->adhar_card;
     }
 
-    public function UpdateUserPic($UserId, $name, $profile_pic = '', $bank_detail, $adhar_card, $upi)
+    public function UpdateUserPic($UserId, $name, $profile_pic = '', $bank_detail = '', $adhar_card = '', $upi = '')
     {
         $data = [
             'name' => $name,
@@ -292,7 +292,7 @@ class Users_model extends MY_Model
         return $this->db->affected_rows();
     }
 
-    public function RegisterUser($MobileNo, $Name, $profile_pic, $gender = 'm', $token, $password, $bonus_amount='')
+    public function RegisterUser($MobileNo, $Name, $profile_pic, $gender = 'm', $token = '', $password = '', $bonus_amount='')
     {
         if (empty($profile_pic)) {
             $profile_pic = ($gender == 'f') ? 'f_' . rand(1, 3) . '.png' : 'm_' . rand(1, 10) . '.png';
@@ -319,7 +319,7 @@ class Users_model extends MY_Model
         return $UserId;
     }
 
-    public function RegisterUserEmail($Email, $Name, $source, $profile_pic, $gender = 'm', $token)
+    public function RegisterUserEmail($Email, $Name, $source, $profile_pic, $gender = 'm', $token = '')
     {
         if (empty($profile_pic)) {
             $profile_pic = ($gender == 'f') ? 'f_' . rand(1, 3) . '.png' : 'm_' . rand(1, 10) . '.png';

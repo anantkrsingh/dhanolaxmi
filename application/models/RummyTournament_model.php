@@ -134,6 +134,17 @@ class RummyTournament_model extends MY_Model
         return $Query->num_rows();
     }
 
+    public function isRoundWinner($tournament_id, $round, $user_id)
+    {
+        $this->db->from('tbl_rummy_tournament_table');
+        $this->db->where('isDeleted', false);
+        $this->db->where('tournament_id', $tournament_id);
+        $this->db->where('round', $round);
+        $this->db->where('winner_id', $user_id);
+        $Query = $this->db->get();
+        return $Query->num_rows();
+    }
+
     public function GetSeatOnTable($TableId)
     {
         $sql = "SELECT * FROM ( SELECT 1 AS mycolumn UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 UNION SELECT 6 ) a WHERE mycolumn NOT in ( SELECT seat_position FROM `tbl_rummy_tournament_table_user` WHERE table_id=" . $TableId . " AND isDeleted=0 ) LIMIT 1";
@@ -419,6 +430,11 @@ class RummyTournament_model extends MY_Model
     {
         $this->db->insert('tbl_rummy_tournament_table', $data);
         $TableId =  $this->db->insert_id();
+
+        $this->db->set('current_round', $data['round']); //value that used to update column
+        $this->db->set('status', 1); //value that used to update column
+        $this->db->where('id', $data['tournament_id']); //which row want to upgrade
+        $this->db->update('tbl_rummy_tournament_master');  //table name
 
         return $TableId;
     }

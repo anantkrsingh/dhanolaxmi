@@ -844,6 +844,34 @@ class User extends REST_Controller
         $this->response($data, HTTP_OK);
     }
 
+    public function wallet_history_red_black_post()
+    {
+        $user_id = $this->input->post('user_id');
+
+        if (empty($user_id)) {
+            $data['message'] = 'Invalid Params';
+            $data['code'] = HTTP_BLANK;
+            $this->response($data, 200);
+            exit();
+        }
+
+        $user = $this->Users_model->UserProfile($user_id);
+        if (empty($user)) {
+            $data['message'] = 'Invalid User';
+            $data['code'] = HTTP_NOT_ACCEPTABLE;
+            $this->response($data, 200);
+            exit();
+        }
+
+        $data = [
+            'GameLog' => $this->Users_model->RedBlack($user_id),
+            'MinRedeem' => min_redeem(),
+            'message' => 'Success',
+            'code' => HTTP_OK,
+        ];
+        $this->response($data, HTTP_OK);
+    }
+
     public function wallet_history_all_post()
     {
         $user_id = $this->input->post('user_id');
