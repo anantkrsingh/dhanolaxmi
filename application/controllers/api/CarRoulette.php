@@ -1,4 +1,5 @@
 <?php
+
 use phpDocumentor\Reflection\Types\Object_;
 use Restserver\Libraries\REST_Controller;
 
@@ -11,14 +12,14 @@ class CarRoulette extends REST_Controller
         parent::__construct();
         $header = $this->input->request_headers('token');
 
-        if (!isset($header['token'])) {
+        if (!isset($header['Token'])) {
             $data['message'] = 'Invalid Request';
             $data['code'] = HTTP_UNAUTHORIZED;
             $this->response($data, HTTP_OK);
             exit();
         }
 
-        if ($header['token'] != getToken()) {
+        if ($header['Token'] != getToken()) {
             $data['message'] = 'Invalid Authorization';
             $data['code'] = HTTP_METHOD_NOT_ALLOWED;
             $this->response($data, HTTP_OK);
@@ -152,14 +153,14 @@ class CarRoulette extends REST_Controller
 
             $data['last_bet'] = $this->CarRoulette_model->ViewBet('', $game_data[0]->id, '', '', 1);
 
-            $data['toyota_amount'] = ($ToyotaAmount)?$ToyotaAmount:0;
-            $data['mahindra_amount'] = ($MahindraAmount)?$MahindraAmount:0;
-            $data['audi_amount'] = ($AudiAmount)?$AudiAmount:0;
-            $data['bmw_amount'] = ($BmwAmount)?$BmwAmount:0;
-            $data['mercedes_amount'] = ($MercedesAmount)?$MercedesAmount:0;
-            $data['porsche_amount'] = ($PorscheAmount)?$PorscheAmount:0;
-            $data['lamborghini_amount'] = ($LamborghiniAmount)?$LamborghiniAmount:0;
-            $data['ferrari_amount'] = ($FerrariAmount)?$FerrariAmount:0;
+            $data['toyota_amount'] = ($ToyotaAmount) ? $ToyotaAmount : 0;
+            $data['mahindra_amount'] = ($MahindraAmount) ? $MahindraAmount : 0;
+            $data['audi_amount'] = ($AudiAmount) ? $AudiAmount : 0;
+            $data['bmw_amount'] = ($BmwAmount) ? $BmwAmount : 0;
+            $data['mercedes_amount'] = ($MercedesAmount) ? $MercedesAmount : 0;
+            $data['porsche_amount'] = ($PorscheAmount) ? $PorscheAmount : 0;
+            $data['lamborghini_amount'] = ($LamborghiniAmount) ? $LamborghiniAmount : 0;
+            $data['ferrari_amount'] = ($FerrariAmount) ? $FerrariAmount : 0;
 
             // $data['jackpot_amount'] = $this->Setting_model->Setting()->jackpot_coin;
 
@@ -172,7 +173,7 @@ class CarRoulette extends REST_Controller
             //     }
             // }
             // $data['big_winner'] = $winners;
-            
+
             $data['profile'] = $user;
             $data['code'] = HTTP_OK;
             $this->response($data, HTTP_OK);
@@ -306,7 +307,7 @@ class CarRoulette extends REST_Controller
             'bet' => $this->data['bet'],
             'amount' => $this->data['amount'],
             'added_date' => date('Y-m-d H:i:s')
-            
+
         ];
 
         $bet_id = $this->CarRoulette_model->PlaceBet($bet_data);
@@ -393,7 +394,7 @@ class CarRoulette extends REST_Controller
         //     'bet' => $last_bet[0]->bet,
         //     'amount' => $last_bet[0]->amount,
         //     'added_date' => date('Y-m-d H:i:s')
-            
+
         // ];
 
         // $bet_id = $this->CarRoulette_model->PlaceBet($bet_data);
@@ -608,7 +609,7 @@ class CarRoulette extends REST_Controller
             exit();
         }
     }
-    
+
     public function last_winners_post()
     {
         if (empty($this->data['user_id']) || empty($this->data['token'])) {

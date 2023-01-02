@@ -1,19 +1,23 @@
-<?php 
+<?php
+
 use Restserver\Libraries\REST_Controller;
-include (APPPATH . '/libraries/REST_Controller.php');
-include (APPPATH . '/libraries/Format.php');
-class Otp extends REST_Controller {
-private $data;
-    public function __construct() {
+
+include(APPPATH . '/libraries/REST_Controller.php');
+include(APPPATH . '/libraries/Format.php');
+class Otp extends REST_Controller
+{
+    private $data;
+    public function __construct()
+    {
         parent::__construct();
         $header = $this->input->request_headers('token');
-        if (!isset($header['token'])) {
+        if (!isset($header['Token'])) {
             $data['message'] = 'Invalid Request';
             $data['code'] = HTTP_UNAUTHORIZED;
             $this->response($data, HTTP_OK);
             exit();
         }
-        if ($header['token'] != getToken()) {
+        if ($header['Token'] != getToken()) {
             $data['message'] = 'Invalid Authorization';
             $data['code'] = HTTP_METHOD_NOT_ALLOWED;
             $this->response($data, HTTP_OK);
@@ -31,10 +35,10 @@ private $data;
             'Users_model'
         ]);
     }
-    function index_post() {
-        
+    public function index_post()
+    {
         $MobileNo = $this->data->MobileNo;
-       
+
         if (empty($MobileNo) || strlen($MobileNo) !== 10) {
             $data['message'] = 'Invalid Mobile Number';
             $data['code'] = HTTP_NOT_ACCEPTABLE;
@@ -43,9 +47,9 @@ private $data;
         }
         //$OTP = rand(100000,999999);
         $OTP = 9988;
-        $GenerateOTP = $this->Users_model->InsertOTP($MobileNo,$OTP);
-         
-        Send_SMS($MobileNo,'The OTP is '.$OTP);
+        $GenerateOTP = $this->Users_model->InsertOTP($MobileNo, $OTP);
+
+        Send_SMS($MobileNo, 'The OTP is '.$OTP);
         // $url = "http://androapps.msg4all.com/GatewayAPI/rest?method=SendMessage&send_to=$MobileNo&msg=Your+Verification+Code+is+%3A-+$OTP&msg_type=TEXT&loginid=Rupee1&auth_scheme=plain&password=nV12IxSoD&v=1.1&format=text";
 
         // $curl = curl_init();
@@ -62,11 +66,12 @@ private $data;
         } else {
             $data['code'] = HTTP_FORBIDDEN;
             $data['message'] = 'Something Went Wrong';
-            $this->response(NULL, 200);
+            $this->response(null, 200);
         }
         // curl_close($curl);
     }
-    function Confirm_post() {
+    public function Confirm_post()
+    {
         $OTP = $this->data->OTP;
         $id = $this->data->Id;
         $MobileNo = $this->data->MobileNo;
@@ -99,43 +104,40 @@ private $data;
         if ($OTPConfirm) {
             //check user already registed
             $UserDetails = $this->Users_model->UserByMobile($MobileNo);
-            if($UserDetails)
-            {
+            if ($UserDetails) {
                 //update token
-                UpdateToken($UserDetails->id,$FCM);
+                UpdateToken($UserDetails->id, $FCM);
                 $UserDetails = $this->Users_model->UserByMobile($MobileNo);
                 $data=[
                     'UserId'=> $UserDetails->token,
                     'token'=>$this->url_encrypt->encode($UserDetails->id),
                     'message'=>'Success',
-                    'AlreadyRegistered'=>TRUE,
+                    'AlreadyRegistered'=>true,
                     'code'=>HTTP_OK
                 ];
                 $this->response($data, HTTP_OK);
-            }else{
+            } else {
                 // Register User
                 $RegisterUser = $this->Users_model->RegisterUser($MobileNo);
-                if($RegisterUser)
-                {
-                    UpdateToken($RegisterUser,$FCM);
+                if ($RegisterUser) {
+                    UpdateToken($RegisterUser, $FCM);
                     $UserDetails = $this->Users_model->UserByMobile($MobileNo);
                     $data=[
                         'UserId'=> $UserDetails->token,
                         'token'=>$this->url_encrypt->encode($UserDetails->id),
                         'message'=>'Success',
-                        'AlreadyRegistered'=>FALSE,
+                        'AlreadyRegistered'=>false,
                         'code'=>HTTP_OK
                     ];
                     $this->response($data, HTTP_OK);
-                }else{
+                } else {
                     $data=[
-                       
+
                         'message'=>'Technical Error',
                         'code'=>HTTP_NOT_ACCEPTABLE
                     ];
                     $this->response($data, HTTP_OK);
                 }
-                
             }
         } else {
             $data['message'] = 'OTP Not Matched1';

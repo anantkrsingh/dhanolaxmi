@@ -16,14 +16,14 @@ class Ticket extends REST_Controller
         parent::__construct();
         $header = $this->input->request_headers('token');
 
-        if (!isset($header['token'])) {
+        if (!isset($header['Token'])) {
             $data['message'] = 'Invalid Request';
             $data['code'] = HTTP_UNAUTHORIZED;
             $this->response($data, HTTP_OK);
             exit();
         }
 
-        if ($header['token'] != getToken()) {
+        if ($header['Token'] != getToken()) {
             $data['message'] = 'Invalid Authorization';
             $data['code'] = HTTP_METHOD_NOT_ALLOWED;
             $this->response($data, HTTP_OK);
@@ -45,7 +45,7 @@ class Ticket extends REST_Controller
         $user_id = $this->input->post('user_id');
         $game_id = $this->input->post('game_id');
         $no_of_tickets = $this->input->post('no_of_tickets');
-        $no_of_tickets = (empty($no_of_tickets)?1:$no_of_tickets);
+        $no_of_tickets = (empty($no_of_tickets) ? 1 : $no_of_tickets);
         if (empty($user_id) || empty($game_id)) {
             $data['message'] = 'Invalid Params';
             $data['code'] = HTTP_BLANK;
@@ -71,49 +71,39 @@ class Ticket extends REST_Controller
         }
         // print_r($Game);
 
-        if($Game)
-        {
+        if ($Game) {
             $Game_status = $Game->status;
 
-            if($Game_status==0)
-            {
+            if ($Game_status==0) {
                 $Amount = $Game->ticket_price*$no_of_tickets;
-                if($Amount<=$user[0]->wallet)
-                {
-                    for ($i=0; $i < $no_of_tickets; $i++) { 
-                        $TicketData = $this->Ticket_model->GetTicketWallet($this->data['user_id'],$this->data['game_id'],$Game->ticket_price);
+                if ($Amount<=$user[0]->wallet) {
+                    for ($i=0; $i < $no_of_tickets; $i++) {
+                        $TicketData = $this->Ticket_model->GetTicketWallet($this->data['user_id'], $this->data['game_id'], $Game->ticket_price);
                     }
-                    
+
                     $data['message'] = 'Success';
                     $data['TicketData'] = $TicketData;
                     $data['code'] = HTTP_OK;
                     $this->response($data, HTTP_OK);
                     exit();
-                }
-                else
-                {
+                } else {
                     $data['message'] = 'Wallet Amount is less than Ticket Price';
                     $data['code'] = HTTP_OK;
                     $this->response($data, HTTP_OK);
                     exit();
                 }
-            }
-            else if($Game_status==1)
-            {
+            } elseif ($Game_status==1) {
                 $data['message'] = 'Game Started';
                 $data['code'] = HTTP_OK;
                 $this->response($data, HTTP_OK);
                 exit();
-            }
-            else
-            {
+            } else {
                 $data['message'] = 'Game Ended';
                 $data['code'] = HTTP_OK;
                 $this->response($data, HTTP_OK);
                 exit();
             }
-        }
-        else{
+        } else {
             $data['message'] = 'Game Not Found';
             $data['code'] = HTTP_OK;
             $this->response($data, HTTP_OK);
@@ -126,7 +116,7 @@ class Ticket extends REST_Controller
         $user_id = $this->input->post('user_id');
         $game_id = $this->input->post('game_id');
         $no_of_tickets = $this->input->post('no_of_tickets');
-        $no_of_tickets = (empty($no_of_tickets)?1:$no_of_tickets);
+        $no_of_tickets = (empty($no_of_tickets) ? 1 : $no_of_tickets);
         if (empty($user_id) || empty($game_id)) {
             $data['message'] = 'Invalid Params';
             $data['code'] = HTTP_BLANK;
@@ -153,11 +143,11 @@ class Ticket extends REST_Controller
 
         $Ticket = '';
         $Ticketids = array();
-        for ($i=0; $i < $no_of_tickets; $i++) { 
-            $Ticket = $this->Ticket_model->GetTicket($user_id,$game_id);
+        for ($i=0; $i < $no_of_tickets; $i++) {
+            $Ticket = $this->Ticket_model->GetTicket($user_id, $game_id);
             $Ticketids[] = $Ticket['ticket_id'];
         }
-        
+
         if (empty($Ticket)) {
             $data['message'] = 'Error while Creating Ticket';
             $data['code'] = HTTP_NOT_ACCEPTABLE;
@@ -166,11 +156,11 @@ class Ticket extends REST_Controller
         }
         // create ORder in razor pay
         $RazorPay_order = $this->RazorPay_order($Ticket['ticket_id'], $Amount);
-        
+
         foreach ($Ticketids as $value) {
             $Update_Order_Master = $this->Ticket_model->Update_Ticket($user_id, $value, $game->ticket_price, $RazorPay_order->id);
         }
-        
+
         if ($Update_Order_Master) {
             $data['ticket_id'] = $Ticket['ticket_id'];
             $data['Total_Amount'] = $Amount;
@@ -206,7 +196,7 @@ class Ticket extends REST_Controller
         $user_id = $this->input->post('user_id');
         $ticket_id = $this->input->post('ticket_id');
         $Payment_ID = $this->input->post('payment_id');
-        
+
         if (empty($user_id) || empty($ticket_id)  || empty($Payment_ID)) {
             $data['message'] = 'Invalid Params';
             $data['code'] = HTTP_BLANK;
@@ -256,11 +246,11 @@ class Ticket extends REST_Controller
             $no_of_tickets = $this->Ticket_model->No_Of_Tickets($CheckTicket[0]->razorpay_order_id);
             $Amount = $CheckTicket[0]->amount*$no_of_tickets;
             if ($payment->status = 'authorized' && $payment->amount >= $Amount) {
-                //     //Update Payment 
+                //     //Update Payment
                 $payment->capture(array('amount' => ($Amount * 100), 'currency' => 'INR'));
                 $Update_payment = $this->Ticket_model->Update_Ticket_Payment($CheckTicket[0]->razorpay_order_id, $payment);
-                
-                
+
+
                 $data['message'] = 'Success';
                 $data['code'] = HTTP_OK;
                 $this->response($data, 200);
@@ -314,7 +304,7 @@ class Ticket extends REST_Controller
             exit();
         }
 
-        $Ticket = $this->Ticket_model->GetUserTicketByGameId($this->data['user_id'],$this->data['game_id']);
+        $Ticket = $this->Ticket_model->GetUserTicketByGameId($this->data['user_id'], $this->data['game_id']);
         $GameData = $this->Ticket_model->GetSelectedGameNumber($this->data['game_id']);
 
         $WinnerData[0]['first_five_winner'] = 0;
@@ -322,32 +312,27 @@ class Ticket extends REST_Controller
         $WinnerData[0]['second_row_winner'] = 0;
         $WinnerData[0]['third_row_winner'] = 0;
         $WinnerData[0]['whole_winner'] = 0;
-        
-        if($game->first_five_winner!=0)
-        {
+
+        if ($game->first_five_winner!=0) {
             $WinnerData[0]['first_five_winner'] = 1;
         }
 
-        if($game->first_row_winner!=0)
-        {
+        if ($game->first_row_winner!=0) {
             $WinnerData[0]['first_row_winner'] = 1;
         }
 
-        if($game->second_row_winner!=0)
-        {
+        if ($game->second_row_winner!=0) {
             $WinnerData[0]['second_row_winner'] = 1;
         }
 
-        if($game->third_row_winner!=0)
-        {
+        if ($game->third_row_winner!=0) {
             $WinnerData[0]['third_row_winner'] = 1;
         }
 
-        if($game->whole_winner!=0)
-        {
+        if ($game->whole_winner!=0) {
             $WinnerData[0]['whole_winner'] = 1;
         }
-        
+
         $data = [
             'List' => $Ticket,
             'GameData' => $GameData,
@@ -399,5 +384,4 @@ class Ticket extends REST_Controller
             $this->response($data, HTTP_OK);
         }
     }
-
 }

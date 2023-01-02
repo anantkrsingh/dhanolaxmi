@@ -14,14 +14,14 @@ class User extends REST_Controller
         parent::__construct();
         $header = $this->input->request_headers('token');
 
-        if (!isset($header['token'])) {
+        if (!isset($header['Token'])) {
             $data['message'] = 'Invalid Request';
             $data['code'] = HTTP_UNAUTHORIZED;
             $this->response($data, HTTP_OK);
             exit();
         }
 
-        if ($header['token'] != getToken()) {
+        if ($header['Token'] != getToken()) {
             $data['message'] = 'Invalid Authorization';
             $data['code'] = HTTP_METHOD_NOT_ALLOWED;
             $this->response($data, HTTP_OK);
