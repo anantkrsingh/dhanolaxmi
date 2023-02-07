@@ -167,3 +167,59 @@ function upload_apk($file, $path, $i = '')
         return $file_name;
     }
 }
+
+function word_to_digit($word)
+{
+    $warr = explode(';', $word);
+    $result = '';
+    foreach ($warr as $value) {
+        switch(trim(strtolower($value))) {
+            case 'zero':
+                $result .= '0';
+                break;
+            case 'one':
+                $result .= '1';
+                break;
+            case 'two':
+                $result .= '2';
+                break;
+            case 'three':
+                $result .= '3';
+                break;
+            case 'four':
+                $result .= '4';
+                break;
+            case 'five':
+                $result .= '5';
+                break;
+            case 'six':
+                $result .= '6';
+                break;
+            case 'seven':
+                $result .= '7';
+                break;
+            case 'eight':
+                $result .= '8';
+                break;
+            case 'nine':
+                $result .= '9';
+                break;
+        }
+    }
+    return $result;
+}
+
+function shuffle_assoc($my_array)
+{
+    $keys = array_keys($my_array);
+
+    shuffle($keys);
+
+    foreach ($keys as $key) {
+        $new[$key] = $my_array[$key];
+    }
+
+    $my_array = $new;
+
+    return $my_array;
+}

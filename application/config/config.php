@@ -25,7 +25,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 |
 */
 
-$config['base_url'] = 'http://64.227.186.5/letscard/';
+$config['base_url'] = 'https://games.androappstech.in/';
 
 
 /*

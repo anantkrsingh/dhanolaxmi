@@ -126,7 +126,7 @@ class Game_model extends MY_Model
         $this->db->where('tbl_game_card.packed', false);
         $this->db->where('tbl_game_card.game_id', $game_id);
         $Query = $this->db->get();
-        return $Query->row()->id;
+        return $Query->row()->id ?? false;
     }
 
     public function isLeaveTable($user_id)

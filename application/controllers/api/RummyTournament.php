@@ -100,7 +100,7 @@ class RummyTournament extends REST_Controller
 
         if ($tables) {
             foreach ($tables as $value) {
-                if ($value->members<6) {
+                if ($value->members<2) {
                     $TableId = $value->rummy_tournament_table_id;
                     $seat_position = $this->RummyTournament_model->GetSeatOnTable($TableId);
                 }
@@ -1128,7 +1128,7 @@ class RummyTournament extends REST_Controller
                 if ($winner_left==0) {
                     $round = $table->round+1;
                     $new_table_count = floor($table_count/6);
-                    $user_per_table = round($table_count/$new_table_count);
+                    $user_per_table = ($new_table_count>0) ? round($table_count/$new_table_count) : 6;
 
                     $i = 0;
                     $seat_position = 0;
@@ -1479,7 +1479,7 @@ class RummyTournament extends REST_Controller
             $data['table_detail'] = $table;
             $data['active_game_id'] = 0;
             $data['game_status'] = 0;
-            $data['table_amount'] = $table->boot_value;
+            $data['table_amount'] = 0;
             $active_game = $this->RummyTournament_model->getActiveGameOnTable($table_id);
             if ($active_game) {
                 // $game_id = $active_game->id;

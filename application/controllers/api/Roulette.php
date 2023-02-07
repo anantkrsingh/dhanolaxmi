@@ -88,12 +88,12 @@ class Roulette extends REST_Controller
 
     public function get_active_game_post()
     {
-        $total_bet_heart = $this->input->post('total_bet_heart');
-        $total_bet_spade = $this->input->post('total_bet_spade');
-        $total_bet_diamond = $this->input->post('total_bet_diamond');
-        $total_bet_club = $this->input->post('total_bet_club');
-        $total_bet_face = $this->input->post('total_bet_face');
-        $total_bet_flag = $this->input->post('total_bet_flag');
+        $total_bet_heart = $this->input->post('total_bet_heart') ?? 0;
+        $total_bet_spade = $this->input->post('total_bet_spade') ?? 0;
+        $total_bet_diamond = $this->input->post('total_bet_diamond') ?? 0;
+        $total_bet_club = $this->input->post('total_bet_club') ?? 0;
+        $total_bet_face = $this->input->post('total_bet_face') ?? 0;
+        $total_bet_flag = $this->input->post('total_bet_flag') ?? 0;
 
         if (empty($this->data['user_id']) || empty($this->data['token']) || empty($this->data['room_id'])) {
             $data['message'] = 'Invalid Parameter';

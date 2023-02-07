@@ -5,7 +5,7 @@ use Restserver\Libraries\REST_Controller;
 
 include APPPATH . '/libraries/REST_Controller.php';
 include APPPATH . '/libraries/Format.php';
-class Game extends REST_Controller
+class GameIOS extends REST_Controller
 {
     private $data;
     public function __construct()
@@ -228,22 +228,22 @@ class Game extends REST_Controller
             $TableId = $this->Game_model->CreateTable($table_data);
             // $this->sendNotification($TableId);
 
-            $robot_teenpatti = $this->Setting_model->Setting()->robot_teenpatti;
-            if ($robot_teenpatti==0) {
-                $bot = $this->Users_model->GetFreeBot();
+            // $robot_teenpatti = $this->Setting_model->Setting()->robot_teenpatti;
+            // if ($robot_teenpatti==0) {
+            //     $bot = $this->Users_model->GetFreeBot();
 
-                if ($bot) {
-                    $table_bot_data = [
-                        'table_id' => $TableId,
-                        'user_id' => $bot[0]->id,
-                        'seat_position' => 2,
-                        'added_date' => date('Y-m-d H:i:s'),
-                        'updated_date' => date('Y-m-d H:i:s')
-                    ];
+            //     if ($bot) {
+            //         $table_bot_data = [
+            //             'table_id' => $TableId,
+            //             'user_id' => $bot[0]->id,
+            //             'seat_position' => 2,
+            //             'added_date' => date('Y-m-d H:i:s'),
+            //             'updated_date' => date('Y-m-d H:i:s')
+            //         ];
 
-                    $this->Game_model->AddTableUser($table_bot_data);
-                }
-            }
+            //         $this->Game_model->AddTableUser($table_bot_data);
+            //     }
+            // }
 
             $admin_mobile = $this->Setting_model->Setting()->mobile;
             if (!empty($admin_mobile)) {
@@ -360,21 +360,21 @@ class Game extends REST_Controller
         if (empty($TableId)) {
             $TableId = $this->Game_model->CreateTable($table_data);
             // $this->sendNotification($TableId);
-            $robot_teenpatti = $this->Setting_model->Setting()->robot_teenpatti;
-            if ($robot_teenpatti==0) {
-                $bot = $this->Users_model->GetFreeBot();
-                if ($bot) {
-                    $table_bot_data = [
-                        'table_id' => $TableId,
-                        'user_id' => $bot[0]->id,
-                        'seat_position' => 2,
-                        'added_date' => date('Y-m-d H:i:s'),
-                        'updated_date' => date('Y-m-d H:i:s')
-                    ];
+            // $robot_teenpatti = $this->Setting_model->Setting()->robot_teenpatti;
+            // if ($robot_teenpatti==0) {
+            //     $bot = $this->Users_model->GetFreeBot();
+            //     if ($bot) {
+            //         $table_bot_data = [
+            //             'table_id' => $TableId,
+            //             'user_id' => $bot[0]->id,
+            //             'seat_position' => 2,
+            //             'added_date' => date('Y-m-d H:i:s'),
+            //             'updated_date' => date('Y-m-d H:i:s')
+            //         ];
 
-                    $this->Game_model->AddTableUser($table_bot_data);
-                }
-            }
+            //         $this->Game_model->AddTableUser($table_bot_data);
+            //     }
+            // }
         }
 
         $table_user_data = [
@@ -822,7 +822,12 @@ class Game extends REST_Controller
 
         $data['message'] = 'Success';
         $data['cards'] = $cards;
-        $data['CardValue'] = $this->Game_model->CardValue($cards[0]->card1, $cards[0]->card2, $cards[0]->card3);
+        if ($cards) {
+            $data['CardValue'] = $this->Game_model->CardValue($cards[0]->card1, $cards[0]->card2, $cards[0]->card3);
+        } else {
+            $data['CardValue'] = array();
+        }
+
         $data['code'] = HTTP_OK;
         $this->response($data, HTTP_OK);
         exit();
@@ -1624,25 +1629,25 @@ class Game extends REST_Controller
 
         if (!empty($table_id)) {
             $table_data = $this->Game_model->TableUser($table_id);
-            if (count($table_data)==1 && $table->private==0) {
-                $robot_teenpatti = $this->Setting_model->Setting()->robot_teenpatti;
-                if ($robot_teenpatti==0) {
-                    $bot = $this->Users_model->GetFreeBot();
+            // if (count($table_data)==1 && $table->private==0) {
+            //     $robot_teenpatti = $this->Setting_model->Setting()->robot_teenpatti;
+            //     if ($robot_teenpatti==0) {
+            //         $bot = $this->Users_model->GetFreeBot();
 
-                    if ($bot) {
-                        $table_bot_data = [
-                            'table_id' => $table_id,
-                            'user_id' => $bot[0]->id,
-                            'seat_position' => 5,
-                            'added_date' => date('Y-m-d H:i:s'),
-                            'updated_date' => date('Y-m-d H:i:s')
-                        ];
+            //         if ($bot) {
+            //             $table_bot_data = [
+            //                 'table_id' => $table_id,
+            //                 'user_id' => $bot[0]->id,
+            //                 'seat_position' => 5,
+            //                 'added_date' => date('Y-m-d H:i:s'),
+            //                 'updated_date' => date('Y-m-d H:i:s')
+            //             ];
 
-                        $this->Game_model->AddTableUser($table_bot_data);
-                    }
-                    $table_data = $this->Game_model->TableUser($table_id);
-                }
-            }
+            //             $this->Game_model->AddTableUser($table_bot_data);
+            //         }
+            //         $table_data = $this->Game_model->TableUser($table_id);
+            //     }
+            // }
             // $data['table_users'] = $table_data;
 
             $table_new_data = array();

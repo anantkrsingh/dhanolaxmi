@@ -562,7 +562,7 @@ class Rummy extends REST_Controller
         if (count($table_users)==1) {
             if ($table_users[0]->mobile=="") {
                 $table_user_data = [
-                    'table_id' => $table_users[0]->rummy_table_id,
+                    'table_id' => $table_users[0]->table_id,
                     'user_id' => $table_users[0]->user_id
                 ];
 

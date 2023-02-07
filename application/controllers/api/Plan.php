@@ -131,7 +131,7 @@ class Plan extends REST_Controller
         $Order_ID_paytm = $Order_ID;
         $paytm_body['orderId'] = $Order_ID_paytm;
         $paytm_body['websiteName'] = str_replace(' ', '', PROJECT_NAME);
-        $paytm_body['amount'] = number_format($Amount, 2);
+        $paytm_body['amount'] = number_format($Amount, 2, '.', '');
         $paytm_body['currency'] = 'INR';
         $paytm_body['custId'] = $user_id;
         $paytm_body['callbackUrl'] = 'https://securegw.paytm.in/theia/paytmCallback?ORDER_ID='.$Order_ID;

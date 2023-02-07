@@ -194,13 +194,16 @@ class SevenUp_model extends MY_Model
     }
 
 
-    public function TotalBetAmount($seven_up_id, $bet='')
+    public function TotalBetAmount($seven_up_id, $bet='', $user_id='')
     {
         $this->db->select('SUM(amount) as amount', false);
         $this->db->from('tbl_seven_up_bet');
         $this->db->where('seven_up_id', $seven_up_id);
         if ($bet!=='') {
             $this->db->where('bet', $bet);
+        }
+        if ($user_id!=='') {
+            $this->db->where('user_id', $user_id);
         }
         $Query = $this->db->get();
         // echo $this->db->last_query();

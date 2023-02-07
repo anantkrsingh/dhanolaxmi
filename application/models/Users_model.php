@@ -703,13 +703,18 @@ class Users_model extends MY_Model
         return $Query->result();
     }
 
-    public function View_Purchase_Reffer()
+    public function View_Purchase_Reffer($user_id='')
     {
-        $Query = $this->db->select('tbl_purcharse_ref.*,tbl_users.name')
+        $this->db->select('tbl_purcharse_ref.*,tbl_users.name')
             ->from('tbl_purcharse_ref')
             ->join('tbl_users', 'tbl_users.id=tbl_purcharse_ref.user_id')
-            ->where('tbl_users.isDeleted', false)
-            ->get();
+            ->where('tbl_users.isDeleted', false);
+
+        if (!empty($user_id)) {
+            $this->db->where('tbl_purcharse_ref.user_id', $user_id);
+        }
+
+        $Query = $this->db->get();
         return $Query->result();
     }
 

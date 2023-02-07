@@ -20,7 +20,7 @@
                         $i = 0;
                         foreach ($AllPurchase as $key => $Purchase) {
                             $i++;
-                        ?>
+                            ?>
                         <tr>
                             <td><?= $i ?></td>
                             <td><?= $Purchase->name ?></td>
@@ -28,7 +28,7 @@
                             <td><?= $Purchase->coin ?></td>
                             <td><?= $Purchase->price ?></td>
                             <!-- <td><?= ($Purchase->payment == 0) ? 'Pending' : 'Done' ?></td> -->
-                            <td><?= date("d-m-Y", strtotime($Purchase->updated_date)) ?></td>
+                            <td><?= date("d-m-Y", strtotime($Purchase->added_date)) ?></td>
                         </tr>
                         <?php }
                         ?>
