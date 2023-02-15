@@ -4,7 +4,7 @@
      <div class="topbar">
          <!-- LOGO -->
          <div class="topbar-left"><a href="#" class="logo"><span style="color: white"><?= PROJECT_NAME ?></span><i><img
-                         src="<?= base_url('assets/images/bu.png') ?>" alt="" height="50"></i></a></div>
+                         src="<?= base_url(LOGO.$logo->logo) ?>" alt="" height="50"></i></a></div>
          <nav class="navbar-custom">
              <ul class="navbar-right list-inline float-right mb-0">
 

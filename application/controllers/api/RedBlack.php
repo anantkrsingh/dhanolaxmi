@@ -126,6 +126,8 @@ class RedBlack extends REST_Controller
             exit();
         }
 
+        $bot_user = $this->Users_model->AllBotUserList();
+        $data['bot_user'] = $bot_user;
         $game_data = $this->RedBlack_model->getActiveGameOnTable($this->data['room_id']);
         if ($game_data) {
             $game_cards = array();

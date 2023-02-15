@@ -159,12 +159,17 @@ function upload_apk($file, $path, $i = '')
     $config['upload_path'] = $path;
     $config['allowed_types'] = '*';
     $file_name =  "game." . $ext;
+    unlink($file_name);
     $config['file_name'] = $file_name;
     $ci->load->library('upload', $config);
     $ci->upload->initialize($config);
     if ($ci->upload->do_upload('file')) {
         $ci->upload->data();
         return $file_name;
+    } else {
+        $error = $ci->upload->display_errors();
+        print_r($error);
+        exit;
     }
 }
 

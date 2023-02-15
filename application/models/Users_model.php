@@ -2,6 +2,16 @@
 
 class Users_model extends MY_Model
 {
+    public function AllBotUserList()
+    {
+        $this->db->from('tbl_bot_users');
+        $this->db->where('tbl_bot_users.isDeleted', false);
+        $this->db->order_by('rand()');
+        $this->db->limit(6);
+        $Query = $this->db->get();
+        return $Query->result();
+    }
+
     public function AllUserList()
     {
         $this->db->select('tbl_users.*,tbl_user_category.name as user_category');

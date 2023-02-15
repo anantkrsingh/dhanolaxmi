@@ -90,6 +90,7 @@ class DragonTiger extends REST_Controller
         $total_bet_dragon = $this->input->post('total_bet_dragon');
         $total_bet_tiger = $this->input->post('total_bet_tiger');
         $total_bet_tie = $this->input->post('total_bet_tie');
+        $increment = $this->input->post('increment');
         if (empty($this->data['user_id']) || empty($this->data['token']) || empty($this->data['room_id'])) {
             $data['message'] = 'Invalid Parameter';
             $data['code'] = HTTP_NOT_ACCEPTABLE;
@@ -120,6 +121,8 @@ class DragonTiger extends REST_Controller
             exit();
         }
 
+        $bot_user = $this->Users_model->AllBotUserList();
+        $data['bot_user'] = $bot_user;
         $game_data = $this->DragonTiger_model->getActiveGameOnTable($this->data['room_id']);
         if ($game_data) {
             $game_cards = array();
@@ -151,9 +154,17 @@ class DragonTiger extends REST_Controller
             $dragon_bet = $this->DragonTiger_model->TotalBetAmount($game_data[0]->id, 0);
             $tiger_bet = $this->DragonTiger_model->TotalBetAmount($game_data[0]->id, 1);
             $tie_bet = $this->DragonTiger_model->TotalBetAmount($game_data[0]->id, 2);
-            $data['dragon_bet'] = rand($total_bet_dragon, $total_bet_dragon+10000)+$dragon_bet;
-            $data['tiger_bet'] = rand($total_bet_tiger, $total_bet_tiger+10000)+$tiger_bet;
-            $data['tie_bet'] = rand($total_bet_tie, $total_bet_tie+10000)+$tie_bet;
+
+            if ($increment==1) {
+                $data['dragon_bet'] = rand($total_bet_dragon, $total_bet_dragon+10000)+$dragon_bet;
+                $data['tiger_bet'] = rand($total_bet_tiger, $total_bet_tiger+10000)+$tiger_bet;
+                $data['tie_bet'] = rand($total_bet_tie, $total_bet_tie+2000)+$tie_bet;
+            } else {
+                $data['dragon_bet'] = $total_bet_dragon+$dragon_bet;
+                $data['tiger_bet'] = $total_bet_tiger+$tiger_bet;
+                $data['tie_bet'] = $total_bet_tie+$tie_bet;
+            }
+
             $data['last_winning'] = $this->DragonTiger_model->LastWinningBet($this->data['room_id']);
             $data['profile'] = $user;
             $data['code'] = HTTP_OK;

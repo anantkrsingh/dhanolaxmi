@@ -118,6 +118,8 @@ class CarRoulette extends REST_Controller
             exit();
         }
 
+        $bot_user = $this->Users_model->AllBotUserList();
+        $data['bot_user'] = $bot_user;
         $game_data = $this->CarRoulette_model->getActiveGameOnTable($this->data['room_id']);
         if ($game_data) {
             $game_cards = array();

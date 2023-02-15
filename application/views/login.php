@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0,minimal-ui">
     <title><?= PROJECT_NAME ?></title>
 
-    <link rel="shortcut icon" href="assets/images/favicon.ico">
+    <link rel="shortcut icon" href="<?= base_url(LOGO.$Setting->logo)?>">
     <link href="<?= base_url('assets/css/bootstrap.min.css') ?>" rel="stylesheet" type="text/css">
     <link href="<?= base_url('assets/css/metismenu.min.css') ?>" rel="stylesheet" type="text/css">
     <link href="<?= base_url('assets/css/icons.css') ?>" rel="stylesheet" type="text/css">
@@ -70,8 +70,8 @@
     echo form_input($email);
     ?>
                 </div>
-                    <div class="form-group"><label for="userpassword">Password</label>
-                        <?php
+                <div class="form-group"><label for="userpassword">Password</label>
+                    <?php
         $password = array(
 
             'id' => 'password',
@@ -84,39 +84,39 @@
         );
     echo form_input($password);
     ?>
-    </div>
-                        <div class="form-group row m-t-20">
-                            <div class="col-sm-6">
-                                <div class="custom-control custom-checkbox"><input type="checkbox"
-                                        class="custom-control-input" id="customControlInline"> <label
-                                        class="custom-control-label" for="customControlInline">Remember me</label></div>
-                            </div>
-                            <div class="col-sm-6 text-right">
-                                <input type="hidden" name="redirect" value="<?= $this->input->get('redirect') ?>">
-                                <?php
+                </div>
+                <div class="form-group row m-t-20">
+                    <div class="col-sm-6">
+                        <div class="custom-control custom-checkbox"><input type="checkbox" class="custom-control-input"
+                                id="customControlInline"> <label class="custom-control-label"
+                                for="customControlInline">Remember me</label></div>
+                    </div>
+                    <div class="col-sm-6 text-right">
+                        <input type="hidden" name="redirect" value="<?= $this->input->get('redirect') ?>">
+                        <?php
             echo form_submit('submit', 'Log In', array('class' => 'btn btn-primary login_bt w-md waves-effect waves-light'));
     ?>
-                                <!-- <button class="btn btn-primary w-md waves-effect waves-light" type="submit">Log In</button></div> -->
-                            </div>
-                            <div class="form-group m-t-10 mb-0 row">
-                                <!-- <div class="col-12 m-t-20"><a href="pages-recoverpw.html"><i class="mdi mdi-lock"></i> Forgot your password?</a></div> -->
-                            </div>
-                            </form>
-                        </div>
+                        <!-- <button class="btn btn-primary w-md waves-effect waves-light" type="submit">Log In</button></div> -->
                     </div>
-                    <div class="m-t-40 text-center">
-                        <!-- <p>Don't have an account ? <a href="pages-register.html" class="font-500 text-primary">Signup now</a></p> -->
-                        <p>© <?= date("Y") ?> <?= COMPANY_NAME ?> Crafted with <i class="mdi mdi-heart"
-                                style="color: #ffc107!important;"></i></p>
+                    <div class="form-group m-t-10 mb-0 row">
+                        <!-- <div class="col-12 m-t-20"><a href="pages-recoverpw.html"><i class="mdi mdi-lock"></i> Forgot your password?</a></div> -->
                     </div>
-                </div><!-- end wrapper-page -->
-                <!-- jQuery  -->
+                    </form>
+                </div>
+            </div>
+            <div class="m-t-40 text-center">
+                <!-- <p>Don't have an account ? <a href="pages-register.html" class="font-500 text-primary">Signup now</a></p> -->
+                <p>© <?= date("Y") ?> <?= COMPANY_NAME ?> Crafted with <i class="mdi mdi-heart"
+                        style="color: #ffc107!important;"></i></p>
+            </div>
+        </div><!-- end wrapper-page -->
+        <!-- jQuery  -->
 
-                <script src="<?= base_url('assets/js/bootstrap.bundle.min.js') ?>"></script>
-                <script src="<?= base_url('assets/js/metisMenu.min.js') ?>"></script>
-                <script src="<?= base_url('assets/js/jquery.slimscroll.js') ?>"></script>
-                <script src="<?= base_url('assets/js/waves.min.js') ?>"></script>
-                <script src="<?= base_url('assets/js/app.js') ?>"></script>
+        <script src="<?= base_url('assets/js/bootstrap.bundle.min.js') ?>"></script>
+        <script src="<?= base_url('assets/js/metisMenu.min.js') ?>"></script>
+        <script src="<?= base_url('assets/js/jquery.slimscroll.js') ?>"></script>
+        <script src="<?= base_url('assets/js/waves.min.js') ?>"></script>
+        <script src="<?= base_url('assets/js/app.js') ?>"></script>
 </body>
 
 </html>

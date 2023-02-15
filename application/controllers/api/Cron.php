@@ -2040,9 +2040,15 @@ class Cron extends CI_Controller
                             $arr['EIGHT'] = ($EightAmount*NUMBER_MULTIPLE)+($RedAmount*GREEN_RED_MULTIPLE);
                             $arr['NINE'] = ($NineAmount*NUMBER_MULTIPLE)+($GreenAmount*GREEN_RED_MULTIPLE);
 
+                            $arr = shuffle_assoc($arr);
+
                             $min_arr = array_keys($arr, min($arr));
                             $min = $min_arr[0];
                         }
+
+                        // print_r($arr);
+                        // print_r($min_arr);
+                        // print_r($min);
 
                         $color = '';
                         $color_multiply = '';

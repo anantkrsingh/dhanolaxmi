@@ -2420,7 +2420,15 @@ class RummyPool extends REST_Controller
 
         // $Cards = $this->RummyPool_model->GetCards(count($table_data)*13);
 
-        $end = 1;
+        $table_user_data = [
+            'game_id' => $GameId,
+            'user_id' => 0,
+            'card' => $Cards[1]->cards
+        ];
+
+        $this->RummyPool_model->StartDropGameCards($table_user_data);
+
+        $end = 2;
         foreach ($table_data as $key => $value) {
             $start = $end;
             $end = $end+RUMMY_CARDS;

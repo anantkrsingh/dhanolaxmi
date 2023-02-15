@@ -339,4 +339,4 @@ define('ROULETTE_LOG', 20);
 // FCM Notification
 define('SERVER_KEY', 'AAAA2bfIo_E:APA91bGFMoeE0wGoYy6q95ImATZ8KofZjx0yXi6ARfBkFzyHJ23Vi6tbV-gJ0kSbL_dzshsR_oVSomIsYP60RJAxzu3QeprGe9H62vEIpzBmI9IH5-6b5W-AFE2DjxiRjN8-2EoU7o03');
 
-define('OTP_API_KEY', '');
+define('OTP_API_KEY', '3a2a9957-8028-11ed-9158-0200cd936042');

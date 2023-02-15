@@ -89,6 +89,7 @@ class AnderBahar extends REST_Controller
     {
         $total_bet_ander = $this->input->post('total_bet_ander');
         $total_bet_bahar = $this->input->post('total_bet_bahar');
+        $increment = $this->input->post('increment');
         if (empty($this->data['user_id']) || empty($this->data['token']) || empty($this->data['room_id'])) {
             $data['message'] = 'Invalid Parameter';
             $data['code'] = HTTP_NOT_ACCEPTABLE;
@@ -119,6 +120,8 @@ class AnderBahar extends REST_Controller
             exit();
         }
 
+        $bot_user = $this->Users_model->AllBotUserList();
+        $data['bot_user'] = $bot_user;
         $game_data = $this->AnderBahar_model->getActiveGameOnTable($this->data['room_id']);
         if ($game_data) {
             $game_cards = array();
@@ -153,8 +156,15 @@ class AnderBahar extends REST_Controller
             // echo $this->db->last_query();
             $ander_bet = $this->AnderBahar_model->TotalBetAmount($game_data[0]->id, 0);
             $bahar_bet = $this->AnderBahar_model->TotalBetAmount($game_data[0]->id, 1);
-            $data['ander_bet'] = rand($total_bet_ander, $total_bet_ander+10000)+$ander_bet;
-            $data['bahar_bet'] = rand($total_bet_bahar, $total_bet_bahar+10000)+$bahar_bet;
+
+            if ($increment==1) {
+                $data['ander_bet'] = rand($total_bet_ander, $total_bet_ander+10000)+$ander_bet;
+                $data['bahar_bet'] = rand($total_bet_bahar, $total_bet_bahar+10000)+$bahar_bet;
+            } else {
+                $data['ander_bet'] = $total_bet_ander+$ander_bet;
+                $data['bahar_bet'] = $total_bet_ander+$bahar_bet;
+            }
+
             $data['last_winning'] = $this->AnderBahar_model->LastWinningBet($this->data['room_id']);
             $data['profile'] = $user;
             $data['code'] = HTTP_OK;

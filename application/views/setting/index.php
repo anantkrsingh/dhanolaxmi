@@ -223,7 +223,7 @@
         </div>
     </div>
     <?php } ?>
-    <?php if (TEENPATTI==true) { ?>
+    <?php if (JACKPOT==true) { ?>
     <div class="col-xl-2 col-md-1">
         <div class="card ">
             <div class="card-body">

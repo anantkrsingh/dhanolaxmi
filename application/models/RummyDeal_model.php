@@ -1521,4 +1521,16 @@ class RummyDeal_model extends MY_Model
         $Query = $this->db->get();
         return $Query->row();
     }
+
+    public function StartDropGameCards($where)
+    {
+        $data = ['isDeleted' => 1, 'updated_date' => date('Y-m-d H:i:s')];
+        $this->db->update('tbl_rummy_deal_card', $data, $where);
+        $where['added_date'] = date('Y-m-d H:i:s');
+        $where['updated_date'] = date('Y-m-d H:i:s');
+        $this->db->insert('tbl_rummy_deal_card_drop', $where);
+        $inserted_id =  $this->db->insert_id();
+
+        return $inserted_id;
+    }
 }
