@@ -9,7 +9,7 @@
          <div class="lift_box">
              <div class="lift_down">
                  <div class="icon">
-                     <img src="<?= base_url('assets/website/images/icon.png') ?>" alt="">
+                     <img src="<?= base_url(LOGO.$Setting->logo) ?>" alt="">
                  </div>
                  <div class="text">
                      <p><?= PROJECT_NAME ?></p>

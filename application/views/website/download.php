@@ -1,5 +1,6 @@
 <div class="container-main">
-    <div class="banner banner_small" style="background: url(<?= BANNER_URL.$banner->banner ?>) no-repeat center;color:white">
+    <div class="banner banner_small"
+        style="background: url(<?= BANNER_URL.$banner->banner ?>) no-repeat center;color:white">
         <div class="text">
             <h1>
                 <?= PROJECT_NAME ?>
@@ -15,7 +16,7 @@
             <div class="title">How to Install <?= PROJECT_NAME ?></div>
             <div class="item">
                 <div>1</div>
-                <p>Download <?= PROJECT_NAME ?> on your Android</p>
+                <p>Download <?= PROJECT_NAME ?> on your Android Device</p>
             </div>
             <div class="item">
                 <div>2</div>

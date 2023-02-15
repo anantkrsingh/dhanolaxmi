@@ -22,7 +22,8 @@
                 <div class="right">
                     <div class="text">
                         <p>
-                            <?= PROJECT_NAME ?> is online Rummy portal completely owned and operated by <?= COMPANY_NAME ?> We providing best-in-class gaming experience to all its users. Our aim
+                            <?= PROJECT_NAME ?> is online Rummy portal completely owned and operated by
+                            <?= COMPANY_NAME ?> We providing best-in-class gaming experience to all its users. Our aim
                             is to
                             give every
                             player a premium and hassle-free rummy-playing experience on our android and iOS app. Our
@@ -40,7 +41,7 @@
                             provide better and faster results through our software. Our software is built on a custom
                             built architecture to be robust in operating Multi-Player Tables and Online Tournaments
                         </p>
-                        <div class="download">
+                        <!-- <div class="download">
                             <a href="home/download">
                                 <img src="#" data-src="<?= base_url('assets/website/images/button-android.png') ?>"
                                     class="lazy" height="60" alt="">
@@ -49,7 +50,7 @@
                                 <img src="#" data-src="<?= base_url('assets/website/images/button-apkpure.png') ?>"
                                     class="lazy" height="60" alt="">
                             </a>
-                        </div>
+                        </div> -->
                     </div>
                 </div>
                 <div class="clear"></div>
