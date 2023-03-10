@@ -69,6 +69,11 @@ $final_url = str_replace(strtolower(base_url()), '', strtolower($actual_link));
                         <span>Banner</span></a></li>
                 <?php } ?>
 
+                <?php if (APPBANNER==true) { ?>
+                <li><a href="<?= base_url('backend/AppBanner') ?>" class="waves-effect"><i class="ion ion-md-contact"></i>
+                        <span>App Banner</span></a></li>
+                <?php } ?>
+
                 <?php if (TEENPATTI==true) { ?>
                 <li
                     class="<?= (array_filter([strpos($final_url, "tablemaster"),strpos($final_url, "backend/game"),strpos($final_url, "backend/table"),strpos($final_url, "tablemaster/add"),strpos($final_url, "tablemaster/edit"),strpos($final_url, "backend/robotcards"),strpos($final_url, "backend/table")], 'is_numeric')) ? 'mm-active' : '' ?>">

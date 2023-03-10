@@ -144,7 +144,7 @@ class Cron extends CI_Controller
                         $bot_chaal = $this->Rummy_model->ChaalCount($game->id, $chaal);
                         // log_message('error', 'robot play - '.$bot_chaal);
                         if ($bot_chaal>5) {
-                            $combination_json[] = '[{"card_group":"6","cards":["BLK","RSK","RP4_"]},{"card_group":"5","cards":["BP10_","BP9","BP8"]},{"card_group":"4","cards":["RS3_","RS2_","JKR2","RP4"]},{"card_group":"6","cards":["JKR1","RP8_","RS8"]}]';
+                            $combination_json[] = '[{"card_group":"6","cards":["BLK","RSK","RPK_"]},{"card_group":"5","cards":["BP10_","BP9","BP8"]},{"card_group":"4","cards":["RS3_","RS2_","JKR2","RP2"]},{"card_group":"6","cards":["JKR1","RP8_","RS8"]}]';
                             $combination_json[] = '[{"card_group":"6","cards":["RS9_","BL9_","BP9"]},{"card_group":"4","cards":["RPA_","RP4_","RP3","RP2"]},{"card_group":"4","cards":["BLA","BLK_","BLQ_"]},{"card_group":"5","cards":["RPQ","RPJ","RP10_"]}]';
                             $combination_json[] = '[{"card_group":"6","cards":["RS6_","RP6_","BP6"]},{"card_group":"5","cards":["RPA_","RP4_","RP3","RP2"]},{"card_group":"4","cards":["BP4_","BP3_","JKR2"]},{"card_group":"5","cards":["BL8_","BL7_","BL6_"]}]';
                             $combination_json[] = '[{"card_group":"6","cards":["RS2_","BL2_","BP2","RP2_"]},{"card_group":"6","cards":["RS4_","BP4","RP4_"]},{"card_group":"5","cards":["RP7_","RP6_","RP5_"]},{"card_group":"4","cards":["BL5","BL4_","BL3"]}]';
@@ -831,127 +831,6 @@ class Cron extends CI_Controller
                             $this->DragonTiger_model->Create($room->id);
 
                             echo 'Dragon Tiger Game Created Successfully'.PHP_EOL;
-                        } else {
-                            echo 'No Online User Found'.PHP_EOL;
-                        }
-                    } else {
-                        echo "No Game to End".PHP_EOL;
-                    }
-                }
-            }
-        } else {
-            echo 'No Rooms Available'.PHP_EOL;
-        }
-    }
-
-    public function head_tail()
-    {
-        $room_data = $this->HeadTail_model->getRoom();
-
-        if ($room_data) {
-            foreach ($room_data as $key => $room) {
-                $game_data = $this->HeadTail_model->getActiveGameOnTable($room->id);
-                $card = '';
-                if (!$game_data) {
-                    $this->HeadTail_model->Create($room->id, $card);
-
-                    echo 'First Head Tail Game Created Successfully'.PHP_EOL;
-                    continue;
-                }
-
-                if ($game_data[0]->status==0) {
-                    if ((strtotime($game_data[0]->added_date)+DRAGON_TIME_FOR_BET)<=time()) {
-                        $TotalWinningAmount = 0;
-                        $TotalBetAmount = $this->HeadTail_model->TotalBetAmount($game_data[0]->id);
-
-                        $DragonBetAmount = $this->HeadTail_model->TotalBetAmount($game_data[0]->id, HEAD)*2;
-                        $TigerBetAmount = $this->HeadTail_model->TotalBetAmount($game_data[0]->id, TAIL)*2;
-
-                        $setting = $this->Setting_model->Setting();
-                        if ($setting->head_tail_random==1) {
-                            $winning = RAND(HEAD, TAIL); //0=head,1=tail
-                        } else {
-                            if ($DragonBetAmount>0 || $TigerBetAmount>0) {
-                                $winning = ($DragonBetAmount>$TigerBetAmount) ? TAIL : HEAD; //0=ander,1=bahar
-                            } else {
-                                $winning = RAND(HEAD, TAIL); //0=head,1=tail
-                            }
-                        }
-
-                        // $TieBetAmount = $this->HeadTail_model->TotalBetAmount($game_data[0]->id, TIE)*11;
-
-                        // if ($DragonBetAmount>$TieBetAmount && $TigerBetAmount>$TieBetAmount) {
-                        //     $winning = TIE;
-                        // } else {
-                        // $winning = ($DragonBetAmount>$TigerBetAmount) ? TIGER : DRAGON; //0=Dragon,1=Tiger
-                        // }
-
-                        // if ($winning==TIE) {
-                        //     $number = rand(2, 10);
-                        //     $card_dragon = 'BP'.$number;
-                        //     $card_tiger = 'RP'.$number;
-
-                        //     $this->HeadTail_model->CreateMap($game_data[0]->id, $card_dragon);
-                        //     $this->HeadTail_model->CreateMap($game_data[0]->id, $card_tiger);
-                        // } else {
-                        $limit = 2;
-                        $cards = $this->HeadTail_model->GetCards($limit);
-                        $card1_point = $this->card_points($cards[0]->cards);
-                        $card2_point = $this->card_points($cards[1]->cards);
-
-                        $card_big = '';
-                        $card_small = '';
-                        if ($card1_point>$card2_point) {
-                            $card_big = $cards[0]->cards;
-                            $card_small = $cards[1]->cards;
-                        } else {
-                            $card_big = $cards[1]->cards;
-                            $card_small = $cards[0]->cards;
-                        }
-
-                        $card_dragon = ($winning==HEAD) ? $card_big : $card_small;
-                        $card_tiger = ($winning==TAIL) ? $card_big : $card_small;
-
-                        $this->HeadTail_model->CreateMap($game_data[0]->id, $card_dragon);
-                        $this->HeadTail_model->CreateMap($game_data[0]->id, $card_tiger);
-                        // }
-
-                        // Give winning Amount to user
-                        $bets = $this->HeadTail_model->ViewBet("", $game_data[0]->id, $winning);
-                        if ($bets) {
-                            // print_r($bets);
-                            $comission = $this->Setting_model->Setting()->admin_commission;
-
-                            foreach ($bets as $key => $value) {
-                                // if ($winning==TIE) {
-                                //     $this->HeadTail_model->MakeWinner($value->user_id, $value->id, $value->amount*11, $comission, $game_data[0]->id);
-                                // } else {
-                                $amount = $value->amount*2;
-                                $TotalWinningAmount += $amount;
-                                $this->HeadTail_model->MakeWinner($value->user_id, $value->id, $amount, $comission, $game_data[0]->id);
-                                // }
-                            }
-                            echo "Winning Amount Given".PHP_EOL;
-                        } else {
-                            echo "No Winning Bet Found".PHP_EOL;
-                        }
-                        $update_data['status'] = 1;
-                        $update_data['winning'] = $winning;
-                        $update_data['total_amount'] = $TotalBetAmount;
-                        $update_data['admin_profit'] = $TotalBetAmount - $TotalWinningAmount;
-                        $update_data['updated_date'] = date('Y-m-d H:i:s');
-                        $update_data['end_datetime'] = date('Y-m-d H:i:s', strtotime('+'.DRAGON_TIME_FOR_START_NEW_GAME.' seconds'));
-                        $this->HeadTail_model->Update($update_data, $game_data[0]->id);
-                    } else {
-                        echo "No Game to Start".PHP_EOL;
-                    }
-                } else {
-                    if (strtotime($game_data[0]->end_datetime)<=time()) {
-                        $count = $this->Users_model->getOnlineUsers($room->id, 'head_tail_room_id');
-                        if ($count>0) {
-                            $this->HeadTail_model->Create($room->id);
-
-                            echo 'Head Tail Game Created Successfully'.PHP_EOL;
                         } else {
                             echo 'No Online User Found'.PHP_EOL;
                         }
@@ -2040,15 +1919,9 @@ class Cron extends CI_Controller
                             $arr['EIGHT'] = ($EightAmount*NUMBER_MULTIPLE)+($RedAmount*GREEN_RED_MULTIPLE);
                             $arr['NINE'] = ($NineAmount*NUMBER_MULTIPLE)+($GreenAmount*GREEN_RED_MULTIPLE);
 
-                            $arr = shuffle_assoc($arr);
-
                             $min_arr = array_keys($arr, min($arr));
                             $min = $min_arr[0];
                         }
-
-                        // print_r($arr);
-                        // print_r($min_arr);
-                        // print_r($min);
 
                         $color = '';
                         $color_multiply = '';
@@ -2197,6 +2070,127 @@ class Cron extends CI_Controller
                             $this->ColorPrediction_model->Create($room->id);
 
                             echo 'Color Prediction Created Successfully'.PHP_EOL;
+                        } else {
+                            echo 'No Online User Found'.PHP_EOL;
+                        }
+                    } else {
+                        echo "No Game to End".PHP_EOL;
+                    }
+                }
+            }
+        } else {
+            echo 'No Rooms Available'.PHP_EOL;
+        }
+    }
+
+    public function head_tail()
+    {
+        $room_data = $this->HeadTail_model->getRoom();
+
+        if ($room_data) {
+            foreach ($room_data as $key => $room) {
+                $game_data = $this->HeadTail_model->getActiveGameOnTable($room->id);
+                $card = '';
+                if (!$game_data) {
+                    $this->HeadTail_model->Create($room->id, $card);
+
+                    echo 'First Head Tail Game Created Successfully'.PHP_EOL;
+                    continue;
+                }
+
+                if ($game_data[0]->status==0) {
+                    if ((strtotime($game_data[0]->added_date)+DRAGON_TIME_FOR_BET)<=time()) {
+                        $TotalWinningAmount = 0;
+                        $TotalBetAmount = $this->HeadTail_model->TotalBetAmount($game_data[0]->id);
+
+                        $DragonBetAmount = $this->HeadTail_model->TotalBetAmount($game_data[0]->id, HEAD)*2;
+                        $TigerBetAmount = $this->HeadTail_model->TotalBetAmount($game_data[0]->id, TAIL)*2;
+
+                        $setting = $this->Setting_model->Setting();
+                        if ($setting->head_tail_random==1) {
+                            $winning = RAND(HEAD, TAIL); //0=head,1=tail
+                        } else {
+                            if ($DragonBetAmount>0 || $TigerBetAmount>0) {
+                                $winning = ($DragonBetAmount>$TigerBetAmount) ? TAIL : HEAD; //0=ander,1=bahar
+                            } else {
+                                $winning = RAND(HEAD, TAIL); //0=head,1=tail
+                            }
+                        }
+
+                        // $TieBetAmount = $this->HeadTail_model->TotalBetAmount($game_data[0]->id, TIE)*11;
+
+                        // if ($DragonBetAmount>$TieBetAmount && $TigerBetAmount>$TieBetAmount) {
+                        //     $winning = TIE;
+                        // } else {
+                        // $winning = ($DragonBetAmount>$TigerBetAmount) ? TIGER : DRAGON; //0=Dragon,1=Tiger
+                        // }
+
+                        // if ($winning==TIE) {
+                        //     $number = rand(2, 10);
+                        //     $card_dragon = 'BP'.$number;
+                        //     $card_tiger = 'RP'.$number;
+
+                        //     $this->HeadTail_model->CreateMap($game_data[0]->id, $card_dragon);
+                        //     $this->HeadTail_model->CreateMap($game_data[0]->id, $card_tiger);
+                        // } else {
+                        $limit = 2;
+                        $cards = $this->HeadTail_model->GetCards($limit);
+                        $card1_point = $this->card_points($cards[0]->cards);
+                        $card2_point = $this->card_points($cards[1]->cards);
+
+                        $card_big = '';
+                        $card_small = '';
+                        if ($card1_point>$card2_point) {
+                            $card_big = $cards[0]->cards;
+                            $card_small = $cards[1]->cards;
+                        } else {
+                            $card_big = $cards[1]->cards;
+                            $card_small = $cards[0]->cards;
+                        }
+
+                        $card_dragon = ($winning==HEAD) ? $card_big : $card_small;
+                        $card_tiger = ($winning==TAIL) ? $card_big : $card_small;
+
+                        $this->HeadTail_model->CreateMap($game_data[0]->id, $card_dragon);
+                        $this->HeadTail_model->CreateMap($game_data[0]->id, $card_tiger);
+                        // }
+
+                        // Give winning Amount to user
+                        $bets = $this->HeadTail_model->ViewBet("", $game_data[0]->id, $winning);
+                        if ($bets) {
+                            // print_r($bets);
+                            $comission = $this->Setting_model->Setting()->admin_commission;
+
+                            foreach ($bets as $key => $value) {
+                                // if ($winning==TIE) {
+                                //     $this->HeadTail_model->MakeWinner($value->user_id, $value->id, $value->amount*11, $comission, $game_data[0]->id);
+                                // } else {
+                                $amount = $value->amount*2;
+                                $TotalWinningAmount += $amount;
+                                $this->HeadTail_model->MakeWinner($value->user_id, $value->id, $amount, $comission, $game_data[0]->id);
+                                // }
+                            }
+                            echo "Winning Amount Given".PHP_EOL;
+                        } else {
+                            echo "No Winning Bet Found".PHP_EOL;
+                        }
+                        $update_data['status'] = 1;
+                        $update_data['winning'] = $winning;
+                        $update_data['total_amount'] = $TotalBetAmount;
+                        $update_data['admin_profit'] = $TotalBetAmount - $TotalWinningAmount;
+                        $update_data['updated_date'] = date('Y-m-d H:i:s');
+                        $update_data['end_datetime'] = date('Y-m-d H:i:s', strtotime('+'.DRAGON_TIME_FOR_START_NEW_GAME.' seconds'));
+                        $this->HeadTail_model->Update($update_data, $game_data[0]->id);
+                    } else {
+                        echo "No Game to Start".PHP_EOL;
+                    }
+                } else {
+                    if (strtotime($game_data[0]->end_datetime)<=time()) {
+                        $count = $this->Users_model->getOnlineUsers($room->id, 'head_tail_room_id');
+                        if ($count>0) {
+                            $this->HeadTail_model->Create($room->id);
+
+                            echo 'Head Tail Game Created Successfully'.PHP_EOL;
                         } else {
                             echo 'No Online User Found'.PHP_EOL;
                         }

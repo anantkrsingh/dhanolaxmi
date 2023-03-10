@@ -222,6 +222,7 @@ class Rummy extends REST_Controller
             'chaal_limit' => $this->data['boot_value']*128,
             'pot_limit' => $this->data['boot_value']*1024,
             'private' => 2,
+            'code' => uniqid(),
             'added_date' => date('Y-m-d H:i:s'),
             'updated_date' => date('Y-m-d H:i:s')
         ];
@@ -238,11 +239,12 @@ class Rummy extends REST_Controller
 
         $this->Rummy_model->AddTableUser($table_user_data);
 
-        $table_data = $this->Rummy_model->TableUser($TableId);
+        $table_data_user = $this->Rummy_model->TableUser($TableId);
 
         $data['message'] = 'Success';
         $data['table_id'] = $TableId;
-        $data['table_data'] = $table_data;
+        $data['table_data'] = $table_data_user;
+        $data['table_code'] = $table_data['code'];
         $data['code'] = HTTP_OK;
         $this->response($data, HTTP_OK);
         exit();
@@ -362,6 +364,78 @@ class Rummy extends REST_Controller
         exit();
     }
 
+    public function join_table_with_code_post()
+    {
+        if (empty($this->data['user_id']) || empty($this->data['code'])) {
+            $data['message'] = 'Invalid Parameter';
+            $data['code'] = HTTP_NOT_ACCEPTABLE;
+            $this->response($data, 200);
+            exit();
+        }
+
+        if (!$this->Users_model->TokenConfirm($this->data['user_id'], $this->data['token'])) {
+            $data['message'] = 'Invalid User';
+            $data['code'] = HTTP_INVALID;
+            $this->response($data, HTTP_OK);
+            exit();
+        }
+
+        $user = $this->Users_model->UserProfile($this->data['user_id']);
+        if (empty($user)) {
+            $data['message'] = 'Invalid User';
+            $data['code'] = HTTP_NOT_ACCEPTABLE;
+            $this->response($data, 200);
+            exit();
+        }
+
+        if ($user[0]->rummy_table_id) {
+            $data['message'] = 'You are Already On Table';
+            $data['code'] = HTTP_NOT_ACCEPTABLE;
+            $this->response($data, 200);
+            exit();
+        }
+
+        // if (!$this->Rummy_model->isTable($this->data['code'])) {
+        //     $data['message'] = 'Invalid Table Id';
+        //     $data['code'] = HTTP_NOT_ACCEPTABLE;
+        //     $this->response($data, 200);
+        //     exit();
+        // }
+
+        $table = $this->Rummy_model->isTableAvailCode($this->data['code']);
+        if (!$table) {
+            $data['message'] = 'Invalid Table Id';
+            $data['code'] = HTTP_NOT_ACCEPTABLE;
+            $this->response($data, 200);
+            exit();
+        }
+
+        if ($user[0]->wallet<$table->boot_value) {
+            $data['message'] = 'Required Minimum '.$table->boot_value.' Coins to Play';
+            $data['code'] = HTTP_NOT_ACCEPTABLE;
+            $this->response($data, 200);
+            exit();
+        }
+
+        $table_user_data = [
+            'table_id' => $table->id,
+            'user_id' => $user[0]->id,
+            'seat_position' => $this->Rummy_model->GetSeatOnTable($table->id),
+            'added_date' => date('Y-m-d H:i:s'),
+            'updated_date' => date('Y-m-d H:i:s')
+        ];
+
+        $this->Rummy_model->AddTableUser($table_user_data);
+
+        $table_data = $this->Rummy_model->TableUser($table->id);
+
+        $data['message'] = 'Success';
+        $data['table_data'] = $table_data;
+        $data['code'] = HTTP_OK;
+        $this->response($data, HTTP_OK);
+        exit();
+    }
+
     public function start_game_post()
     {
         if (empty($this->data['user_id'])) {
@@ -444,7 +518,7 @@ class Rummy extends REST_Controller
         }
 
         $amount = 0;
-        $Cards = $this->Rummy_model->GetStartCards((count($table_data)*13)+1);
+        $Cards = $this->Rummy_model->GetStartCards((count($table_data)*13)+2);
         $game_data = [
             'table_id' => $user[0]->rummy_table_id,
             'joker' => $Cards[0]->cards,
@@ -463,7 +537,6 @@ class Rummy extends REST_Controller
         $this->Rummy_model->StartDropGameCards($table_user_data);
 
         $end = 2;
-
         foreach ($table_data as $key => $value) {
             $start = $end;
             $end = $end+13;
@@ -548,21 +621,24 @@ class Rummy extends REST_Controller
         $game = $this->Rummy_model->getActiveGameOnTable($user[0]->rummy_table_id);
 
         if ($game) {
-            $table = $this->Rummy_model->isTableAvail($user[0]->rummy_table_id);
-            $boot_value = $table->boot_value;
-            $ChaalCount = $this->Rummy_model->ChaalCount($game->id, $this->data['user_id']);
+            $isUserGame = $this->Rummy_model->GameOnlyUser($game->id, $user[0]->id);
+            if ($isUserGame) {
+                $table = $this->Rummy_model->isTableAvail($user[0]->rummy_table_id);
+                $boot_value = $table->boot_value;
+                $ChaalCount = $this->Rummy_model->ChaalCount($game->id, $this->data['user_id']);
 
-            $percent = $ChaalCount>0 ? CHAAL_PERCENT : NO_CHAAL_PERCENT;
-            $amount = round(($percent / 100) * $boot_value, 2);
+                $percent = $ChaalCount>0 ? CHAAL_PERCENT : NO_CHAAL_PERCENT;
+                $amount = round(($percent / 100) * $boot_value, 2);
 
-            $this->Rummy_model->PackGame($this->data['user_id'], $game->id, $timeout, '', $amount, $percent);
-            $this->Rummy_model->MinusWallet($this->data['user_id'], $amount);
-            $game_users = $this->Rummy_model->GameUser($game->id);
+                $this->Rummy_model->PackGame($this->data['user_id'], $game->id, $timeout, '', $amount, $percent);
+                $this->Rummy_model->MinusWallet($this->data['user_id'], $amount);
+                $game_users = $this->Rummy_model->GameUser($game->id);
 
-            if (count($game_users)==1) {
-                $game = $this->Rummy_model->getActiveGameOnTable($user[0]->rummy_table_id);
-                $comission = $this->Setting_model->Setting()->admin_commission;
-                $this->Rummy_model->MakeWinner($game->id, $game->amount, $game_users[0]->user_id, $comission);
+                if (count($game_users)==1) {
+                    $game = $this->Rummy_model->getActiveGameOnTable($user[0]->rummy_table_id);
+                    $comission = $this->Setting_model->Setting()->admin_commission;
+                    $this->Rummy_model->MakeWinner($game->id, $game->amount, $game_users[0]->user_id, $comission);
+                }
             }
         }
 
@@ -1225,7 +1301,7 @@ class Rummy extends REST_Controller
             $game = $this->Rummy_model->getActiveGameOnTable($user[0]->rummy_table_id);
             // $table = $this->Rummy_model->isTableAvail($user[0]->rummy_table_id);
 
-            $actual_points = $points*round($table->boot_value/80, 2);
+            // $actual_points = $points*round($table->boot_value/80, 2);
 
             $this->Rummy_model->MinusWallet($this->data['user_id'], $actual_points);
             $comission = $this->Setting_model->Setting()->admin_commission;

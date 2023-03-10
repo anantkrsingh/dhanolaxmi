@@ -33,7 +33,8 @@ class User extends REST_Controller
         $this->load->model([
             'Users_model',
             'Game_model',
-            'Setting_model'
+            'Setting_model',
+            'AppBanner_model'
         ]);
     }
 
@@ -293,6 +294,7 @@ class User extends REST_Controller
         if (!empty($app_version)) {
             $this->Users_model->UpdateAppVersion($this->data['id'], $app_version);
         }
+        $AppBanner = $this->AppBanner_model->View();
         $UserData = $this->Users_model->UserProfile($this->data['id']);
         $UserKyc = $this->Users_model->UserKyc($this->data['id']);
         $UserBankDetails = $this->Users_model->UserBankDetails($this->data['id']);
@@ -317,6 +319,7 @@ class User extends REST_Controller
         $data['user_bank_details'] = $UserBankDetails;
         $data['avatar'] = $avatar;
         $data['setting'] = $setting;
+        $data['app_banner'] = $AppBanner;
         $data['code'] = HTTP_OK;
         $this->response($data, HTTP_OK);
         exit();
@@ -1301,37 +1304,39 @@ class User extends REST_Controller
 
             if (strtotime($last_date)<strtotime(date('Y-m-d'))) {
                 $collected_days = count($bonus_log);
-                if ($WelcomeBonus[$collected_days]->game_played<=$user[0]->game_played) {
-                    $this->Users_model->AddWelcomeBonus($WelcomeBonus[$collected_days]->coin, $this->data['user_id']);
+                if ($WelcomeBonus) {
+                    if ($WelcomeBonus[$collected_days]->game_played<=$user[0]->game_played) {
+                        $this->Users_model->AddWelcomeBonus($WelcomeBonus[$collected_days]->coin, $this->data['user_id']);
 
-                    $setting = $this->Setting_model->Setting();
-                    for ($i=1; $i <= 3; $i++) {
-                        if ($user[0]->referred_by!=0) {
-                            $level = 'level_'.$i;
-                            $coins = (($WelcomeBonus[$collected_days]->coin*$setting->$level)/100);
-                            $this->Users_model->UpdateWalletOrder($coins, $user[0]->referred_by);
+                        $setting = $this->Setting_model->Setting();
+                        for ($i=1; $i <= 3; $i++) {
+                            if ($user[0]->referred_by!=0) {
+                                $level = 'level_'.$i;
+                                $coins = (($WelcomeBonus[$collected_days]->coin*$setting->$level)/100);
+                                $this->Users_model->UpdateWalletOrder($coins, $user[0]->referred_by);
 
-                            $log_data = [
-                                'user_id' => $user[0]->referred_by,
-                                'day' => $WelcomeBonus[$collected_days]->id,
-                                'bonus_user_id' => $this->data['user_id'],
-                                'coin' => $coins,
-                                'added_date' => date('Y-m-d H:i:s'),
-                                'level' => $i,
-                            ];
+                                $log_data = [
+                                    'user_id' => $user[0]->referred_by,
+                                    'day' => $WelcomeBonus[$collected_days]->id,
+                                    'bonus_user_id' => $this->data['user_id'],
+                                    'coin' => $coins,
+                                    'added_date' => date('Y-m-d H:i:s'),
+                                    'level' => $i,
+                                ];
 
-                            $this->Users_model->AddWelcomeReferLog($log_data);
-                            $user = $this->Users_model->UserProfile($user[0]->referred_by);
-                        } else {
-                            break;
+                                $this->Users_model->AddWelcomeReferLog($log_data);
+                                $user = $this->Users_model->UserProfile($user[0]->referred_by);
+                            } else {
+                                break;
+                            }
                         }
-                    }
 
-                    $data['message'] = 'Success';
-                    $data['coin'] = $WelcomeBonus[$collected_days]->coin;
-                    $data['code'] = HTTP_OK;
-                    $this->response($data, HTTP_OK);
-                    exit();
+                        $data['message'] = 'Success';
+                        $data['coin'] = $WelcomeBonus[$collected_days]->coin;
+                        $data['code'] = HTTP_OK;
+                        $this->response($data, HTTP_OK);
+                        exit();
+                    }
                 }
 
                 $data['message'] = 'You Have To Play '.($WelcomeBonus[$collected_days]->game_played-$user[0]->game_played).' More Games to Collect Bonus';

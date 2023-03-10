@@ -9,11 +9,13 @@ class WithdrawalLog extends MY_Controller
 
     public function index()
     {
+        $start_date = $this->input->get('start_date');
+        $end_date = $this->input->get('end_date');
         $data = [
             'title' => 'Withdrawal Log',
-            'Pending' => $this->WithdrawalLog_model->WithDrawal_list(0),
-            'Approved' => $this->WithdrawalLog_model->WithDrawal_list(1),
-            'Rejected' => $this->WithdrawalLog_model->WithDrawal_list(2)
+            'Pending' => $this->WithdrawalLog_model->WithDrawal_list(0,$start_date, $end_date),
+            'Approved' => $this->WithdrawalLog_model->WithDrawal_list(1,$start_date, $end_date),
+            'Rejected' => $this->WithdrawalLog_model->WithDrawal_list(2,$start_date, $end_date)
         ];
         template('redeem/withdrawal_log', $data);
     }

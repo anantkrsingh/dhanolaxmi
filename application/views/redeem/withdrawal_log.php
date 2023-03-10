@@ -1,5 +1,41 @@
-<!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script> -->
+<section class="section">
+    <div class="card">
+        <div class="card-body">
+            <form>
+                <div class="row">
+                    <div class="col-4">
+                        <div class="form-group">
+                            <input type="hidden" id="sn_date" value="" name="start_date">
+                            <input type="hidden" id="en_date" value="" name="end_date">
+                            <label for="crm_attendence_date">Date filter</label>
+                            <div id="report" class="form-control" style=" cursor: pointer; ">
+                                <i class="fa fa-calendar"></i>&nbsp;
+
+                                <span></span>
+                                <i class="fa fa-caret-down"></i>
+
+                            </div>
+                        </div>
+                    </div>
+                    
+                    
+                    <div class="col-1">
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-success mt-4">Search</button>
+                        </div>
+                    </div>
+                    <div class="col-1">
+                        <div class="form-group">
+                            <a href="<?= base_url('crm/Attendence') ?>" class="btn btn-info mt-4">Clear</a>
+                        </div>
+                    </div>
+
+                </div>
+            </form>
+        </div>
+    </div>
+
+</section>
 <div class="row">
     <div class="col-12">
         <div class="card">

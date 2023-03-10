@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.gamegards.letsplaycard",
+      "sha256_cert_fingerprints": [
+        "38:D8:23:17:6E:2F:A8:8C:07:0C:CE:6A:72:EC:52:EE:96:18:38:A4:51:2F:66:6F:90:B3:8D:0B:17:E3:3D:AF"
+      ]
+    }
+  }
+]

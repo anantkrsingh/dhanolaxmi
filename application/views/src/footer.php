@@ -36,7 +36,45 @@
    <script src="<?= base_url('assets/js/bootstrap-datepicker.min.js')?>"></script>
    <script src="<?= base_url('assets/js/app.js')?>"></script>
    <script src="<?= base_url('assets/js/custom/validation.js')?>"></script>
+   <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+   <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+   <script>
+      $(function() {
+         var start = moment(<?= ($this->input->get('start_date') != '') ? '"' . $this->input->get('start_date') . '"' : ''; ?>);
+         var end = moment(<?= ($this->input->get('end_date') != '') ? '"' . $this->input->get('end_date') . '"' : ''; ?>);
+         // alert(start)
+         function cb(start, end) {
+            $('#report span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
+            var start_date = start.format('YYYY-MM-DD')
+            var end_date = end.format('YYYY-MM-DD')
+            //   alert(start_date);
+            $('#sn_date').val(start_date);
+            $('#en_date').val(end_date);
 
+         }
+
+         $('#report').daterangepicker({
+            maxDate: new Date(),
+            startDate: start,
+            endDate: end,
+            //    maxDate: d,                      
+            ranges: {
+                  'Today': [moment(), moment()],
+                  'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+                  'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+                  'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+                  'This Month': [moment().startOf('month'), moment().endOf('month')],
+                  'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month')
+                     .endOf('month')
+                  ]
+            },
+
+         }, cb);
+         cb(start, end);
+
+
+      })
+   </script>
    </body>
 
    </html>

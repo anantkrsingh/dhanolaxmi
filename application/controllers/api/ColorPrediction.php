@@ -144,25 +144,29 @@ class ColorPrediction extends REST_Controller
             $data['online'] = $this->ColorPrediction_model->getRoomOnline($this->data['room_id']);
             $data['online_users'] = $this->ColorPrediction_model->getRoomOnlineUser($this->data['room_id']);
 
-            // $ToyotaAmount = $this->ColorPrediction_model->TotalBetAmount($game_data[0]->id, 1);
-            // $MahindraAmount = $this->ColorPrediction_model->TotalBetAmount($game_data[0]->id, 2);
-            // $AudiAmount = $this->ColorPrediction_model->TotalBetAmount($game_data[0]->id, 3);
-            // $BmwAmount = $this->ColorPrediction_model->TotalBetAmount($game_data[0]->id, 4);
-            // $MercedesAmount = $this->ColorPrediction_model->TotalBetAmount($game_data[0]->id, 5);
-            // $PorscheAmount = $this->ColorPrediction_model->TotalBetAmount($game_data[0]->id, 6);
-            // $LamborghiniAmount = $this->ColorPrediction_model->TotalBetAmount($game_data[0]->id, 7);
-            // $FerrariAmount = $this->ColorPrediction_model->TotalBetAmount($game_data[0]->id, 8);
+            $my_bet_0 = $this->ColorPrediction_model->TotalBetAmount($game_data[0]->id, 0);
+            $my_bet_1 = $this->ColorPrediction_model->TotalBetAmount($game_data[0]->id, 1);
+            $my_bet_2 = $this->ColorPrediction_model->TotalBetAmount($game_data[0]->id, 2);
+            $my_bet_3 = $this->ColorPrediction_model->TotalBetAmount($game_data[0]->id, 3);
+            $my_bet_4 = $this->ColorPrediction_model->TotalBetAmount($game_data[0]->id, 4);
+            $my_bet_5 = $this->ColorPrediction_model->TotalBetAmount($game_data[0]->id, 5);
+            $my_bet_6 = $this->ColorPrediction_model->TotalBetAmount($game_data[0]->id, 6);
+            $my_bet_7 = $this->ColorPrediction_model->TotalBetAmount($game_data[0]->id, 7);
+            $my_bet_8 = $this->ColorPrediction_model->TotalBetAmount($game_data[0]->id, 8);
+            $my_bet_9 = $this->ColorPrediction_model->TotalBetAmount($game_data[0]->id, 9);
 
             $data['last_bet'] = $this->ColorPrediction_model->ViewBet('', $game_data[0]->id, '', '', 1);
 
-            // $data['toyota_amount'] = ($ToyotaAmount) ? $ToyotaAmount : 0;
-            // $data['mahindra_amount'] = ($MahindraAmount) ? $MahindraAmount : 0;
-            // $data['audi_amount'] = ($AudiAmount) ? $AudiAmount : 0;
-            // $data['bmw_amount'] = ($BmwAmount) ? $BmwAmount : 0;
-            // $data['mercedes_amount'] = ($MercedesAmount) ? $MercedesAmount : 0;
-            // $data['porsche_amount'] = ($PorscheAmount) ? $PorscheAmount : 0;
-            // $data['lamborghini_amount'] = ($LamborghiniAmount) ? $LamborghiniAmount : 0;
-            // $data['ferrari_amount'] = ($FerrariAmount) ? $FerrariAmount : 0;
+            $data['my_bet_0'] = ($my_bet_0) ? $my_bet_0 : 0;
+            $data['my_bet_1'] = ($my_bet_1) ? $my_bet_1 : 0;
+            $data['my_bet_2'] = ($my_bet_2) ? $my_bet_2 : 0;
+            $data['my_bet_3'] = ($my_bet_3) ? $my_bet_3 : 0;
+            $data['my_bet_4'] = ($my_bet_4) ? $my_bet_4 : 0;
+            $data['my_bet_5'] = ($my_bet_5) ? $my_bet_5 : 0;
+            $data['my_bet_6'] = ($my_bet_6) ? $my_bet_6 : 0;
+            $data['my_bet_7'] = ($my_bet_7) ? $my_bet_7 : 0;
+            $data['my_bet_8'] = ($my_bet_8) ? $my_bet_8 : 0;
+            $data['my_bet_9'] = ($my_bet_9) ? $my_bet_9 : 0;
 
             // $data['jackpot_amount'] = $this->Setting_model->Setting()->jackpot_coin;
 
@@ -296,12 +300,12 @@ class ColorPrediction extends REST_Controller
 
         $bet = $this->ColorPrediction_model->ViewBet($this->data['user_id'], $this->data['game_id'], $this->data['bet']);
 
-        if ($bet) {
-            $data['message'] = 'One Bet Already Placed';
-            $data['code'] = HTTP_NOT_ACCEPTABLE;
-            $this->response($data, 200);
-            exit();
-        }
+        // if ($bet) {
+        //     $data['message'] = 'One Bet Already Placed';
+        //     $data['code'] = HTTP_NOT_ACCEPTABLE;
+        //     $this->response($data, 200);
+        //     exit();
+        // }
 
         $bet_data = [
             'color_prediction_id' => $this->data['game_id'],

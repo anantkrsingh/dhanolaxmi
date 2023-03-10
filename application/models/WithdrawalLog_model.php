@@ -83,15 +83,27 @@ class WithdrawalLog_model extends MY_Model
             ->result();
     }
 
-    public function WithDrawal_list($status)
+    public function WithDrawal_list($status,$startDate="", $endDate)
     {
-        return $Query = $this->db->select('tbl_withdrawal_log.*,tbl_users.name as user_name,tbl_users.mobile as user_mobile,tbl_users.bank_detail,tbl_users.adhar_card,tbl_users.upi')
-            ->from('tbl_withdrawal_log')
-            ->join('tbl_users', 'tbl_users.id=tbl_withdrawal_log.user_id')
-            ->where('tbl_withdrawal_log.isDeleted', FALSE)
-            ->where('tbl_withdrawal_log.status', $status)
-            ->get()
-            ->result();
+        $this->db->select('tbl_withdrawal_log.*,tbl_users.name as user_name,tbl_users.mobile as user_mobile,tbl_users.bank_detail,tbl_users.adhar_card,tbl_users.upi');
+        $this->db->from('tbl_withdrawal_log');
+        $this->db->join('tbl_users', 'tbl_users.id=tbl_withdrawal_log.user_id');
+            // filter
+        if(!empty($startDate)) {
+            $startDate = date('Y-m-d 00:00:00', strtotime($startDate));
+            $endDate = date('Y-m-d 23:59:59', strtotime($endDate));
+            $this->db->where('created_date >=', $startDate);
+            $this->db->where('created_date <=', $endDate);
+        }else {
+            $startDate = date('Y-m-d 00:00:00');
+            $endDate = date('Y-m-d 23:59:59');
+            $this->db->where('created_date >=', $startDate);
+            $this->db->where('created_date <=', $endDate);
+        }
+        $this->db->where('tbl_withdrawal_log.isDeleted', FALSE);
+        $this->db->where('tbl_withdrawal_log.status', $status);
+        $Query= $this->db->get();
+        return $Query->result();
     }
 
     public function ChangeStatus($id, $status)

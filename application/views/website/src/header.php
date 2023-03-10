@@ -11,22 +11,24 @@
     <meta property="og:description"
         content="Download and Play <?= PROJECT_NAME ?>, classic Indian Cards Games online anytime, anywhere. Free daily bonus chips, win real money cash in rupees. Winners Take All!" />
     <link href="<?= base_url(LOGO.$Setting->logo) ?>" rel="shortcut icon">
-    <link href="https://fonts.googleapis.com/css?family=Anton|Titan+One" rel="stylesheet">
-    <link rel="stylesheet" href="<?= base_url('assets/website/css/style.css') ?>">
-    <script src="<?= base_url('assets/website/js/jquery-3.4.1.min.js') ?>" type="text/javascript">
+    <link href="https://fonts.googleapis.com/css?family=Anton|Titan+One" async rel="stylesheet">
+    <link rel="stylesheet" href="<?= base_url('assets/website/css/style.css') ?>" async>
+    <script src="<?= base_url('assets/website/js/jquery-3.4.1.min.js') ?>" async type="text/javascript">
     </script>
     <style>
-    .banner-bg{
-        background-image:url(<?= BANNER_URL.$banner->banner ?>);
-        background-repeat:no-repeat;
-        background-size:cover;
+    .banner-bg {
+        background-image: url(<?= BANNER_URL.$banner->banner ?>);
+        background-repeat: no-repeat;
+        background-size: cover;
     }
     </style>
 </head>
 
 <body>
     <header class="header">
-        <a class="logo" style="background: url(<?= LOGO.$Setting->logo ?>) left center no-repeat; background-size: 120px;" href="<?= base_url() ?>"></a>
+        <a class="logo"
+            style="background: url(<?= LOGO.$Setting->logo ?>) left center no-repeat; background-size: 120px;"
+            href="<?= base_url() ?>"></a>
         <div class="navigation">
             <div class="menu_icon"></div>
             <ul>

@@ -81,6 +81,16 @@ class Rummy_model extends MY_Model
         return $Query->row();
     }
 
+    public function isTableAvailCode($code)
+    {
+        $this->db->from('tbl_rummy_table');
+        $this->db->where('isDeleted', false);
+        $this->db->where('private', 2);
+        $this->db->where('code', $code);
+        $Query = $this->db->get();
+        return $Query->row();
+    }
+
     public function GetSeatOnTable($TableId)
     {
         $sql = "SELECT * FROM ( SELECT 1 AS mycolumn UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 ) a WHERE mycolumn NOT in ( SELECT seat_position FROM `tbl_rummy_table_user` WHERE table_id=" . $TableId . " AND isDeleted=0 ) LIMIT 1";
@@ -167,12 +177,15 @@ class Rummy_model extends MY_Model
         return $Query->result();
     }
 
-    public function GameOnlyUser($game_id)
+    public function GameOnlyUser($game_id, $user_id='')
     {
         $this->db->select('tbl_rummy_card.user_id,tbl_rummy_card.packed,tbl_users.name');
         $this->db->from('tbl_rummy_card');
         $this->db->join('tbl_users', 'tbl_users.id=tbl_rummy_card.user_id');
         $this->db->where('tbl_rummy_card.game_id', $game_id);
+        if (!empty($user_id)) {
+            $this->db->where('tbl_rummy_card.user_id', $user_id);
+        }
         $this->db->group_by('tbl_rummy_card.user_id');
         $Query = $this->db->get();
         return $Query->result();
@@ -1084,6 +1097,7 @@ class Rummy_model extends MY_Model
         $this->db->select('card');
         $this->db->from('tbl_rummy_card_drop');
         $this->db->where('game_id', $game_id);
+        $this->db->where('isDeleted', false);
         $this->db->limit(1);
         $this->db->order_by('id', 'DESC');
         $Query = $this->db->get();
