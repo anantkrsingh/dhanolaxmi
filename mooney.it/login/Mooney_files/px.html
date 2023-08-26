@@ -1,0 +1,117 @@
+
+<!-- saved from url=(0065)https://cert.home4four.com/v2/pxjs/px.js?_rnd=0.22910615424729563 -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=windows-1252"><meta name="color-scheme" content="light dark"></head><body><pre style="word-wrap: break-word; white-space: pre-wrap;">var __assign = (this &amp;&amp; this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i &lt; n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
+(function () {
+    var tr = (function () {
+        function tr() {
+            var _this = this;
+            tltr.clk = function () { return _this.clk(); };
+            tltr.az = function (az, campaign, order_id, commission, price, extra) { return _this.az(az, campaign, order_id, commission, price, extra); };
+            while (tltr.c.length &gt; 0) {
+                var v = tltr.c.shift();
+                switch (v.m) {
+                    case 'clk':
+                        this.clk.apply(this, v.arg);
+                        break;
+                    case 'az':
+                        this.az.apply(this, v.arg);
+                        break;
+                }
+            }
+        }
+        tr.prototype.getCodeFromQueryString = function (code) {
+            var _a;
+            var regex = new RegExp('(?:\\?|&amp;)' + tltr.param + '=([a-zA-Z0-9]+)(?:&amp;|#|$)');
+            var c = ((_a = regex.exec(window.location.href)) === null || _a === void 0 ? void 0 : _a.pop()) || null;
+            if (c &amp;&amp; c.split(/[CT]/).length &gt; 1) {
+                return c;
+            }
+            return code || c;
+        };
+        tr.prototype.getQueryString = function () {
+            var parts = window.location.href.split(/[?|#]/);
+            var query = null;
+            if (parts.length &gt;= 2) {
+                var regex = new RegExp('(^|&amp;)' + tltr.param + '=[a-zA-Z0-9]+(&amp;|$)');
+                query = parts[1].replace(regex, function (match, p1, p2, offset, string) {
+                    return p1 == '&amp;' &amp;&amp; p2 == '&amp;' ? '&amp;' : '';
+                });
+            }
+            return query;
+        };
+        tr.prototype.clk = function () {
+            var _this = this;
+            var code = this.getCodeFromQueryString();
+            if (code != null) {
+                var lastClick = localStorage.getItem(this.getClickDupKey(code));
+                this.call('/click_json.php', { tl_track_code: lastClick || code }, true, function (r) {
+                    if (r.status) {
+                        localStorage.setItem(_this.getClickDupKey(code), r.track_code);
+                        localStorage.setItem(_this.getClickKey(r.campaign), r.track_code);
+                    }
+                });
+            }
+        };
+        tr.prototype.az = function (az, campaign, order_id, commission, price, extra) {
+            var _this = this;
+            var param = __assign(__assign({}, (extra || {})), { azione: az, code: null, order_id: order_id, provvigione: commission, prezzo: price, dup: null });
+            param.code = this.getCodeFromQueryString(localStorage.getItem(this.getClickKey(campaign)));
+            param.dup = param.code ? localStorage.getItem(this.getAzKey(az, param.code)) : null;
+            for (var k in param) {
+                if (Object.prototype.hasOwnProperty.call(param, k) &amp;&amp; param[k] == null) {
+                    delete param[k];
+                }
+            }
+            this.call('/azione_json.php', param, false, function (r) {
+                if (!!(r === null || r === void 0 ? void 0 : r.return)) {
+                    localStorage.setItem(_this.getClickKey(campaign), r.track_code);
+                    localStorage.setItem(_this.getAzKey(az, r.track_code), (r.dup + 1).toString());
+                }
+            });
+        };
+        tr.prototype.getClickKey = function (campaign) { return 'trtl_' + campaign; };
+        tr.prototype.getClickDupKey = function (code) { return 'trtl' + code; };
+        tr.prototype.getAzKey = function (az, code) {
+            var c = code.split(/[CT]/);
+            return 'trtl' + az + '_' + c[0];
+        };
+        tr.prototype.call = function (url, params, qsa, callback) {
+            var x = new XMLHttpRequest();
+            var final_url = tltr.url + url + '?';
+            x.onreadystatechange = function () {
+                if (x.readyState == XMLHttpRequest.DONE &amp;&amp; x.status == 200) {
+                    var resp = JSON.parse(x.responseText);
+                    callback(resp);
+                }
+            };
+            var qs = [];
+            for (var k in params) {
+                if (Object.prototype.hasOwnProperty.call(params, k)) {
+                    qs.push(encodeURIComponent(k) + '=' + encodeURIComponent(params[k]));
+                }
+            }
+            final_url += qs.join('&amp;');
+            if (qsa) {
+                var query = this.getQueryString();
+                if (query) {
+                    final_url += '&amp;' + query;
+                }
+            }
+            x.open('GET', final_url, true);
+            x.send();
+        };
+        return tr;
+    }());
+    var run = new tr();
+})();
+</pre></body></html>

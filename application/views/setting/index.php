@@ -118,7 +118,7 @@
         </div>
     </div>
     <?php } ?>
-    <?php if (POINT_RUMMY==true) { ?>
+    <!-- <?php if (POINT_RUMMY==true) { ?>
     <div class="col-xl-2 col-md-1">
         <div class="card ">
             <div class="card-body">
@@ -131,7 +131,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> -->
     <?php } ?>
     <?php if (RUMMY_POOL==true) { ?>
     <div class="col-xl-2 col-md-1">

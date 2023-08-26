@@ -133,8 +133,28 @@ strong {
     text-align: right
 }
 
-.bg-primary {
-    background-color: #626ed4!important
+.new-bg{
+    
+    border-radius: 200px;
+    border: gray solid 2px;
+    background-color: #00DBDE;
+background-image: linear-gradient(90deg, #00DBDE 0%, #FC00FF 100%);
+
+}
+
+.title-color{
+    color: green;
+    font-weight: bold;
+}
+.text-red{
+    color: red;
+}
+.text-black{
+    color: black;
+    font-weight: bold;
+}
+.black{
+    color: #000;
 }
 
 .bg-success {
@@ -3084,7 +3104,6 @@ table.focus-on tbody tr.focused td {
     width: 58px;
     height: 58px;
     line-height: 58px;
-    background: rgb(255 255 255);
     border-radius: 4px;
     text-align: center
 }
@@ -3343,6 +3362,13 @@ table.focus-on tbody tr.focused td {
 .directory-card .social-links li a {
     margin-bottom: 6px
 }
+.mydiv{
+    display: flex;
+align-content: center;
+align-items: center;
+justify-content: center;
+align-self: center;
+}
 
 .pricing-box .pricing-icon i {
     font-size: 30px;
@@ -3579,12 +3605,12 @@ a.faq[data-toggle=collapse]:before {
     position: relative
 }
 
-.bg_dasbord_box {
+/* .bg_dasbord_box {
     /* background-color: #793975!important; */
     background: linear-gradient( 
 37deg
  , rgb(167 118 49) 0%, rgb(187 35 35) 35%, rgba(255,145,0,1) 100%);
-}
+} */
 
 .wrapper-page .logo-admin {
     position: absolute;

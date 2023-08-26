@@ -8,12 +8,11 @@
     <div class="col-xl-3 col-md-6">
      
     <a href="<?= base_url("backend/Purchase") ?>">
-            <div class="card bg_dasbord_box mini-stat bg-primary text-white">
-                <div class="card-body">
+            <div class="card bg_dasbord_box mini-stat new-bg text-white">
+                <div class="card-body mydiv">
                     <div class="mb-4">
-                        <div class="float-left mini-stat-img mr-4"><img src="<?= base_url("assets/images/coin.png") ?>"
-                                alt=""></div>
-                        <h5 class="font-14 text-uppercase mt-0 text-white-50">Online</h5>
+                       
+                        <h5 class="font-14 text-uppercase mt-0 ">Online</h5>
                         <h4 class="font-500"><?= ($PurchaseOnline)?$PurchaseOnline:0 ?></h4>
                         <!-- <div class="mini-stat-label bg-success">
                                         <p class="mb-0">+ 12%</p>
@@ -25,12 +24,11 @@
     </div>
     <div class="col-xl-3 col-md-6"> 
     <a href="<?= base_url("backend/Purchase") ?>">
-         <div class="card bg_dasbord_box mini-stat bg-primary text-white">
-             <div class="card-body">
+         <div class="card bg_dasbord_box mini-stat new-bg text-white">
+             <div class="card-body mydiv">
                  <div class="mb-4">
-                     <div class="float-left mini-stat-img mr-4"><img src="<?= base_url("assets/images/coin.png") ?>"
-                             alt=""></div>
-                     <h5 class="font-14 text-uppercase mt-0 text-white-50">Offline</h5>
+                     
+                     <h5 class="font-14 text-uppercase mt-0 ">Offline</h5>
                      <h4 class="font-500"><?= ($PurchaseOffline)?$PurchaseOffline:0 ?></h4>
                      <!-- <div class="mini-stat-label bg-success">
                                      <p class="mb-0">+ 12%</p>
@@ -42,12 +40,11 @@
  </div>
  <div class="col-xl-3 col-md-6"> 
     <a href="<?= base_url("backend/Purchase") ?>">
-         <div class="card bg_dasbord_box mini-stat bg-primary text-white">
-             <div class="card-body">
+         <div class="card bg_dasbord_box mini-stat new-bg text-white">
+             <div class="card-body mydiv">
                  <div class="mb-4">
-                     <div class="float-left mini-stat-img mr-4"><img src="<?= base_url("assets/images/coin.png") ?>"
-                             alt=""></div>
-                     <h5 class="font-14 text-uppercase mt-0 text-white-50">Robot Coin</h5>
+                     
+                     <h5 class="font-14 text-uppercase mt-0 ">Robot Coin</h5>
                      <h4 class="font-500"><?= ($RobotCoin)?$RobotCoin:0 ?></h4>
                      <!-- <div class="mini-stat-label bg-success">
                                      <p class="mb-0">+ 12%</p>
@@ -64,11 +61,10 @@
        
     <div class="col-xl-3">
     <a href="#">
-            <div class="card bg_dasbord_box mini-stat bg-primary text-white">
-                <div class="card-body">
+            <div class="card bg_dasbord_box mini-stat new-bg text-white">
+                <div class="card-body mydiv">
                     <div class="mb-4">
-                        <div class="float-left mini-stat-img mr-4"><img src="<?= base_url("assets/images/coin.png") ?>"
-                                alt=""></div>
+                        
                         <h5 class="font-14 text-uppercase mt-0 text-white-50">Welcome Bonus</h5>
                         <h4 class="font-500"><?= ($WelcomeBonus)?$WelcomeBonus:0 ?></h4>
                         <!-- <div class="mini-stat-label bg-success">
@@ -81,11 +77,10 @@
     </div>
     <div class="col-xl-3 ">
     <a href="#">
-            <div class="card bg_dasbord_box mini-stat bg-primary text-white">
-                <div class="card-body">
+            <div class="card bg_dasbord_box mini-stat new-bg text-white">
+                <div class="card-body mydiv">
                     <div class="mb-4">
-                        <div class="float-left mini-stat-img mr-4"><img src="<?= base_url("assets/images/coin.png") ?>"
-                                alt=""></div>
+                        
                         <h5 class="font-14 text-uppercase mt-0 text-white-50">Welcome Referral Bonus</h5>
                         <h4 class="font-500"><?= ($RefferalBonus)?$RefferalBonus:0 ?></h4>
                         <!-- <div class="mini-stat-label bg-success">
@@ -100,11 +95,10 @@
      
         
     <a href="#">
-         <div class="card bg_dasbord_box mini-stat bg-primary text-white">
-             <div class="card-body">
+         <div class="card bg_dasbord_box mini-stat new-bg text-white">
+             <div class="card-body mydiv">
                  <div class="mb-4">
-                     <div class="float-left mini-stat-img mr-4"><img src="<?= base_url("assets/images/coin.png") ?>"
-                             alt=""></div>
+                     
                      <h5 class="font-14 text-uppercase mt-0 text-white-50">Referral Bonus</h5>
                      <h4 class="font-500"><?= ($WelcomeReferralBonus)?$WelcomeReferralBonus:0 ?></h4>
                      <!-- <div class="mini-stat-label bg-success">
@@ -119,11 +113,9 @@
      
         
      <a href="#">
-          <div class="card bg_dasbord_box mini-stat bg-primary text-white">
-              <div class="card-body">
+          <div class="card bg_dasbord_box mini-stat new-bg text-white">
+              <div class="card-body mydiv">
                   <div class="mb-4">
-                      <div class="float-left mini-stat-img mr-4"><img src="<?= base_url("assets/images/coin.png") ?>"
-                              alt=""></div>
                       <h5 class="font-14 text-uppercase mt-0 text-white-50">Purchase Bonus</h5>
                       <h4 class="font-500"><?= ($PurchaseBonus)?$PurchaseBonus:0 ?></h4>
                       <!-- <div class="mini-stat-label bg-success">
@@ -144,11 +136,10 @@
 <div class="row">
     <div class="col-xl-3 col-md-6">
         <a href="<?= base_url("backend/WithdrawalLog") ?>">
-            <div class="card bg_dasbord_box mini-stat bg-primary text-white">
-                <div class="card-body">
+            <div class="card bg_dasbord_box mini-stat new-bg text-white">
+                <div class="card-body mydiv">
                     <div class="mb-4">
-                        <div class="float-left mini-stat-img mr-4"><img src="<?= base_url("assets/images/coin.png") ?>"
-                                alt=""></div>
+                       
                         <h5 class="font-14 text-uppercase mt-0 text-white-50">Approved</h5>
                         <h4 class="font-500">
                            <?= ($ApprovedCoins)?$ApprovedCoins:0 ?>
@@ -164,11 +155,10 @@
 
     <div class="col-xl-3 col-md-6">
     <a href="<?= base_url("backend/WithdrawalLog") ?>">
-        <div class="card bg_dasbord_box mini-stat bg-primary text-white">
-            <div class="card-body">
+        <div class="card bg_dasbord_box mini-stat new-bg text-white">
+            <div class="card-body mydiv">
                 <div class="mb-4">
-                    <div class="float-left mini-stat-img mr-4"><img src="<?= base_url("assets/images/coin.png") ?>"
-                            alt=""></div>
+                    
                     <h5 class="font-14 text-uppercase mt-0 text-white-50">Pending</h5>
                     <h4 class="font-500"><?= ($PendingCoins)?$PendingCoins:0 ?></h4>
                 </div>
@@ -179,11 +169,10 @@
 
     <div class="col-xl-3 col-md-6">
         <a href="<?= base_url("backend/WithdrawalLog") ?>">
-            <div class="card bg_dasbord_box mini-stat bg-primary text-white">
-                <div class="card-body">
+            <div class="card bg_dasbord_box mini-stat new-bg text-white">
+                <div class="card-body mydiv">
                     <div class="mb-4">
-                        <div class="float-left mini-stat-img mr-4"><img
-                                src="<?= base_url("assets/images/coin.png") ?>" alt=""></div>
+                      
                         <h5 class="font-14 text-uppercase mt-0 text-white-50">Rejected</h5>
                         <h4 class="font-500"><?= ($RejectedCoins)?$RejectedCoins:0 ?></h4>
                     </div>

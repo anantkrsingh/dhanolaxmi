@@ -220,6 +220,8 @@
                             </option>
                             <option value="7" <?= ($Setting->payment_gateway=='7' ? 'selected' : '') ?>>Custom
                             </option>
+                            <option value="7" <?= ($Setting->payment_gateway=='8' ? 'selected' : '') ?>>Neokard
+                            </option>
                         </select>
                     </div>
                 </div>
@@ -245,6 +247,22 @@
                     <div class="col-sm-10">
                         <input class="form-control" type="text" name="payumoney_salt" id="payumoney_salt"
                             value="<?= $Setting->payumoney_salt ?>">
+                    </div>
+                </div>
+
+                <div class="form-group row"><label for="neokred_client_secret" class="col-sm-2 col-form-label">Neokard
+                        Client Secret *</label>
+                    <div class="col-sm-10">
+                        <input class="form-control" type="text" name="neokred_client_secret" id="neokred_client_secret"
+                            value="<?= $Setting->neokred_client_secret ?>">
+                    </div>
+                </div>
+
+                <div class="form-group row"><label for="neokred_project_id" class="col-sm-2 col-form-label">Neokard
+                        Project Id</label>
+                    <div class="col-sm-10">
+                        <input class="form-control" type="text" name="neokred_project_id" id="neokred_project_id"
+                            value="<?= $Setting->neokred_project_id ?>">
                     </div>
                 </div>
 

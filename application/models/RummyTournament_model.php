@@ -31,8 +31,11 @@ class RummyTournament_model extends MY_Model
 
     public function getTableMaster($tournament_id='')
     {
-        $this->db->select('tbl_rummy_tournament_master.*');
+        $this->db->select('tbl_rummy_tournament_master.*,first_table.name as first_winner_name,second_table.name as second_winner_name,third_table.name as third_winner_name');
         $this->db->from('tbl_rummy_tournament_master');
+        $this->db->join('tbl_users as first_table', 'first_table.id=tbl_rummy_tournament_master.first_winner', 'left');
+        $this->db->join('tbl_users as second_table', 'second_table.id=tbl_rummy_tournament_master.second_winner', 'left');
+        $this->db->join('tbl_users as third_table', 'third_table.id=tbl_rummy_tournament_master.third_winner', 'left');
         $this->db->where('tbl_rummy_tournament_master.isDeleted', 0);
         if (!empty($tournament_id)) {
             $this->db->where('tbl_rummy_tournament_master.id', $tournament_id);

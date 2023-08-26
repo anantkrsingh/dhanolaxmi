@@ -1,0 +1,56 @@
+<html>
+<body onload="callParent();">
+<script>
+	function inIframe () {
+		try {
+			return window.self !== window.top;
+		} catch (e) {
+			return true;
+		}
+	}
+	function inDoubleIframe(){
+		try {
+			return window.self !== window.top.top;
+		} catch (e) {
+			return true;
+		}
+	}
+	function callParent(){
+	
+		if(inIframe()){
+            if (typeof parent.YOC != "undefined" &&  typeof parent.YOC.partnerFinishedLoading == 'function') {
+			
+                //console.log ("xxxxxxxxxx" + window.frameElement.getAttribute('data-is_final_request'));
+                // data-final_request = i sau -1, setat din loadService, in functie de tipul url-ului apelat (ultimul sau nu, daca e ultimul => se trimite -1 si mai apoi, afiseaza vizual statusul)
+				//console.log("--- On parent action : " + 'Opt-out');
+                parent.YOC.partnerFinishedLoading('nocookie', window.frameElement.id, window.frameElement.getAttribute('data-is_final_request'),window.frameElement.getAttribute('action'),'fbhy1xDvZSKb-QwFDWbG7VYn4bA');
+            }
+			
+			
+
+			else if (typeof parent.partnerFinishedLoading == 'function') {
+
+				parent.partnerFinishedLoading('nocookie', window.frameElement.id,window.frameElement.getAttribute('action'),window.frameElement.getAttribute('request_nr'),'fbhy1xDvZSKb-QwFDWbG7VYn4bA');
+
+			}
+
+		}
+	}
+</script>
+
+<div style='background-color : green; border-style : solid; width : 100%; height : 200px; text-align : center;'>
+  <h1>Request OK</h1>
+    <h2>
+    Status: nocookie    <br>
+    Token: fbhy1xDvZSKb-QwFDWbG7VYn4bA    </h2>
+</div>
+
+<input id="status" name="status" type="hidden" value="nocookie"/>
+<input id="token" name="token" type="hidden" value="fbhy1xDvZSKb-QwFDWbG7VYn4bA"/>
+<input id="message" name="message" type="hidden" value="<b>No Cookie Found.</b>  You have not opted out and you have no cookie from this network."/>
+<input id="action" name="action" type="hidden" value="Opt-out"/>
+</body>
+
+</html>
+
+

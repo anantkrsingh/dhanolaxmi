@@ -1,11 +1,10 @@
 <div class="row">
     <div class="col-xl-3 col-md-6">
         <a href="<?= base_url("backend/Setting/AdminCoin_log") ?>">
-            <div class="card bg_dasbord_box mini-stat bg-primary text-white">
-                <div class="card-body">
+            <div class="card bg_dasbord_box mini-stat new-bg new-bg text-white">
+                <div class="card-body mydiv">
                     <div class="mb-4">
-                        <div class="float-left mini-stat-img mr-4"><img src="<?= base_url("assets/images/coin.png") ?>"
-                                alt=""></div>
+                        
                         <h5 class="font-14 text-uppercase mt-0 text-white-50">Admin Coin</h5>
                         <h4 class="font-500"><?= number_format($AdminCoins) ?></h4>
                         <!-- <div class="mini-stat-label bg-success">
@@ -18,11 +17,10 @@
     </div>
 
     <div class="col-xl-3 col-md-6">
-        <div class="card bg_dasbord_box mini-stat bg-primary text-white">
-            <div class="card-body">
+        <div class="card bg_dasbord_box mini-stat new-bg text-white">
+            <div class="card-body mydiv">
                 <div class="mb-4">
-                    <div class="float-left mini-stat-img mr-4"><img src="<?= base_url("assets/images/artisan.png") ?>"
-                            alt=""></div>
+                   
                     <h5 class="font-14 text-uppercase mt-0 text-white-50">Active User</h5>
                     <h4 class="font-500"><?= number_format(count($ActiveUser)) ?></h4>
                 </div>
@@ -32,11 +30,10 @@
 
     <div class="col-xl-3 col-md-6">
         <a href="<?= base_url("backend/user") ?>">
-            <div class="card bg_dasbord_box mini-stat bg-primary text-white">
-                <div class="card-body">
+            <div class="card bg_dasbord_box mini-stat new-bg text-white">
+                <div class="card-body mydiv">
                     <div class="mb-4">
-                        <div class="float-left mini-stat-img mr-4"><img
-                                src="<?= base_url("assets/images/customer.png") ?>" alt=""></div>
+                        
                         <h5 class="font-14 text-uppercase mt-0 text-white-50">Total User</h5>
                         <h4 class="font-500"><?= number_format(count($AllUserList)) ?></h4>
                     </div>
@@ -47,11 +44,10 @@
 
     <div class="col-xl-3 col-md-6">
         <a href="<?= base_url("backend/Purchase") ?>">
-            <div class="card bg_dasbord_box mini-stat bg-primary text-white">
-                <div class="card-body">
+            <div class="card bg_dasbord_box mini-stat new-bg text-white">
+                <div class="card-body mydiv">
                     <div class="mb-4">
-                        <div class="float-left mini-stat-img mr-4"><img
-                                src="<?= base_url("assets/images/money-bag.png") ?>" alt=""></div>
+                        
                         <h5 class="font-14 text-uppercase mt-0 text-white-50">Total Purchase</h5>
                         <h4 class="font-500"><?= number_format((float) $TotalCoins) ?></h4>
                     </div>
@@ -67,7 +63,7 @@
             <option value="1" <?= (($JackpotStatus == 1) ? 'selected' : '') ?>>ON</option>
         </select><br>
         <a href="#">
-            <div class="card bg_dasbord_box mini-stat bg-primary text-white">
+            <div class="card bg_dasbord_box mini-stat new-bg text-white">
                 <div class="card-body">
                     <div class="mb-4">
                         <div class="float-left mini-stat-img mr-4"><img src="<?= base_url("assets/images/coin.png") ?>"

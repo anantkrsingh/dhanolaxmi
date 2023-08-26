@@ -32,7 +32,7 @@
 
 </head>
 
-<body style="background-image: url('<?= base_url('assets/images/sp_bg.png') ?>');">
+<body style="">
     <div class="home-btn d-none d-sm-block"><a href="<?= base_url()?>" class="text-dark"><i
                 class="fas fa-home h2"></i></a></div>
     <div class="wrapper-page">

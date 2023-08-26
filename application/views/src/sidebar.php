@@ -4,44 +4,44 @@ $final_url = str_replace(strtolower(base_url()), '', strtolower($actual_link));
 ?>
 <!-- Top Bar End -->
 <!-- ========== Left Sidebar Start ========== -->
-<div class="left side-menu" style="background-image: url('<?= base_url('assets/images/sp_bg.png') ?>');">
+<div class="left side-menu bg-white text-black">
     <div class="slimscroll-menu" id="remove-scroll">
         <!--- Sidemenu -->
         <div id="sidebar-menu">
             <!-- Left Menu Start -->
             <ul class="metismenu" id="side-menu">
 
-                <li><a href="<?= base_url('backend/dashboard/admin') ?>" class="waves-effect"><i class="ti-home"></i>
-                        <span>Dashboard</span></a></li>
+                <li><a href="<?= base_url('backend/dashboard/admin') ?>" class="waves-effect"><i class="ti-home" style="color:black !important;"></i>
+                        <span style="color:black !important;">Dashboard</span></a></li>
                 <li class="menu-title">Content</li>
                 <?php if (USER_MANAGEMENT==true) { ?>
                 <li
                     class="<?= (array_filter([strpos($final_url, "backend/user"),strpos($final_url, "backend/usercategory"),strpos($final_url, "backend/table"),strpos($final_url, "tablemaster/add"),strpos($final_url, "tablemaster/edit"),strpos($final_url, "backend/robotcards"),strpos($final_url, "backend/table")], 'is_numeric')) ? 'mm-active' : '' ?>">
-                    <a href="javascript: void(0);" class="has-arrow waves-effect">
-                        <i class="ion ion-md-contact"></i>
+                    <a href="javascript: void(0);" style="color:black;" class="has-arrow waves-effect black">
+                        <i class="ion  ion-md-contact" style="color:black;"></i>
                         <span>Users Management</span>
                     </a>
-                    <ul class="sub-menu mm-collapse">
-                        <li
+                    <ul class="sub-menu text-black mm-collapse">
+                        <li style="color:black;"
                             class="<?= (array_filter([strpos($final_url, "backend/user")], 'is_numeric')) ? 'mm-active' : '' ?>">
                             <a href="<?= base_url('backend/user') ?>" class="waves-effect">
-                                <span>Users</span></a>
+                                <span style="color:black;">Users</span></a>
                         </li>
                         <li
                             class="<?= (array_filter([strpos($final_url, "backend/usercategory")], 'is_numeric')) ? 'mm-active' : '' ?>">
                             <a href="<?= base_url('backend/UserCategory') ?>" class="waves-effect">
-                                <span>User Category</span></a>
+                                <span style="color:black;">User Category</span></a>
                         </li>
 
 
                         <li
                             class="<?= (array_filter([strpos($final_url, "backend/kyc")], 'is_numeric')) ? 'mm-active' : '' ?>">
                             <a href="<?= base_url('backend/Kyc') ?>" class="waves-effect"></i>
-                                <span>Kyc</span></a>
+                                <span style="color:black;">Kyc</span></a>
                         </li>
                         <li
                             class="<?= (array_filter([strpos($final_url, "backend/BankDetails")], 'is_numeric')) ? 'mm-active' : '' ?>">
-                            <a href="<?= base_url('backend/BankDetails') ?>" class="waves-effect"> <span>Bank
+                            <a href="<?= base_url('backend/BankDetails') ?>" class="waves-effect"> <span style="color:black;">Bank
                                     Details</span></a>
                         </li>
                     </ul>
@@ -54,7 +54,7 @@ $final_url = str_replace(strtolower(base_url()), '', strtolower($actual_link));
                 <?php if (WITHDRAWL_DASHBOARD==true) { ?>
                 <li
                     class="<?= (array_filter([strpos($final_url, "withdrawldashboard")], 'is_numeric')) ? 'mm-active' : '' ?>">
-                    <a href="<?= base_url('backend/WithdrawlDashboard') ?>" class="waves-effect"><i class="ti-home"></i>
+                    <a style="color:black;" href="<?= base_url('backend/WithdrawlDashboard') ?>" class="waves-effect"><i style="color:black;" class="ti-home"></i>
                         <span>Withdrawl Dashboard</span></a>
                 </li>
                 <?php } ?>
@@ -64,15 +64,15 @@ $final_url = str_replace(strtolower(base_url()), '', strtolower($actual_link));
                 <?php } ?> -->
 
 
-                <?php if (BANNER==true) { ?>
+                <!-- <?php if (BANNER==true) { ?>
                 <li><a href="<?= base_url('backend/banner') ?>" class="waves-effect"><i class="ion ion-md-contact"></i>
                         <span>Banner</span></a></li>
-                <?php } ?>
+                <?php } ?> -->
 
-                <?php if (APPBANNER==true) { ?>
+                <!-- <?php if (APPBANNER==true) { ?>
                 <li><a href="<?= base_url('backend/AppBanner') ?>" class="waves-effect"><i class="ion ion-md-contact"></i>
                         <span>App Banner</span></a></li>
-                <?php } ?>
+                <?php } ?> -->
 
                 <?php if (TEENPATTI==true) { ?>
                 <li
@@ -117,19 +117,19 @@ $final_url = str_replace(strtolower(base_url()), '', strtolower($actual_link));
                 <?php if (LUDO==true) { ?>
                 <li
                     class="<?= (array_filter([strpos($final_url, "ludotablemaster"),strpos($final_url, "ludohistory"),strpos($final_url, "ludotablemaster/add"),strpos($final_url, "ludotablemaster/edit")], 'is_numeric')) ? 'mm-active' : '' ?>">
-                    <a href="javascript: void(0);" class="has-arrow waves-effect">
-                        <i class="ti-layout-grid2-alt"></i>
+                    <a style="color:black !important;" href="javascript: void(0);" class="has-arrow waves-effect">
+                        <i style="color:black !important;" class="ti-layout-grid2-alt"></i>
                         <span>Ludo Management</span>
                     </a>
                     <ul class="sub-menu mm-collapse">
                         <li
                             class="<?= (array_filter([strpos($final_url, "ludotablemaster"),strpos($final_url, "ludotablemaster/add"),strpos($final_url, "ludotablemaster/edit")], 'is_numeric')) ? 'mm-active' : '' ?>">
-                            <a href="<?= base_url('backend/ludoTableMaster') ?>">Ludo Table Master</a>
+                            <a style="color:black !important;" href="<?= base_url('backend/ludoTableMaster') ?>">Ludo Table Master</a>
                         </li>
 
                         <li
                             class="<?= (array_filter([strpos($final_url, "ludohistory"),], 'is_numeric')) ? 'mm-active' : '' ?>">
-                            <a href="<?= base_url('backend/LudoHistory') ?>">Ludo History</a>
+                            <a style="color:black !important;" href="<?= base_url('backend/LudoHistory') ?>">Ludo History</a>
                         </li>
                     </ul>
                 </li>
@@ -139,22 +139,22 @@ $final_url = str_replace(strtolower(base_url()), '', strtolower($actual_link));
                 <li
                     class="<?= (array_filter([strpos($final_url, "backend/rummypool"),strpos($final_url, "backend/rummypool"),strpos($final_url, "pooltablemaster/add"),strpos($final_url, "pooltablemaster/edit")], 'is_numeric')) ? 'mm-active' : '' ?>">
                     <a href="javascript: void(0);" class="has-arrow waves-effect">
-                        <i class="ti-layout-grid2-alt"></i>
-                        <span>Rummy Pool Mgmt.</span>
+                        <i style="color:black !important;" class="ti-layout-grid2-alt"></i>
+                        <span style="color:black !important;">Rummy Pool Mgmt.</span>
                     </a>
                     <ul class="sub-menu mm-collapse">
                         <li
                             class="<?= (array_filter([strpos($final_url, "backend/rummypool")], 'is_numeric')) ? 'mm-active' : '' ?>">
                             <a href="<?= base_url('backend/RummyPool') ?>" class="waves-effect"><i
                                     class="ion ion-md-contact"></i>
-                                <span>Pool Table Master</span></a>
+                                <span style="color:black !important;">Pool Table Master</span></a>
                         </li>
 
                         <li
                             class="<?= (array_filter([strpos($final_url, "rummypool"),], 'is_numeric')) ? 'mm-active' : '' ?>">
                             <a href="<?= base_url('backend/RummyPool') ?>" class="waves-effect"><i
                                     class="ion ion-md-list-box"></i>
-                                <span>Rummy Pool History</span></a>
+                                <span style="color:black !important;">Rummy Pool History</span></a>
                         </li>
                     </ul>
                 </li>
@@ -163,19 +163,19 @@ $final_url = str_replace(strtolower(base_url()), '', strtolower($actual_link));
                 <li
                     class="<?= (array_filter([strpos($final_url, "backend/rummy")], 'is_numeric')) ? 'mm-active' : '' ?>">
                     <a href="javascript: void(0);" class="has-arrow waves-effect">
-                        <i class="ti-layout-grid2-alt"></i>
-                        <span>Rummy Management</span>
+                        <i style="color:black !important;" class="ti-layout-grid2-alt"></i>
+                        <span style="color:black !important;">Rummy Management</span>
                     </a>
                     <ul class="sub-menu mm-collapse">
                     <li
                             class="<?= (array_filter([strpos($final_url, "backend/rtummyablemaster")], 'is_numeric')) ? 'mm-active' : '' ?>">
-                            <a href="<?= base_url('backend/RummyTableMaster') ?>" class="waves-effect">
-                                <span>Point Table Master</span></a>
+                            <a style="color:black !important;" href="<?= base_url('backend/RummyTableMaster') ?>" class="waves-effect">
+                                <span style="color:black !important;">Point Table Master</span></a>
                         </li>
                         <li
                             class="<?= (array_filter([strpos($final_url, "rummy"),], 'is_numeric')) ? 'mm-active' : '' ?>">
-                            <a href="<?= base_url('backend/Rummy') ?>" class="waves-effect">
-                                <span>Rummy Point History</span></a>
+                            <a style="color:black !important;" href="<?= base_url('backend/Rummy') ?>" class="waves-effect">
+                                <span style="color:black !important;">Rummy Point History</span></a>
                         </li>
                     </ul>
                 </li>
@@ -184,11 +184,11 @@ $final_url = str_replace(strtolower(base_url()), '', strtolower($actual_link));
                 <li
                     class="<?= (array_filter([strpos($final_url, "backend/rummydeal")], 'is_numeric')) ? 'mm-active' : '' ?>">
                     <a href="javascript: void(0);" class="has-arrow waves-effect">
-                        <i class="ti-layout-grid2-alt"></i>
-                        <span>Rummy Deal Mgmt.</span>
+                        <i style="color:black !important;" class="ti-layout-grid2-alt"></i>
+                        <span style="color:black !important;">Rummy Deal Mgmt.</span>
                     </a>
-                    <ul class="sub-menu mm-collapse">
-                        <li
+                    <ul class="sub-menu mm-collapse" style="color:black !important;">
+                        <li style="color:black !important;"     
                             class="<?= (array_filter([strpos($final_url, "rummydeal"),], 'is_numeric')) ? 'mm-active' : '' ?>">
                             <a href="<?= base_url('backend/RummyDeal') ?>" class="waves-effect">
                                 <span>Rummy Deal History</span></a>
@@ -198,13 +198,13 @@ $final_url = str_replace(strtolower(base_url()), '', strtolower($actual_link));
                 <?php } ?>
 
                 <?php if (RUMMY_TOURNAMENT==true) { ?>
-                <li
+                <li style="color:black !important;"
                     class="<?= (array_filter([strpos($final_url, "backend/rummytournament")], 'is_numeric')) ? 'mm-active' : '' ?>">
                     <a href="javascript: void(0);" class="has-arrow waves-effect">
                         <i class="ti-layout-grid2-alt"></i>
                         <span>Rummy Tournament</span>
                     </a>
-                    <ul class="sub-menu mm-collapse">
+                    <ul style="color:black !important;" class="sub-menu mm-collapse">
                         <li
                             class="<?= (array_filter([strpos($final_url, "rummytournament"),], 'is_numeric')) ? 'mm-active' : '' ?>">
                             <a href="<?= base_url('backend/RummyTournaMent') ?>" class="waves-effect">
@@ -215,7 +215,7 @@ $final_url = str_replace(strtolower(base_url()), '', strtolower($actual_link));
                 <?php } ?>
 
                 <?php if (ANDER_BAHAR==true) { ?>
-                <li
+                <li style="color:black !important;"
                     class="<?= (array_filter([strpos($final_url, "backend/andarbahar")], 'is_numeric')) ? 'mm-active' : '' ?>">
                     <a href="javascript: void(0);" class="has-arrow waves-effect">
                         <i class="ti-layout-grid2-alt"></i>
@@ -231,7 +231,7 @@ $final_url = str_replace(strtolower(base_url()), '', strtolower($actual_link));
                 </li>
                 <?php } ?>
                 <?php if (BACCARAT==true) { ?>
-                <li
+                <li style="color:black !important;"
                     class="<?= (array_filter([strpos($final_url, "backend/baccarat")], 'is_numeric')) ? 'mm-active' : '' ?>">
                     <a href="javascript: void(0);" class="has-arrow waves-effect">
                         <i class="ti-layout-grid2-alt"></i>
@@ -247,7 +247,7 @@ $final_url = str_replace(strtolower(base_url()), '', strtolower($actual_link));
                 </li>
                 <?php } ?>
                 <?php if (DRAGON_TIGER==true) { ?>
-                <li
+                <li style="color:black !important;"
                     class="<?= (array_filter([strpos($final_url, "backend/dragontiger")], 'is_numeric')) ? 'mm-active' : '' ?>">
                     <a href="javascript: void(0);" class="has-arrow waves-effect">
                         <i class="ti-layout-grid2-alt"></i>
@@ -416,45 +416,45 @@ $final_url = str_replace(strtolower(base_url()), '', strtolower($actual_link));
                 <?php } ?>
 
                 <?php if (CHIPS_MANAGEMENT==true) { ?>
-                <li><a href="<?= base_url('backend/chips') ?>" class="waves-effect"><i class="ion ion-md-contact"></i>
-                        <span>Chips Management</span></a></li>
+                <li style="color:black !important;"><a href="<?= base_url('backend/chips') ?>" class="waves-effect"><i style="color:black !important;" class="ion ion-md-contact"></i>
+                        <span style="color:black !important;">Chips Management</span></a></li>
                 <?php } ?>
 
                 <?php if (GIFT_MANAGEMENT==true) { ?>
-                <li><a href="<?= base_url('backend/gift') ?>" class="waves-effect"><i
-                            class="ion ion-md-contact"></i><span>Gift Management</span></a></li>
+                <li style="color:black !important;"><a style="color:black !important;" href="<?= base_url('backend/gift') ?>" class="waves-effect"><i
+                style="color:black !important;"   class="ion ion-md-contact"></i><span>Gift Management</span></a></li>
                 <?php } ?>
 
                 <?php if (PURCHASE_HISTORY==true) { ?>
                 <li><a href="<?= base_url('backend/Purchase') ?>" class="waves-effect"><i
-                            class="ion ion-md-contact"></i> <span>Purchase History</span></a></li>
+                style="color:black !important;"     class="ion ion-md-contact"></i> <span style="color:black !important;">Purchase History</span></a></li>
                 <?php } ?>
 
                 <?php if (LEAD_BOARD==true) { ?>
                 <li><a href="<?= base_url('backend/Game/Leaderboard') ?>" class="waves-effect"><i
-                            class="ion ion-md-contact"></i> <span>Leadboard</span></a></li>
+                style="color:black !important;"      class="ion ion-md-contact"></i> <span style="color:black !important;">Leadboard</span></a></li>
                 <?php } ?>
 
                 <?php if (NOTIFICATION==true) { ?>
                 <li><a href="<?= base_url('backend/notification') ?>" class="waves-effect"><i
-                            class="ion ion-md-list-box"></i> <span>Notification</span></a></li>
+                style="color:black !important;"        class="ion ion-md-list-box"></i> <span style="color:black !important;">Notification</span></a></li>
                 <?php } ?>
 
                 <?php if (WELCOME_BONUS==true) { ?>
                 <li><a href="<?= base_url('backend/welcomebonus') ?>" class="waves-effect"><i
-                            class="ion ion-md-list-box"></i> <span>Welcome Bonus</span></a></li>
+                style="color:black !important;"       class="ion ion-md-list-box"></i> <span style="color:black !important;">Welcome Bonus</span></a></li>
                 <?php } ?>
 
 
 
                 <?php if (REEDEM_MANAGEMENT==true) { ?>
-                <li><a href="<?= base_url('backend/WithdrawalLog/ReedemNow') ?>" class="waves-effect"><i
-                            class="ion ion-md-list-box"></i> <span>Reedem Management</span></a></li>
+                <li><a style="color:black !important;" href="<?= base_url('backend/WithdrawalLog/ReedemNow') ?>" class="waves-effect"><i
+                style="color:black !important;"    class="ion ion-md-list-box"></i> <span style="color:black !important;">Reedem Management</span></a></li>
                 <?php } ?>
 
                 <?php if (WITHDRAWAL_LOG==true) { ?>
                 <li><a href="<?= base_url('backend/WithdrawalLog') ?>" class="waves-effect"><i
-                            class="ion ion-md-list-box"></i> <span>Withdrawal Log</span></a></li>
+                style="color:black !important;"       class="ion ion-md-list-box"></i> <span style="color:black !important;">Withdrawal Log</span></a></li>
                 <?php } ?>
 
                 <!-- <?php if (COMISSION==true) { ?>
@@ -464,7 +464,7 @@ $final_url = str_replace(strtolower(base_url()), '', strtolower($actual_link));
 
                 <?php if (SETTING==true) { ?>
                 <li><a href="<?= base_url('backend/setting') ?>" class="waves-effect"><i
-                            class="ion ion-md-list-box"></i> <span>Setting</span></a></li>
+                style="color:black !important;"    class="ion ion-md-list-box"></i> <span style="color:black !important;">Setting</span></a></li>
                 <?php } ?>
             </ul>
         </div>

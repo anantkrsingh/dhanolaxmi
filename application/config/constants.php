@@ -94,8 +94,8 @@ defined('EXIT_USER_INPUT')     or define('EXIT_USER_INPUT', 7); // invalid user 
 defined('EXIT_DATABASE')       or define('EXIT_DATABASE', 8); // database error
 defined('EXIT__AUTO_MIN')      or define('EXIT__AUTO_MIN', 9); // lowest automatically-assigned error code
 defined('EXIT__AUTO_MAX')      or define('EXIT__AUTO_MAX', 125); // highest automatically-assigned error code
-define('PROJECT_NAME', 'Lets Card');
-define('COMPANY_NAME', 'ASAG Androapps Technology Pvt Ltd.');
+define('PROJECT_NAME', 'Dhanolaxmi');
+define('COMPANY_NAME', 'Dhanolaxmi');
 define('SUPERADMIN', 0);
 define('KEY', '2018');
 define('URL_ENCRYPT_KEY', 'Housie432423');
@@ -295,27 +295,27 @@ define('COMISSION', true);
 define('BANNER', true);
 define('APPBANNER', true);
 
-define('TEENPATTI', true);
+define('TEENPATTI', false);
 define('POINT_RUMMY', true);
 define('RUMMY_POOL', true);
 define('RUMMY_DEAL', true);
-define('ANDER_BAHAR', true);
-define('DRAGON_TIGER', true);
-define('SEVEN_UP_DOWN', true);
-define('CAR_ROULETTE', true);
-define('COLOR_PREDICTION', true);
-define('JACKPOT', true);
-define('ANIMAL_ROULETTE', true);
+define('ANDER_BAHAR', false);
+define('DRAGON_TIGER', false);
+define('SEVEN_UP_DOWN', false);
+define('CAR_ROULETTE', false);
+define('COLOR_PREDICTION', false);
+define('JACKPOT', false);
+define('ANIMAL_ROULETTE', false);
 define('LUDO', true);
 define('LUDO_LOCAL', true);
 define('LUDO_COMPUTER', true);
-define('BACCARAT', true);
-define('POKER', true);
-define('RED_VS_BLACK', true);
-define('HEAD_TAILS', true);
-define('JHANDI_MUNDA', true);
-define('ROULETTE', true);
-define('RUMMY_TOURNAMENT', true);
+define('BACCARAT', false);
+define('POKER', false);
+define('RED_VS_BLACK', false);
+define('HEAD_TAILS', false);
+define('JHANDI_MUNDA', false);
+define('ROULETTE', false);
+define('RUMMY_TOURNAMENT', false);
 
 define('TEENPATTI_LOG', 1);
 define('POINT_RUMMY_LOG', 2);

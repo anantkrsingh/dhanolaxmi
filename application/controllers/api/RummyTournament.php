@@ -272,7 +272,7 @@ class RummyTournament extends REST_Controller
         foreach ($table_data as $key => $value) {
             $value->is_registered = ($this->RummyTournament_model->alreadyRegistered($this->data['user_id'], $value->id)) ? '1' : '0';
             $value->participants = $this->RummyTournament_model->participants($value->id);
-            $value->is_winner = $this->RummyTournament_model->isRoundWinner($value->id, $value->current_round, $this->data['user_id']);
+            $value->is_winner = $this->RummyTournament_model->isRoundWinner($value->id, $value->current_round-1, $this->data['user_id']);
         }
 
         $data['message'] = 'Success';
