@@ -69,10 +69,10 @@ $final_url = str_replace(strtolower(base_url()), '', strtolower($actual_link));
                         <span>Banner</span></a></li>
                 <?php } ?> -->
 
-                <!-- <?php if (APPBANNER==true) { ?>
+                 <?php if (APPBANNER==true) { ?>
                 <li><a href="<?= base_url('backend/AppBanner') ?>" class="waves-effect"><i class="ion ion-md-contact"></i>
                         <span>App Banner</span></a></li>
-                <?php } ?> -->
+                <?php } ?> 
 
                 <?php if (TEENPATTI==true) { ?>
                 <li
