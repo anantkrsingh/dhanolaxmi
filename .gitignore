@@ -1,8 +1,8 @@
-# .env
+.env
 vendor
 data
 game.apk
 composer.lock
-uploads
+# uploads
 application/logs
 phpmyadmin
