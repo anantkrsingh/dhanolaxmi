@@ -1,6 +1,6 @@
 .env
 vendor
-data
+# data
 game.apk
 composer.lock
 # uploads
